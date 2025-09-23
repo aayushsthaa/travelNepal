@@ -69,7 +69,7 @@ function getDbConnection() {
             $parsed = parse_url($dbUrl);
             
             // Build DSN in the format PDO expects
-            $dsn = sprintf("pgsql:host=%s;port=%d;dbname=%s;sslmode=require", 
+            $dsn = sprintf("pgsql:host=%s;port=%d;dbname=%s;sslmode=prefer", 
                           $parsed['host'], 
                           $parsed['port'] ?? 5432, 
                           trim($parsed['path'], '/'));
