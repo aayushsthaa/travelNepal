@@ -20,8 +20,7 @@ $router->get('/blog', function() {
 
 // Destinations listing
 $router->get('/destinations', function() {
-    $destinations = loadDestinations();
-    includeTemplate('destinations', compact('destinations'));
+    includeTemplate('destinations');
 });
 
 // Individual destination
@@ -82,8 +81,7 @@ $router->get('/admin/logout', function() {
 $router->get('/admin/dashboard', function() {
     requireAuth();
     $posts = loadAllBlogPosts();
-    $destinations = loadAllDestinations();
-    includeTemplate('admin/dashboard', compact('posts', 'destinations'));
+    includeTemplate('admin/dashboard', compact('posts'));
 });
 
 // Create/Edit post form
@@ -97,6 +95,7 @@ $router->get('/admin/post/edit/{slug}', function($slug) {
     $post = loadBlogPost($slug);
     if (!$post) {
         http_response_code(404);
+        includeTemplate('404');
         return;
     }
     includeTemplate('admin/post-form', compact('post'));
@@ -111,15 +110,18 @@ $router->post('/admin/post/save', function() {
         'title' => sanitize($_POST['title']),
         'content' => $_POST['content'], // Allow HTML for blog content
         'excerpt' => sanitize($_POST['excerpt']),
-        'featured_image' => sanitize($_POST['featured_image']),
         'category' => sanitize($_POST['category']),
         'tags' => array_map('sanitize', explode(',', $_POST['tags'] ?? '')),
         'published' => isset($_POST['published']),
         'updated_at' => time()
     ];
     
-    // Handle file upload if present
-    if (isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] !== UPLOAD_ERR_NO_FILE) {
+    $isEditing = isset($_POST['slug']) && !empty($_POST['slug']);
+    
+    // Handle file upload
+    $fileUploaded = isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] !== UPLOAD_ERR_NO_FILE;
+    
+    if ($fileUploaded) {
         $uploadResult = handleFileUpload($_FILES['image_upload']);
         
         if ($uploadResult['success']) {
@@ -134,15 +136,28 @@ $router->post('/admin/post/save', function() {
         }
     }
     
-    // Validate that we have either uploaded image or URL
-    if (empty($data['featured_image'])) {
-        $error = 'Please either upload an image or provide an image URL';
+    // For new posts, require image upload
+    if (!$isEditing && !$fileUploaded) {
+        $error = 'An image is required. Please upload an image for your blog post.';
         $post = $data; // Keep form data for redisplay
         includeTemplate('admin/post-form', compact('post', 'error'));
         return;
     }
     
-    if (isset($_POST['slug']) && !empty($_POST['slug'])) {
+    // For editing posts, keep existing image if no new upload
+    if ($isEditing && !$fileUploaded) {
+        $existing = loadBlogPost($_POST['slug']);
+        if ($existing && !empty($existing['featured_image'])) {
+            $data['featured_image'] = $existing['featured_image'];
+        } else {
+            $error = 'This post needs an image. Please upload an image.';
+            $post = $data; // Keep form data for redisplay
+            includeTemplate('admin/post-form', compact('post', 'error'));
+            return;
+        }
+    }
+    
+    if ($isEditing) {
         // Editing existing post
         $data['slug'] = sanitize($_POST['slug']);
         $existing = loadBlogPost($data['slug']);
@@ -238,7 +253,26 @@ $router->get('/contact', function() {
     includeTemplate('contact');
 });
 
-// Static assets (basic handling)
+// Static assets - Images in subdirectories
+$router->get('/assets/images/{file}', function($file) {
+    // Security: prevent directory traversal
+    if (strpos($file, '..') !== false || strpos($file, '/') !== false || strpos($file, '\\') !== false) {
+        http_response_code(404);
+        return;
+    }
+    
+    $filePath = ASSETS_PATH . '/images/' . $file;
+    if (file_exists($filePath) && is_file($filePath)) {
+        $mime = mime_content_type($filePath);
+        header('Content-Type: ' . $mime);
+        header('Cache-Control: public, max-age=31536000'); // Cache for 1 year
+        readfile($filePath);
+    } else {
+        http_response_code(404);
+    }
+});
+
+// Static assets (basic handling for root assets)
 $router->get('/assets/{file}', function($file) {
     // Security: prevent directory traversal
     if (strpos($file, '..') !== false || strpos($file, '/') !== false || strpos($file, '\\') !== false) {
@@ -311,99 +345,6 @@ $router->get('/uploads/{year}/{month}/{file}', function($year, $month, $file) {
     }
 });
 
-// Destination CRUD routes
-$router->get('/admin/destination/create', function() {
-    requireAuth();
-    includeTemplate('admin/destination-form');
-});
-
-$router->get('/admin/destination/edit/{slug}', function($slug) {
-    requireAuth();
-    $destination = loadDestination($slug);
-    if (!$destination) {
-        http_response_code(404);
-        return;
-    }
-    includeTemplate('admin/destination-form', compact('destination'));
-});
-
-$router->post('/admin/destination/save', function() {
-    requireAuth();
-    requireCSRF();
-    
-    $data = [
-        'name' => sanitize($_POST['name']),
-        'description' => sanitize($_POST['description']),
-        'long_description' => $_POST['long_description'] ?? '', // Allow HTML
-        'featured_image' => sanitize($_POST['featured_image']),
-        'category' => sanitize($_POST['category']),
-        'region' => sanitize($_POST['region']),
-        'altitude_range' => sanitize($_POST['altitude_range']),
-        'best_time_to_visit' => sanitize($_POST['best_time_to_visit']),
-        'duration' => sanitize($_POST['duration']),
-        'difficulty_level' => sanitize($_POST['difficulty_level']),
-        'highlights' => array_filter(array_map('sanitize', explode(',', $_POST['highlights'] ?? ''))),
-        'activities' => array_filter(array_map('sanitize', explode(',', $_POST['activities'] ?? ''))),
-        'location_coordinates' => sanitize($_POST['location_coordinates']),
-        'entry_permits_required' => isset($_POST['entry_permits_required']),
-        'accommodation_available' => isset($_POST['accommodation_available']),
-        'transportation_info' => sanitize($_POST['transportation_info']),
-        'featured' => isset($_POST['featured']),
-        'published' => isset($_POST['published']),
-        'meta_title' => sanitize($_POST['meta_title']),
-        'meta_description' => sanitize($_POST['meta_description'])
-    ];
-    
-    // Handle file upload if present
-    if (isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] !== UPLOAD_ERR_NO_FILE) {
-        $uploadResult = handleFileUpload($_FILES['image_upload']);
-        
-        if ($uploadResult['success']) {
-            $data['featured_image'] = $uploadResult['url'];
-        } else {
-            $error = 'Image upload failed: ' . $uploadResult['error'];
-            $destination = $data;
-            includeTemplate('admin/destination-form', compact('destination', 'error'));
-            return;
-        }
-    }
-    
-    // Validate required fields
-    if (empty($data['name']) || empty($data['description'])) {
-        $error = 'Name and description are required';
-        $destination = $data;
-        includeTemplate('admin/destination-form', compact('destination', 'error'));
-        return;
-    }
-    
-    // Check if this is an edit (slug provided)
-    if (isset($_POST['slug']) && !empty($_POST['slug'])) {
-        $data['slug'] = sanitize($_POST['slug']);
-    }
-    
-    if (saveDestination($data)) {
-        header('Location: /admin/dashboard?destination_saved=1');
-    } else {
-        $error = 'Failed to save destination';
-        $destination = $data;
-        includeTemplate('admin/destination-form', compact('destination', 'error'));
-    }
-    exit();
-});
-
-$router->post('/admin/destination/delete', function() {
-    requireAuth();
-    requireCSRF();
-    
-    $slug = sanitize($_POST['slug']);
-    
-    if (deleteDestination($slug)) {
-        header('Location: /admin/dashboard?destination_deleted=1');
-    } else {
-        header('Location: /admin/dashboard?error=destination_delete_failed');
-    }
-    exit();
-});
 
 // Run the router
 $router->run();

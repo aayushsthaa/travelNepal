@@ -206,6 +206,65 @@ ob_start();
     </div>
 </section>
 
+<!-- Location Map Section -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-display font-bold text-mountain-800 mb-4">
+                Discover <span class="text-gradient">Nepal</span>
+            </h2>
+            <p class="text-lg text-mountain-600 max-w-3xl mx-auto">
+                Nestled in the heart of the Himalayas between China and India, Nepal offers breathtaking landscapes, 
+                rich culture, and unforgettable adventures. Explore our beautiful country and start planning your journey.
+            </p>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+            <div class="mb-6">
+                <h3 class="text-2xl font-display font-bold text-mountain-800 mb-2">
+                    Nepal Location Map
+                </h3>
+                <p class="text-mountain-600">
+                    Nepal is a landlocked country in South Asia, home to Mount Everest and rich cultural heritage. 
+                    Our team is based in Kathmandu, the vibrant capital city.
+                </p>
+            </div>
+            
+            <!-- Interactive Map Container -->
+            <div class="relative">
+                <div id="nepal-map" class="w-full h-96 md:h-[500px] rounded-xl overflow-hidden border border-mountain-200"></div>
+                
+                <!-- Map Loading State -->
+                <div id="map-loading" class="absolute inset-0 bg-mountain-50 rounded-xl flex items-center justify-center">
+                    <div class="text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-nepal-500 mb-3"></div>
+                        <p class="text-mountain-600">Loading Nepal map...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map Features -->
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center p-4 bg-nepal-50 rounded-lg">
+                    <i class="fas fa-mountain text-nepal-600 text-2xl mb-2"></i>
+                    <h4 class="font-semibold text-mountain-800">Himalayan Views</h4>
+                    <p class="text-sm text-mountain-600">Home to 8 of the world's 14 highest peaks</p>
+                </div>
+                <div class="text-center p-4 bg-nepal-50 rounded-lg">
+                    <i class="fas fa-temple text-nepal-600 text-2xl mb-2"></i>
+                    <h4 class="font-semibold text-mountain-800">Rich Culture</h4>
+                    <p class="text-sm text-mountain-600">Ancient temples and diverse traditions</p>
+                </div>
+                <div class="text-center p-4 bg-nepal-50 rounded-lg">
+                    <i class="fas fa-hiking text-nepal-600 text-2xl mb-2"></i>
+                    <h4 class="font-semibold text-mountain-800">Adventure Hub</h4>
+                    <p class="text-sm text-mountain-600">World-class trekking and outdoor activities</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- FAQ Section -->
 <section class="py-16 bg-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -272,6 +331,105 @@ ob_start();
         </div>
     </div>
 </section>
+
+<script>
+// Initialize Nepal Map when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const mapLoading = document.getElementById('map-loading');
+    const mapContainer = document.getElementById('nepal-map');
+    
+    // Check if Leaflet library is available
+    if (window.L && typeof L.map === 'function') {
+        // Initialize map centered on Nepal
+        const map = L.map('nepal-map', {
+            center: [28.3949, 84.1240], // Nepal coordinates
+            zoom: 7, // Show whole country
+            zoomControl: true,
+            scrollWheelZoom: true,
+            dragging: true,
+            touchZoom: true,
+            doubleClickZoom: true
+        });
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+        }).addTo(map);
+        
+        // Custom icon for Nepal marker
+        const nepalIcon = L.divIcon({
+            className: 'custom-nepal-marker',
+            html: '<div class="marker-pin"><i class="fas fa-map-marker-alt"></i></div>',
+            iconSize: [30, 30],
+            iconAnchor: [15, 30]
+        });
+        
+        // Add marker for Kathmandu (capital city)
+        const kathmanduMarker = L.marker([27.7172, 85.3240], { icon: nepalIcon })
+            .addTo(map)
+            .bindPopup(`
+                <div class="map-popup">
+                    <h4 class="font-bold text-mountain-800 mb-2">
+                        <i class="fas fa-city text-nepal-500 mr-2"></i>Kathmandu, Nepal
+                    </h4>
+                    <p class="text-mountain-600 mb-2">Capital and largest city of Nepal</p>
+                    <p class="text-sm text-mountain-500">Our team is located here to help plan your adventure!</p>
+                </div>
+            `, {
+                maxWidth: 250,
+                className: 'custom-popup'
+            });
+        
+        // Hide loading indicator after map loads
+        map.whenReady(function() {
+            setTimeout(() => {
+                mapLoading.style.display = 'none';
+            }, 500);
+        });
+        
+        // Make map responsive
+        function resizeMap() {
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 100);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', resizeMap);
+        
+        // Optional: Add fullscreen control if available
+        if (typeof L.control.fullscreen !== 'undefined') {
+            map.addControl(new L.control.fullscreen());
+        }
+    } else {
+        // Fallback when Leaflet library is not available
+        const fallbackMessage = `
+            <div class="text-center py-16">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-mountain-100 rounded-full mb-4">
+                    <i class="fas fa-map text-mountain-400 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-mountain-800 mb-2">Map Temporarily Unavailable</h3>
+                <p class="text-mountain-600 mb-4">
+                    We're experiencing issues loading the interactive map. Please try refreshing the page.
+                </p>
+                <div class="text-sm text-mountain-500 space-y-1">
+                    <p><strong>Nepal Location:</strong> South Asia, between China and India</p>
+                    <p><strong>Capital:</strong> Kathmandu</p>
+                    <p><strong>Coordinates:</strong> 28.3949°N, 84.1240°E</p>
+                </div>
+                <button onclick="location.reload()" 
+                        class="mt-4 px-4 py-2 bg-nepal-500 text-white rounded-lg hover:bg-nepal-600 transition-colors">
+                    <i class="fas fa-refresh mr-2"></i>Retry Loading Map
+                </button>
+            </div>
+        `;
+        
+        mapContainer.innerHTML = fallbackMessage;
+        mapLoading.style.display = 'none';
+    }
+});
+</script>
 
 <?php
 $content = ob_get_clean();

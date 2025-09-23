@@ -77,6 +77,9 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
         .bg-hero-pattern {
             background-image: linear-gradient(135deg, rgba(237, 112, 63, 0.9) 0%, rgba(185, 63, 31, 0.9) 100%);
@@ -98,12 +101,88 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         
+        /* Nepal Map Styling */
+        .custom-nepal-marker {
+            background: transparent;
+            border: none;
+        }
+        
+        .custom-nepal-marker .marker-pin {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ed703f 0%, #b93f1f 100%);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .custom-nepal-marker .marker-pin i {
+            color: white;
+            font-size: 16px;
+            transform: rotate(45deg);
+        }
+        
+        .leaflet-popup-content-wrapper {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .leaflet-popup-content {
+            margin: 0;
+            padding: 16px;
+            line-height: 1.5;
+        }
+        
+        .custom-popup .map-popup h4 {
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .custom-popup .map-popup p {
+            color: #475569;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .leaflet-popup-tip {
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* Map container responsive styling */
+        #nepal-map {
+            transition: opacity 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .custom-nepal-marker .marker-pin {
+                width: 25px;
+                height: 25px;
+            }
+            
+            .custom-nepal-marker .marker-pin i {
+                font-size: 14px;
+            }
+            
+            .leaflet-popup-content {
+                padding: 12px;
+            }
+        }
+        
     </style>
 </head>
 
 <body class="bg-gray-50 font-sans">
     <!-- Navigation -->
-    <?php include 'components/navbar.php'; ?>
+    <?php include __DIR__ . '/components/navbar.php'; ?>
     
     <!-- Main Content -->
     <main class="min-h-screen">
@@ -111,9 +190,12 @@
     </main>
     
     <!-- Footer -->
-    <?php include 'components/footer.php'; ?>
+    <?php include __DIR__ . '/components/footer.php'; ?>
     
     <!-- JavaScript -->
     <script src="/assets/js/main.js"></script>
+    
+    <!-- Leaflet JavaScript for Maps -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>

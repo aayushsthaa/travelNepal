@@ -9,6 +9,12 @@ $page_description = $isEditing ? 'Edit your Nepal travel blog post' : 'Create a 
 ob_start();
 ?>
 
+<!-- Include Admin Sidebar -->
+<?php include __DIR__ . '/../components/admin-sidebar.php'; ?>
+
+<!-- Main Content Area (with sidebar padding) -->
+<div class="lg:ml-64">
+
 <div class="min-h-screen bg-mountain-50">
     <!-- Header -->
     <div class="bg-white border-b border-mountain-200">
@@ -84,38 +90,17 @@ ob_start();
                     <!-- Upload Option -->
                     <div class="mb-4">
                         <label for="image_upload" class="block text-sm font-medium text-mountain-600 mb-2">
-                            <i class="fas fa-upload mr-2"></i>Upload Image (Recommended)
+                            <i class="fas fa-upload mr-2"></i>Upload Image
                         </label>
                         <input type="file" 
                                id="image_upload" 
                                name="image_upload" 
+                               <?php echo !$isEditing ? 'required' : ''; ?>
                                accept=".jpg,.jpeg,.png,.webp"
                                class="w-full px-4 py-3 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-nepal-50 file:text-nepal-700 hover:file:bg-nepal-100">
                         <p class="mt-2 text-sm text-mountain-500">
                             <strong>Allowed:</strong> JPEG, PNG, WebP • <strong>Max size:</strong> 5MB
-                        </p>
-                    </div>
-
-                    <!-- OR Divider -->
-                    <div class="flex items-center my-4">
-                        <div class="flex-grow border-t border-mountain-200"></div>
-                        <span class="px-4 text-sm text-mountain-500 bg-white">OR</span>
-                        <div class="flex-grow border-t border-mountain-200"></div>
-                    </div>
-
-                    <!-- URL Option -->
-                    <div>
-                        <label for="featured_image" class="block text-sm font-medium text-mountain-600 mb-2">
-                            <i class="fas fa-link mr-2"></i>Image URL (Fallback)
-                        </label>
-                        <input type="url" 
-                               id="featured_image" 
-                               name="featured_image" 
-                               value="<?php echo htmlspecialchars($post['featured_image'] ?? ''); ?>"
-                               class="w-full px-4 py-3 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent"
-                               placeholder="/assets/images/your-image.jpg">
-                        <p class="mt-2 text-sm text-mountain-500">
-                            Use existing Nepal images: Everest_sunrise_panorama_20949daa.png, Kathmandu_temple_architecture_df1e8ace.png, Pokhara_lake_reflections_ada62be7.png, or Prayer_flags_mountain_vista_1f2256d5.png
+                            <?php if (!$isEditing): ?><br><strong>Required:</strong> You must upload an image for new posts<?php else: ?><br><strong>Optional:</strong> Upload a new image to replace the current one<?php endif; ?>
                         </p>
                     </div>
                 </div>
@@ -299,13 +284,6 @@ document.addEventListener('DOMContentLoaded', function() {
     excerptInput.dispatchEvent(new Event('input'));
 });
 
-// Image URL validation
-document.getElementById('featured_image').addEventListener('blur', function() {
-    const url = this.value;
-    if (url && !url.match(/\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i) && !url.startsWith('/assets/')) {
-        showNotification('Please enter a valid image URL', 'warning');
-    }
-});
 </script>
 
 <style>
@@ -343,6 +321,8 @@ textarea {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 }
 </style>
+
+</div> <!-- End Main Content Area -->
 
 <?php
 $content = ob_get_contents();

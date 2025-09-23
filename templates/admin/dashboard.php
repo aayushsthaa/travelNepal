@@ -2,8 +2,17 @@
 $page_title = 'Admin Dashboard - travelNepal';
 $page_description = 'Manage your Nepal travel blog posts and content.';
 
+// Defensive coding to prevent undefined variable warnings
+$posts = $posts ?? [];
+
 ob_start();
 ?>
+
+<!-- Include Admin Sidebar -->
+<?php include __DIR__ . '/../components/admin-sidebar.php'; ?>
+
+<!-- Main Content Area (with sidebar padding) -->
+<div class="lg:ml-64">
 
 <!-- Dashboard Header -->
 <div class="bg-gradient-to-r from-nepal-500 to-nepal-600 text-white">
@@ -19,10 +28,6 @@ ob_start();
                         <i class="fas fa-plus mr-2"></i>
                         New Post
                     </a>
-                    <a href="/admin/destination/create" class="bg-nepal-700 text-white hover:bg-nepal-800 px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
-                        <i class="fas fa-map-marked-alt mr-2"></i>
-                        New Destination
-                    </a>
                 </div>
             </div>
         </div>
@@ -32,7 +37,7 @@ ob_start();
 <!-- Dashboard Stats -->
 <div class="bg-white border-b border-mountain-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 animate-on-scroll">
                 <div class="flex items-center justify-between">
                     <div>
@@ -87,25 +92,12 @@ ob_start();
                 </div>
             </div>
             
-            <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 animate-on-scroll">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-orange-600 text-sm font-medium">Destinations</p>
-                        <p class="text-2xl font-bold text-orange-800">
-                            <?php echo isset($destinations) ? count($destinations) : 0; ?>
-                        </p>
-                    </div>
-                    <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
-                        <i class="fas fa-map-marked-alt text-white"></i>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
 
 <!-- Posts Management -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" id="posts">
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="px-6 py-4 bg-mountain-50 border-b border-mountain-200">
             <div class="flex justify-between items-center">
@@ -213,120 +205,9 @@ ob_start();
     </div>
 </div>
 
-<!-- Destinations Management -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <div class="px-6 py-4 bg-mountain-50 border-b border-mountain-200">
-            <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-mountain-800">Destinations</h2>
-                <div class="flex space-x-2">
-                    <select class="px-4 py-2 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent" id="destinationCategoryFilter">
-                        <option value="">All Categories</option>
-                        <?php
-                        $destinationCategories = getDestinationCategories();
-                        foreach ($destinationCategories as $category):
-                        ?>
-                        <option value="<?php echo htmlspecialchars($category); ?>">
-                            <?php echo htmlspecialchars($category); ?>
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <?php if (!empty($destinations)): ?>
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-mountain-100">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Destination</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Region</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Duration</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-mountain-200">
-                    <?php foreach ($destinations as $destination): ?>
-                    <tr class="destination-row hover:bg-mountain-50 transition-colors" data-category="<?php echo htmlspecialchars($destination['category']); ?>">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center">
-                                <img src="<?php echo htmlspecialchars($destination['featured_image']); ?>" 
-                                     alt="<?php echo htmlspecialchars($destination['name']); ?>"
-                                     class="w-16 h-12 rounded-lg object-cover mr-4">
-                                <div>
-                                    <div class="text-sm font-medium text-mountain-900">
-                                        <?php echo htmlspecialchars(truncateText($destination['name'], 60)); ?>
-                                    </div>
-                                    <div class="text-sm text-mountain-500">
-                                        <?php echo htmlspecialchars(truncateText($destination['description'], 80)); ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                <?php echo htmlspecialchars($destination['category']); ?>
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-mountain-900">
-                                <?php echo htmlspecialchars($destination['region']); ?>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-mountain-900">
-                                <?php echo htmlspecialchars($destination['duration']); ?>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $destination['published'] ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
-                                <i class="fas <?php echo $destination['published'] ? 'fa-check-circle' : 'fa-clock'; ?> mr-1"></i>
-                                <?php echo $destination['published'] ? 'Published' : 'Draft'; ?>
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex items-center space-x-2">
-                                <a href="/destinations" 
-                                   class="text-blue-600 hover:text-blue-900 transition-colors" 
-                                   title="View Destinations Page" target="_blank">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="/admin/destination/edit/<?php echo htmlspecialchars($destination['slug']); ?>" 
-                                   class="text-nepal-600 hover:text-nepal-900 transition-colors" 
-                                   title="Edit Destination">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button onclick="confirmDeleteDestination('<?php echo htmlspecialchars($destination['slug']); ?>', '<?php echo htmlspecialchars($destination['name']); ?>')" 
-                                        class="text-red-600 hover:text-red-900 transition-colors" 
-                                        title="Delete Destination">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-        <?php else: ?>
-        <div class="text-center py-12">
-            <i class="fas fa-map-marked-alt text-mountain-300 text-6xl mb-4"></i>
-            <h3 class="text-lg font-medium text-mountain-700 mb-2">No destinations yet</h3>
-            <p class="text-mountain-500 mb-6">Start adding amazing Nepal destinations!</p>
-            <a href="/admin/destination/create" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
-                <i class="fas fa-plus mr-2"></i>
-                Create Your First Destination
-            </a>
-        </div>
-        <?php endif; ?>
-    </div>
-</div>
 
 <!-- Category Management -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="categories">
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="px-6 py-4 bg-mountain-50 border-b border-mountain-200">
             <div class="flex justify-between items-center">
@@ -645,6 +526,8 @@ document.getElementById('deleteModal').addEventListener('click', function(e) {
     }
 });
 </script>
+
+</div> <!-- End Main Content Area -->
 
 <?php
 $content = ob_get_contents();
