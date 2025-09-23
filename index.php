@@ -100,6 +100,30 @@ $router->post('/admin/post/save', function() {
         'updated_at' => time()
     ];
     
+    // Handle file upload if present
+    if (isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $uploadResult = handleFileUpload($_FILES['image_upload']);
+        
+        if ($uploadResult['success']) {
+            // Use uploaded file URL as featured image
+            $data['featured_image'] = $uploadResult['url'];
+        } else {
+            // Return with upload error
+            $error = 'Image upload failed: ' . $uploadResult['error'];
+            $post = $data; // Keep form data for redisplay
+            includeTemplate('admin/post-form', compact('post', 'error'));
+            return;
+        }
+    }
+    
+    // Validate that we have either uploaded image or URL
+    if (empty($data['featured_image'])) {
+        $error = 'Please either upload an image or provide an image URL';
+        $post = $data; // Keep form data for redisplay
+        includeTemplate('admin/post-form', compact('post', 'error'));
+        return;
+    }
+    
     if (isset($_POST['slug']) && !empty($_POST['slug'])) {
         // Editing existing post
         $data['slug'] = sanitize($_POST['slug']);
@@ -117,7 +141,8 @@ $router->post('/admin/post/save', function() {
         header('Location: /admin/dashboard');
     } else {
         $error = 'Failed to save post';
-        includeTemplate('admin/post-form', compact('data', 'error'));
+        $post = $data; // Keep form data for redisplay
+        includeTemplate('admin/post-form', compact('post', 'error'));
     }
 });
 
@@ -202,10 +227,71 @@ $router->get('/contact', function() {
 
 // Static assets (basic handling)
 $router->get('/assets/{file}', function($file) {
+    // Security: prevent directory traversal
+    if (strpos($file, '..') !== false || strpos($file, '/') !== false || strpos($file, '\\') !== false) {
+        http_response_code(404);
+        return;
+    }
+    
     $filePath = ASSETS_PATH . '/' . $file;
-    if (file_exists($filePath)) {
+    if (file_exists($filePath) && is_file($filePath)) {
         $mime = mime_content_type($filePath);
         header('Content-Type: ' . $mime);
+        readfile($filePath);
+    } else {
+        http_response_code(404);
+    }
+});
+
+// Uploaded files (secure handling)
+$router->get('/uploads/{year}/{month}/{file}', function($year, $month, $file) {
+    // Sanitize inputs to prevent directory traversal
+    $year = sanitizeFilePath($year);
+    $month = sanitizeFilePath($month);
+    $file = sanitizeFilePath($file);
+    
+    // Validate year and month format
+    if (!preg_match('/^\d{4}$/', $year) || !preg_match('/^\d{2}$/', $month)) {
+        http_response_code(404);
+        return;
+    }
+    
+    // Validate file extension
+    $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+    if (!in_array($extension, ALLOWED_EXTENSIONS)) {
+        http_response_code(404);
+        return;
+    }
+    
+    $filePath = UPLOADS_PATH . "/{$year}/{$month}/{$file}";
+    
+    if (file_exists($filePath) && is_file($filePath)) {
+        // Get mime type and validate it's an image
+        $mime = mime_content_type($filePath);
+        if (!in_array($mime, ALLOWED_IMAGE_TYPES)) {
+            http_response_code(404);
+            return;
+        }
+        
+        // Set security headers
+        header('Content-Type: ' . $mime);
+        header('X-Content-Type-Options: nosniff');
+        header('Content-Security-Policy: default-src \'none\'; img-src \'self\'; style-src \'none\'; script-src \'none\';');
+        
+        // Cache headers for better performance
+        $lastModified = filemtime($filePath);
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');
+        header('Cache-Control: public, max-age=31536000'); // 1 year
+        
+        // Check if client has cached version
+        if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+            $clientModified = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+            if ($clientModified >= $lastModified) {
+                http_response_code(304);
+                return;
+            }
+        }
+        
         readfile($filePath);
     } else {
         http_response_code(404);

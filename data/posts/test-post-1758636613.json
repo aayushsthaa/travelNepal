@@ -1,0 +1,13 @@
+{
+    "title": "Updated Test Post",
+    "content": "Updated test content",
+    "excerpt": "Updated test excerpt",
+    "featured_image": "updated.jpg",
+    "category": "Updated Category",
+    "tags": [
+        "updated",
+        "test"
+    ],
+    "published": false,
+    "slug": "test-post-1758636613"
+}

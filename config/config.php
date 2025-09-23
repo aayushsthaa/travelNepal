@@ -11,6 +11,18 @@ define('BASE_PATH', __DIR__ . '/..');
 define('TEMPLATES_PATH', BASE_PATH . '/templates');
 define('ASSETS_PATH', BASE_PATH . '/assets');
 define('DATA_PATH', BASE_PATH . '/data');
+define('UPLOADS_PATH', BASE_PATH . '/uploads');
+
+// Upload Configuration
+define('MAX_UPLOAD_SIZE', 5 * 1024 * 1024); // 5MB in bytes
+define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/webp']);
+define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'webp']);
+
+// Set PHP upload limits to match our constraints
+ini_set('upload_max_filesize', '5M');
+ini_set('post_max_size', '6M'); // Slightly larger to account for form data
+ini_set('max_input_time', 60);
+ini_set('memory_limit', '128M');
 
 // Admin Configuration - Require environment variables for security
 if (!isset($_ENV['ADMIN_USERNAME']) || empty($_ENV['ADMIN_USERNAME'])) {
@@ -90,7 +102,7 @@ function getDbConnection() {
 }
 
 // Create necessary directories
-$directories = [DATA_PATH, ASSETS_PATH . '/images', TEMPLATES_PATH];
+$directories = [DATA_PATH, ASSETS_PATH . '/images', TEMPLATES_PATH, UPLOADS_PATH];
 foreach ($directories as $dir) {
     if (!is_dir($dir)) {
         mkdir($dir, 0755, true);

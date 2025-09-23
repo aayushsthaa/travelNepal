@@ -181,7 +181,7 @@ function saveBlogPost($data) {
             
             // Prepare data for database insertion
             $tags_json = json_encode($data['tags']);
-            $published = $data['published'] ? true : false;
+            $published = $data['published'] ? 'true' : 'false';
             
             // Get category_id from category name
             $category_id = null;
@@ -222,7 +222,7 @@ function saveBlogPost($data) {
             } else {
                 // Insert new post
                 $sql = "INSERT INTO posts (title, slug, excerpt, content, category, category_id, tags, featured_image, published, created_at, updated_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
                         
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
@@ -473,5 +473,161 @@ function getCategoryIdByName($categoryName) {
         error_log('Database category ID lookup error: ' . $e->getMessage());
         return null;
     }
+}
+
+/**
+ * Generate secure random filename for uploads
+ */
+function generateSecureFilename($originalName) {
+    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    $randomName = bin2hex(random_bytes(16));
+    return $randomName . '.' . $extension;
+}
+
+/**
+ * Validate uploaded file security and constraints
+ */
+function validateUploadedFile($file) {
+    $errors = [];
+    
+    // Check if file was uploaded
+    if (!isset($file['tmp_name']) || empty($file['tmp_name'])) {
+        return ['No file uploaded'];
+    }
+    
+    // Check for upload errors
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return ['File upload error: ' . $file['error']];
+    }
+    
+    // Check file size
+    if ($file['size'] > MAX_UPLOAD_SIZE) {
+        $maxSizeMB = MAX_UPLOAD_SIZE / (1024 * 1024);
+        return ["File too large. Maximum size: {$maxSizeMB}MB"];
+    }
+    
+    // Check MIME type
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+    
+    if (!in_array($mimeType, ALLOWED_IMAGE_TYPES)) {
+        return ['Invalid file type. Only JPEG, PNG, and WebP images are allowed.'];
+    }
+    
+    // Check file extension
+    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($extension, ALLOWED_EXTENSIONS)) {
+        return ['Invalid file extension. Only jpg, jpeg, png, and webp files are allowed.'];
+    }
+    
+    // Additional security: check file signature (magic bytes)
+    $handle = fopen($file['tmp_name'], 'rb');
+    $signature = fread($handle, 8);
+    fclose($handle);
+    
+    $validSignatures = [
+        "\xFF\xD8\xFF", // JPEG
+        "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A", // PNG
+        "RIFF", // WebP (RIFF header)
+    ];
+    
+    $isValidSignature = false;
+    foreach ($validSignatures as $validSig) {
+        if (strpos($signature, $validSig) === 0) {
+            $isValidSignature = true;
+            break;
+        }
+    }
+    
+    if (!$isValidSignature) {
+        return ['Invalid file format. File appears to be corrupted or not a valid image.'];
+    }
+    
+    // Check for PHP code in image files (additional security)
+    $content = file_get_contents($file['tmp_name']);
+    if (strpos($content, '<?php') !== false || strpos($content, '<?=') !== false || 
+        strpos($content, '<script') !== false || strpos($content, '<html') !== false) {
+        return ['Security violation: File contains potentially malicious content.'];
+    }
+    
+    return []; // No errors
+}
+
+/**
+ * Create upload directory for year/month structure
+ */
+function createUploadDirectory() {
+    $year = date('Y');
+    $month = date('m');
+    $uploadDir = UPLOADS_PATH . "/{$year}/{$month}";
+    
+    if (!is_dir($uploadDir)) {
+        if (!mkdir($uploadDir, 0755, true)) {
+            return false;
+        }
+    }
+    
+    return $uploadDir;
+}
+
+/**
+ * Handle secure file upload
+ */
+function handleFileUpload($file) {
+    // Validate file
+    $errors = validateUploadedFile($file);
+    if (!empty($errors)) {
+        return ['success' => false, 'error' => implode(' ', $errors)];
+    }
+    
+    // Create upload directory
+    $uploadDir = createUploadDirectory();
+    if (!$uploadDir) {
+        return ['success' => false, 'error' => 'Failed to create upload directory'];
+    }
+    
+    // Generate secure filename
+    $secureFilename = generateSecureFilename($file['name']);
+    $targetPath = $uploadDir . '/' . $secureFilename;
+    
+    // Move uploaded file
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        return ['success' => false, 'error' => 'Failed to move uploaded file'];
+    }
+    
+    // Set proper permissions
+    chmod($targetPath, 0644);
+    
+    // Generate public URL
+    $year = date('Y');
+    $month = date('m');
+    $publicUrl = "/uploads/{$year}/{$month}/{$secureFilename}";
+    
+    return [
+        'success' => true,
+        'url' => $publicUrl,
+        'filename' => $secureFilename,
+        'path' => $targetPath
+    ];
+}
+
+/**
+ * Sanitize and prevent directory traversal
+ */
+function sanitizeFilePath($path) {
+    // Remove any directory traversal attempts (multiple passes to handle complex attacks)
+    $path = str_replace(['../', '..\/', '..\\', '...', '..', './', '.\/', '.\\'], '', $path);
+    $path = str_replace(['../', '..\/', '..\\', '...', '..', './', '.\/', '.\\'], '', $path); // Second pass
+    
+    // Only allow alphanumeric characters, dots, hyphens, and underscores (no slashes)
+    $path = preg_replace('/[^a-zA-Z0-9._\-]/', '', $path);
+    
+    // Ensure no empty path or suspicious patterns
+    if (empty($path) || strpos($path, '..') !== false || strpos($path, './') !== false) {
+        return 'invalid';
+    }
+    
+    return $path;
 }
 ?>

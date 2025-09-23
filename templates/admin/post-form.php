@@ -1,4 +1,7 @@
 <?php
+// Initialize variables to prevent undefined variable warnings
+$post = $post ?? null;
+$error = $error ?? null;
 $isEditing = isset($post);
 $page_title = $isEditing ? 'Edit Post - travelNepal Admin' : 'New Post - travelNepal Admin';
 $page_description = $isEditing ? 'Edit your Nepal travel blog post' : 'Create a new Nepal travel blog post';
@@ -30,10 +33,10 @@ ob_start();
     <!-- Form -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="bg-white rounded-2xl shadow-lg">
-            <form method="POST" action="/admin/post/save" class="p-8 space-y-8" id="post-form">
+            <form method="POST" action="/admin/post/save" enctype="multipart/form-data" class="p-8 space-y-8" id="post-form">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 <?php if ($isEditing): ?>
-                <input type="hidden" name="slug" value="<?php echo htmlspecialchars($post['slug']); ?>">
+                <input type="hidden" name="slug" value="<?php echo htmlspecialchars($post['slug'] ?? ''); ?>">
                 <?php endif; ?>
 
                 <?php if (isset($error)): ?>
@@ -74,18 +77,47 @@ ob_start();
 
                 <!-- Featured Image -->
                 <div>
-                    <label for="featured_image" class="block text-sm font-medium text-mountain-700 mb-2">
-                        <i class="fas fa-image mr-2"></i>Featured Image URL
+                    <label class="block text-sm font-medium text-mountain-700 mb-4">
+                        <i class="fas fa-image mr-2"></i>Featured Image
                     </label>
-                    <input type="url" 
-                           id="featured_image" 
-                           name="featured_image" 
-                           value="<?php echo htmlspecialchars($post['featured_image'] ?? ''); ?>"
-                           class="w-full px-4 py-3 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent"
-                           placeholder="/assets/images/your-image.jpg">
-                    <p class="mt-2 text-sm text-mountain-500">
-                        Use the generated Nepal images: Everest_sunrise_panorama_20949daa.png, Kathmandu_temple_architecture_df1e8ace.png, Pokhara_lake_reflections_ada62be7.png, or Prayer_flags_mountain_vista_1f2256d5.png
-                    </p>
+                    
+                    <!-- Upload Option -->
+                    <div class="mb-4">
+                        <label for="image_upload" class="block text-sm font-medium text-mountain-600 mb-2">
+                            <i class="fas fa-upload mr-2"></i>Upload Image (Recommended)
+                        </label>
+                        <input type="file" 
+                               id="image_upload" 
+                               name="image_upload" 
+                               accept=".jpg,.jpeg,.png,.webp"
+                               class="w-full px-4 py-3 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-nepal-50 file:text-nepal-700 hover:file:bg-nepal-100">
+                        <p class="mt-2 text-sm text-mountain-500">
+                            <strong>Allowed:</strong> JPEG, PNG, WebP • <strong>Max size:</strong> 5MB
+                        </p>
+                    </div>
+
+                    <!-- OR Divider -->
+                    <div class="flex items-center my-4">
+                        <div class="flex-grow border-t border-mountain-200"></div>
+                        <span class="px-4 text-sm text-mountain-500 bg-white">OR</span>
+                        <div class="flex-grow border-t border-mountain-200"></div>
+                    </div>
+
+                    <!-- URL Option -->
+                    <div>
+                        <label for="featured_image" class="block text-sm font-medium text-mountain-600 mb-2">
+                            <i class="fas fa-link mr-2"></i>Image URL (Fallback)
+                        </label>
+                        <input type="url" 
+                               id="featured_image" 
+                               name="featured_image" 
+                               value="<?php echo htmlspecialchars($post['featured_image'] ?? ''); ?>"
+                               class="w-full px-4 py-3 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent"
+                               placeholder="/assets/images/your-image.jpg">
+                        <p class="mt-2 text-sm text-mountain-500">
+                            Use existing Nepal images: Everest_sunrise_panorama_20949daa.png, Kathmandu_temple_architecture_df1e8ace.png, Pokhara_lake_reflections_ada62be7.png, or Prayer_flags_mountain_vista_1f2256d5.png
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Category and Tags Row -->
