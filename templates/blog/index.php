@@ -41,15 +41,15 @@ ob_start();
             <button class="category-filter active bg-nepal-500 text-white px-6 py-2 rounded-full font-medium transition-all duration-300 hover:bg-nepal-600" data-category="all">
                 All Posts
             </button>
-            <button class="category-filter bg-mountain-100 text-mountain-700 px-6 py-2 rounded-full font-medium transition-all duration-300 hover:bg-nepal-500 hover:text-white" data-category="Trekking">
-                Trekking
+            <?php
+            $categories = getCategories();
+            foreach ($categories as $category):
+            ?>
+            <button class="category-filter bg-mountain-100 text-mountain-700 px-6 py-2 rounded-full font-medium transition-all duration-300 hover:bg-nepal-500 hover:text-white" 
+                    data-category="<?php echo htmlspecialchars($category['name']); ?>">
+                <?php echo htmlspecialchars($category['name']); ?>
             </button>
-            <button class="category-filter bg-mountain-100 text-mountain-700 px-6 py-2 rounded-full font-medium transition-all duration-300 hover:bg-nepal-500 hover:text-white" data-category="Culture">
-                Culture
-            </button>
-            <button class="category-filter bg-mountain-100 text-mountain-700 px-6 py-2 rounded-full font-medium transition-all duration-300 hover:bg-nepal-500 hover:text-white" data-category="Adventure">
-                Adventure
-            </button>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>

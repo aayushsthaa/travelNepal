@@ -100,11 +100,14 @@ ob_start();
                                 required
                                 class="w-full px-4 py-3 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent">
                             <option value="">Select a category</option>
-                            <option value="Trekking" <?php echo (($post['category'] ?? '') === 'Trekking') ? 'selected' : ''; ?>>Trekking</option>
-                            <option value="Culture" <?php echo (($post['category'] ?? '') === 'Culture') ? 'selected' : ''; ?>>Culture</option>
-                            <option value="Adventure" <?php echo (($post['category'] ?? '') === 'Adventure') ? 'selected' : ''; ?>>Adventure</option>
-                            <option value="Photography" <?php echo (($post['category'] ?? '') === 'Photography') ? 'selected' : ''; ?>>Photography</option>
-                            <option value="Food" <?php echo (($post['category'] ?? '') === 'Food') ? 'selected' : ''; ?>>Food</option>
+                            <?php
+                            $categories = getCategories();
+                            foreach ($categories as $category):
+                            ?>
+                            <option value="<?php echo htmlspecialchars($category['name']); ?>" <?php echo (($post['category'] ?? '') === $category['name']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($category['name']); ?>
+                            </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
@@ -312,5 +315,5 @@ textarea {
 <?php
 $content = ob_get_contents();
 ob_end_clean();
-include '../layout.php';
+include TEMPLATES_PATH . '/layout.php';
 ?>

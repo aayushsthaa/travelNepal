@@ -56,9 +56,48 @@ function truncateText($text, $length = 150) {
 }
 
 /**
- * Load blog posts from JSON files
+ * Load blog posts from database
  */
-function loadBlogPosts($limit = null) {
+function loadBlogPosts($limit = null, $includeUnpublished = false) {
+    $pdo = getDbConnection();
+    
+    // If database connection available, use it
+    if ($pdo !== null) {
+        try {
+            $sql = "SELECT id, title, slug, excerpt, content, category, tags, featured_image, published, 
+                           EXTRACT(EPOCH FROM created_at) as created_at, 
+                           EXTRACT(EPOCH FROM updated_at) as updated_at 
+                    FROM posts";
+            
+            if (!$includeUnpublished) {
+                $sql .= " WHERE published = true";
+            }
+            
+            $sql .= " ORDER BY created_at DESC";
+            
+            if ($limit) {
+                $sql .= " LIMIT " . intval($limit);
+            }
+            
+            $stmt = $pdo->query($sql);
+            $posts = $stmt->fetchAll();
+            
+            // Convert JSON tags back to array and timestamps to integers
+            foreach ($posts as &$post) {
+                $post['tags'] = json_decode($post['tags'], true) ?: [];
+                $post['created_at'] = (int)$post['created_at'];
+                $post['updated_at'] = (int)$post['updated_at'];
+                $post['published'] = (bool)$post['published'];
+            }
+            
+            return $posts;
+        } catch (Exception $e) {
+            error_log('Database query error: ' . $e->getMessage());
+            // Fall through to JSON fallback
+        }
+    }
+    
+    // Fallback to JSON file method
     $dataPath = DATA_PATH . '/posts';
     if (!is_dir($dataPath)) {
         return [];
@@ -71,7 +110,7 @@ function loadBlogPosts($limit = null) {
         if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
             $content = file_get_contents($dataPath . '/' . $file);
             $post = json_decode($content, true);
-            if ($post && $post['published']) {
+            if ($post && ($includeUnpublished || $post['published'])) {
                 $posts[] = $post;
             }
         }
@@ -89,6 +128,36 @@ function loadBlogPosts($limit = null) {
  * Load a single blog post by slug
  */
 function loadBlogPost($slug) {
+    $pdo = getDbConnection();
+    
+    // If database connection available, use it
+    if ($pdo !== null) {
+        try {
+            $sql = "SELECT id, title, slug, excerpt, content, category, tags, featured_image, published, 
+                           EXTRACT(EPOCH FROM created_at) as created_at, 
+                           EXTRACT(EPOCH FROM updated_at) as updated_at 
+                    FROM posts WHERE slug = ?";
+            
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$slug]);
+            $post = $stmt->fetch();
+            
+            if ($post) {
+                // Convert JSON tags back to array and timestamps to integers
+                $post['tags'] = json_decode($post['tags'], true) ?: [];
+                $post['created_at'] = (int)$post['created_at'];
+                $post['updated_at'] = (int)$post['updated_at'];
+                $post['published'] = (bool)$post['published'];
+            }
+            
+            return $post ?: null;
+        } catch (Exception $e) {
+            error_log('Database query error: ' . $e->getMessage());
+            // Fall through to JSON fallback
+        }
+    }
+    
+    // Fallback to JSON file method
     $filePath = DATA_PATH . "/posts/{$slug}.json";
     if (!file_exists($filePath)) {
         return null;
@@ -99,22 +168,112 @@ function loadBlogPost($slug) {
 }
 
 /**
- * Save blog post to JSON file
+ * Save blog post to database
  */
 function saveBlogPost($data) {
+    $pdo = getDbConnection();
+    
+    // If database connection available, use it
+    if ($pdo !== null) {
+        try {
+            // Check if this is an update (post exists) or insert (new post)
+            $existingPost = loadBlogPost($data['slug']);
+            
+            // Prepare data for database insertion
+            $tags_json = json_encode($data['tags']);
+            $published = $data['published'] ? true : false;
+            
+            // Get category_id from category name
+            $category_id = null;
+            if (!empty($data['category'])) {
+                $category_id = getCategoryIdByName($data['category']);
+                if (!$category_id) {
+                    // Category doesn't exist, create it
+                    $category_id = createCategory($data['category']);
+                }
+            }
+            
+            if ($existingPost) {
+                // Update existing post
+                $sql = "UPDATE posts SET 
+                            title = ?,
+                            excerpt = ?,
+                            content = ?,
+                            category = ?,
+                            category_id = ?,
+                            tags = ?,
+                            featured_image = ?,
+                            published = ?,
+                            updated_at = CURRENT_TIMESTAMP
+                        WHERE slug = ?";
+                        
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    $data['title'],
+                    $data['excerpt'], 
+                    $data['content'],
+                    $data['category'], // Keep for backward compatibility
+                    $category_id,
+                    $tags_json,
+                    $data['featured_image'],
+                    $published,
+                    $data['slug']
+                ]);
+            } else {
+                // Insert new post
+                $sql = "INSERT INTO posts (title, slug, excerpt, content, category, category_id, tags, featured_image, published, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+                        
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    $data['title'],
+                    $data['slug'],
+                    $data['excerpt'],
+                    $data['content'], 
+                    $data['category'], // Keep for backward compatibility
+                    $category_id,
+                    $tags_json,
+                    $data['featured_image'],
+                    $published
+                ]);
+            }
+            return true;
+        } catch (Exception $e) {
+            error_log('Database save error: ' . $e->getMessage());
+            // Fall through to JSON fallback
+        }
+    }
+    
+    // Fallback to JSON file method
     $dataPath = DATA_PATH . '/posts';
     if (!is_dir($dataPath)) {
         mkdir($dataPath, 0755, true);
     }
     
     $filePath = $dataPath . '/' . $data['slug'] . '.json';
-    return file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
+    return file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT)) !== false;
 }
 
 /**
  * Delete blog post
  */
 function deleteBlogPost($slug) {
+    $pdo = getDbConnection();
+    
+    // If database connection available, use it
+    if ($pdo !== null) {
+        try {
+            $sql = "DELETE FROM posts WHERE slug = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$slug]);
+            return true;
+        } catch (Exception $e) {
+            error_log('Database delete error: ' . $e->getMessage());
+            // Fall through to JSON fallback
+        }
+    }
+    
+    // Fallback to JSON file method
     $filePath = DATA_PATH . "/posts/{$slug}.json";
     if (file_exists($filePath)) {
         return unlink($filePath);
@@ -156,5 +315,163 @@ function requireCSRF() {
 function includeTemplate($template, $variables = []) {
     extract($variables);
     include TEMPLATES_PATH . '/' . $template . '.php';
+}
+
+/**
+ * Get all categories from database
+ */
+function getCategories() {
+    $pdo = getDbConnection();
+    
+    // If database connection available, use it
+    if ($pdo !== null) {
+        try {
+            $sql = "SELECT id, name, slug FROM categories ORDER BY name";
+            $stmt = $pdo->query($sql);
+            return $stmt->fetchAll();
+        } catch (Exception $e) {
+            error_log('Database categories error: ' . $e->getMessage());
+            // Fall through to default categories
+        }
+    }
+    
+    // Fallback to default categories
+    return [
+        ['id' => 1, 'name' => 'Trekking', 'slug' => 'trekking'],
+        ['id' => 2, 'name' => 'Culture', 'slug' => 'culture'],
+        ['id' => 3, 'name' => 'Adventure', 'slug' => 'adventure'],
+        ['id' => 4, 'name' => 'Photography', 'slug' => 'photography'],
+        ['id' => 5, 'name' => 'Food', 'slug' => 'food']
+    ];
+}
+
+/**
+ * Load all blog posts including unpublished (for admin)
+ */
+function loadAllBlogPosts($limit = null) {
+    return loadBlogPosts($limit, true);
+}
+
+/**
+ * Create a new category
+ */
+function createCategory($name, $slug = null) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return false;
+    }
+    
+    try {
+        // Generate slug if not provided
+        if ($slug === null) {
+            $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', trim($name)));
+            $slug = trim($slug, '-');
+        }
+        
+        $sql = "INSERT INTO categories (name, slug, created_at, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$name, $slug]);
+        return $pdo->lastInsertId();
+    } catch (Exception $e) {
+        error_log('Database category creation error: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Update an existing category
+ */
+function updateCategory($id, $name, $slug) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return false;
+    }
+    
+    try {
+        $sql = "UPDATE categories SET name = ?, slug = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$name, $slug, $id]);
+        return true;
+    } catch (Exception $e) {
+        error_log('Database category update error: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Delete a category
+ */
+function deleteCategory($id) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return false;
+    }
+    
+    try {
+        // First check if category is in use
+        $checkSql = "SELECT COUNT(*) FROM posts WHERE category_id = ?";
+        $checkStmt = $pdo->prepare($checkSql);
+        $checkStmt->execute([$id]);
+        $postCount = $checkStmt->fetchColumn();
+        
+        if ($postCount > 0) {
+            // Category is in use, cannot delete
+            return ['success' => false, 'error' => 'Cannot delete category: it is being used by ' . $postCount . ' post(s)'];
+        }
+        
+        $sql = "DELETE FROM categories WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$id]);
+        return ['success' => true];
+    } catch (Exception $e) {
+        error_log('Database category deletion error: ' . $e->getMessage());
+        return ['success' => false, 'error' => 'Database error occurred'];
+    }
+}
+
+/**
+ * Get a single category by ID
+ */
+function getCategory($id) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return null;
+    }
+    
+    try {
+        $sql = "SELECT id, name, slug, created_at, updated_at FROM categories WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    } catch (Exception $e) {
+        error_log('Database category fetch error: ' . $e->getMessage());
+        return null;
+    }
+}
+
+/**
+ * Get category ID by name (for migration/compatibility)
+ */
+function getCategoryIdByName($categoryName) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return null;
+    }
+    
+    try {
+        $sql = "SELECT id FROM categories WHERE name = ? LIMIT 1";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$categoryName]);
+        $result = $stmt->fetchColumn();
+        return $result ?: null;
+    } catch (Exception $e) {
+        error_log('Database category ID lookup error: ' . $e->getMessage());
+        return null;
+    }
 }
 ?>

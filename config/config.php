@@ -46,6 +46,49 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Database Configuration
+if (!isset($_ENV['DATABASE_URL']) || empty($_ENV['DATABASE_URL'])) {
+    die('ERROR: DATABASE_URL environment variable is required for database connection.');
+}
+
+define('DATABASE_URL', $_ENV['DATABASE_URL']);
+define('ENVIRONMENT', 'development');
+
+/**
+ * Get database connection (returns null if connection fails)
+ */
+function getDbConnection() {
+    static $pdo = null;
+    static $connection_attempted = false;
+    
+    if (!$connection_attempted) {
+        $connection_attempted = true;
+        try {
+            // Parse the PostgreSQL URL to create proper DSN
+            $dbUrl = DATABASE_URL;
+            $parsed = parse_url($dbUrl);
+            
+            // Build DSN in the format PDO expects
+            $dsn = sprintf("pgsql:host=%s;port=%d;dbname=%s;sslmode=require", 
+                          $parsed['host'], 
+                          $parsed['port'] ?? 5432, 
+                          trim($parsed['path'], '/'));
+            
+            // Create PDO connection with parsed credentials
+            $pdo = new PDO($dsn, $parsed['user'], $parsed['pass'], [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ]);
+        } catch (PDOException $e) {
+            error_log('Database connection failed: ' . $e->getMessage());
+            $pdo = null; // Set to null so functions can handle gracefully
+        }
+    }
+    
+    return $pdo;
+}
+
 // Create necessary directories
 $directories = [DATA_PATH, ASSETS_PATH . '/images', TEMPLATES_PATH];
 foreach ($directories as $dir) {

@@ -64,7 +64,7 @@ $router->get('/admin/logout', function() {
 // Admin dashboard
 $router->get('/admin/dashboard', function() {
     requireAuth();
-    $posts = loadBlogPosts();
+    $posts = loadAllBlogPosts();
     includeTemplate('admin/dashboard', compact('posts'));
 });
 
@@ -127,6 +127,62 @@ $router->post('/admin/post/delete/{slug}', function($slug) {
     requireCSRF();
     deleteBlogPost($slug);
     header('Location: /admin/dashboard');
+});
+
+// Category CRUD routes
+$router->post('/admin/category/create', function() {
+    requireAuth();
+    requireCSRF();
+    
+    header('Content-Type: application/json');
+    
+    $name = sanitize($_POST['category_name'] ?? '');
+    $slug = sanitize($_POST['category_slug'] ?? '');
+    
+    if (empty($name) || empty($slug)) {
+        echo json_encode(['success' => false, 'message' => 'Name and slug are required']);
+        return;
+    }
+    
+    $categoryId = createCategory($name, $slug);
+    if ($categoryId) {
+        echo json_encode(['success' => true, 'id' => $categoryId]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to create category']);
+    }
+});
+
+$router->post('/admin/category/update/{id}', function($id) {
+    requireAuth();
+    requireCSRF();
+    
+    header('Content-Type: application/json');
+    
+    $name = sanitize($_POST['category_name'] ?? '');
+    $slug = sanitize($_POST['category_slug'] ?? '');
+    
+    if (empty($name) || empty($slug)) {
+        echo json_encode(['success' => false, 'message' => 'Name and slug are required']);
+        return;
+    }
+    
+    if (updateCategory($id, $name, $slug)) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to update category']);
+    }
+});
+
+$router->post('/admin/category/delete/{id}', function($id) {
+    requireAuth();
+    requireCSRF();
+    
+    if (deleteCategory($id)) {
+        header('Location: /admin/dashboard');
+    } else {
+        // Return to dashboard with error - could implement flash messages
+        header('Location: /admin/dashboard');
+    }
 });
 
 // Destinations page

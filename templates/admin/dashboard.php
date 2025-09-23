@@ -93,9 +93,14 @@ ob_start();
                 <div class="flex space-x-2">
                     <select class="px-4 py-2 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent" id="categoryFilter">
                         <option value="">All Categories</option>
-                        <option value="Trekking">Trekking</option>
-                        <option value="Culture">Culture</option>
-                        <option value="Adventure">Adventure</option>
+                        <?php
+                        $categories = getCategories();
+                        foreach ($categories as $category):
+                        ?>
+                        <option value="<?php echo htmlspecialchars($category['name']); ?>">
+                            <?php echo htmlspecialchars($category['name']); ?>
+                        </option>
+                        <?php endforeach; ?>
                     </select>
                     <select class="px-4 py-2 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent" id="statusFilter">
                         <option value="">All Status</option>
@@ -188,7 +193,138 @@ ob_start();
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
+<!-- Category Management -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="px-6 py-4 bg-mountain-50 border-b border-mountain-200">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-mountain-800">Category Management</h2>
+                <button onclick="showAddCategoryModal()" class="bg-nepal-500 hover:bg-nepal-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Category
+                </button>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-mountain-100">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Category Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Slug</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Posts Count</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-mountain-200">
+                    <?php 
+                    $categories = getCategories();
+                    foreach ($categories as $category): 
+                        // Count posts in this category
+                        $postCount = count(array_filter($posts, function($p) use ($category) { 
+                            return $p['category'] === $category['name']; 
+                        }));
+                    ?>
+                    <tr class="hover:bg-mountain-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-mountain-900">
+                                <?php echo htmlspecialchars($category['name']); ?>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-mountain-500">
+                                <?php echo htmlspecialchars($category['slug']); ?>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <?php echo $postCount; ?> posts
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex items-center space-x-2">
+                                <button onclick="editCategory(<?php echo $category['id']; ?>, '<?php echo htmlspecialchars($category['name']); ?>', '<?php echo htmlspecialchars($category['slug']); ?>')" 
+                                        class="text-nepal-600 hover:text-nepal-900 transition-colors" 
+                                        title="Edit Category">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <?php if ($postCount === 0): ?>
+                                <button onclick="confirmDeleteCategory(<?php echo $category['id']; ?>, '<?php echo htmlspecialchars($category['name']); ?>')" 
+                                        class="text-red-600 hover:text-red-900 transition-colors" 
+                                        title="Delete Category">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <?php else: ?>
+                                <span class="text-gray-400" title="Cannot delete category with posts">
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Category Modal -->
+<div id="categoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-md mx-4 animate-fade-in-up">
+        <h3 id="categoryModalTitle" class="text-lg font-semibold text-mountain-800 mb-4">Add Category</h3>
+        <form id="categoryForm">
+            <input type="hidden" id="categoryId" name="category_id">
+            <div class="mb-4">
+                <label for="categoryName" class="block text-sm font-medium text-mountain-700 mb-2">Category Name</label>
+                <input type="text" id="categoryName" name="category_name" required 
+                       class="w-full px-3 py-2 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent"
+                       placeholder="Enter category name">
+            </div>
+            <div class="mb-6">
+                <label for="categorySlug" class="block text-sm font-medium text-mountain-700 mb-2">Category Slug</label>
+                <input type="text" id="categorySlug" name="category_slug" required 
+                       class="w-full px-3 py-2 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent"
+                       placeholder="category-slug">
+                <p class="text-xs text-mountain-500 mt-1">Used in URLs, only lowercase letters, numbers and hyphens</p>
+            </div>
+            <div class="flex space-x-4">
+                <button type="button" onclick="closeCategoryModal()" 
+                        class="flex-1 bg-mountain-200 text-mountain-700 py-2 px-4 rounded-lg hover:bg-mountain-300 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="flex-1 bg-nepal-500 text-white py-2 px-4 rounded-lg hover:bg-nepal-600 transition-colors">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Category Confirmation Modal -->
+<div id="deleteCategoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-md mx-4 animate-fade-in-up">
+        <div class="text-center">
+            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-exclamation-triangle text-red-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-mountain-800 mb-2">Delete Category</h3>
+            <p class="text-mountain-600 mb-6">
+                Are you sure you want to delete the category "<span id="deleteCategoryName"></span>"?
+            </p>
+            <div class="flex space-x-4">
+                <button onclick="closeDeleteCategoryModal()" class="flex-1 bg-mountain-200 text-mountain-700 py-2 px-4 rounded-lg hover:bg-mountain-300 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="deleteCategory()" class="flex-1 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Post Modal -->
 <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-2xl p-6 max-w-md mx-4 animate-fade-in-up">
         <div class="text-center">
@@ -272,6 +408,102 @@ document.addEventListener('DOMContentLoaded', function() {
 
     categoryFilter.addEventListener('change', filterPosts);
     statusFilter.addEventListener('change', filterPosts);
+});
+
+// Category management functions
+let currentDeleteCategoryId = '';
+
+function showAddCategoryModal() {
+    document.getElementById('categoryModalTitle').textContent = 'Add Category';
+    document.getElementById('categoryForm').reset();
+    document.getElementById('categoryId').value = '';
+    document.getElementById('categoryModal').classList.remove('hidden');
+    document.getElementById('categoryModal').classList.add('flex');
+}
+
+function editCategory(id, name, slug) {
+    document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+    document.getElementById('categoryId').value = id;
+    document.getElementById('categoryName').value = name;
+    document.getElementById('categorySlug').value = slug;
+    document.getElementById('categoryModal').classList.remove('hidden');
+    document.getElementById('categoryModal').classList.add('flex');
+}
+
+function closeCategoryModal() {
+    document.getElementById('categoryModal').classList.add('hidden');
+    document.getElementById('categoryModal').classList.remove('flex');
+}
+
+function confirmDeleteCategory(id, name) {
+    currentDeleteCategoryId = id;
+    document.getElementById('deleteCategoryName').textContent = name;
+    document.getElementById('deleteCategoryModal').classList.remove('hidden');
+    document.getElementById('deleteCategoryModal').classList.add('flex');
+}
+
+function closeDeleteCategoryModal() {
+    document.getElementById('deleteCategoryModal').classList.add('hidden');
+    document.getElementById('deleteCategoryModal').classList.remove('flex');
+    currentDeleteCategoryId = '';
+}
+
+function deleteCategory() {
+    if (currentDeleteCategoryId) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/category/delete/${currentDeleteCategoryId}`;
+        
+        // Add CSRF token
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = '<?php echo generateCSRFToken(); ?>';
+        form.appendChild(csrfInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Category form submission
+document.getElementById('categoryForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const categoryId = formData.get('category_id');
+    const action = categoryId ? `/admin/category/update/${categoryId}` : '/admin/category/create';
+    
+    // Add CSRF token
+    formData.append('csrf_token', '<?php echo generateCSRFToken(); ?>');
+    
+    fetch(action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.message || 'An error occurred');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving the category');
+    });
+});
+
+// Auto-generate slug from name
+document.getElementById('categoryName').addEventListener('input', function() {
+    const name = this.value;
+    const slug = name.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim('-');
+    document.getElementById('categorySlug').value = slug;
 });
 
 // Close modal when clicking outside
