@@ -257,5 +257,5 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php
 $content = ob_get_contents();
 ob_end_clean();
-include '../layout.php';
+include TEMPLATES_PATH . '/layout.php';
 ?>

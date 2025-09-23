@@ -21,7 +21,7 @@ if (!isset($_ENV['ADMIN_PASSWORD']) || empty($_ENV['ADMIN_PASSWORD'])) {
 }
 
 define('ADMIN_USERNAME', $_ENV['ADMIN_USERNAME']);
-define('ADMIN_PASSWORD', password_hash($_ENV['ADMIN_PASSWORD'], PASSWORD_DEFAULT));
+define('ADMIN_PASSWORD', $_ENV['ADMIN_PASSWORD']);
 
 // Session Configuration
 ini_set('session.cookie_httponly', 1);

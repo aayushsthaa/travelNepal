@@ -44,7 +44,7 @@ $router->post('/admin/login', function() {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     
-    if ($username === ADMIN_USERNAME && password_verify($password, ADMIN_PASSWORD)) {
+    if ($username === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
         // Regenerate session ID to prevent session fixation
         session_regenerate_id(true);
         $_SESSION['admin_logged_in'] = true;
@@ -127,6 +127,21 @@ $router->post('/admin/post/delete/{slug}', function($slug) {
     requireCSRF();
     deleteBlogPost($slug);
     header('Location: /admin/dashboard');
+});
+
+// Destinations page
+$router->get('/destinations', function() {
+    includeTemplate('destinations');
+});
+
+// About page
+$router->get('/about', function() {
+    includeTemplate('about');
+});
+
+// Contact page
+$router->get('/contact', function() {
+    includeTemplate('contact');
 });
 
 // Static assets (basic handling)
