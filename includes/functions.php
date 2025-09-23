@@ -630,4 +630,310 @@ function sanitizeFilePath($path) {
     
     return $path;
 }
+
+/**
+ * Load destinations from database
+ */
+function loadDestinations($limit = null, $featured_only = false, $category = null, $options = []) {
+    $pdo = getDbConnection();
+    
+    if ($pdo !== null) {
+        try {
+            $sql = "SELECT id, name, slug, description, long_description, featured_image, 
+                           category, region, altitude_range, best_time_to_visit, duration, 
+                           difficulty_level, highlights, activities, location_coordinates,
+                           entry_permits_required, accommodation_available, transportation_info,
+                           featured, published, meta_title, meta_description,
+                           EXTRACT(EPOCH FROM created_at) as created_at,
+                           EXTRACT(EPOCH FROM updated_at) as updated_at
+                    FROM destinations WHERE published = true";
+            
+            $params = [];
+            
+            if ($featured_only) {
+                $sql .= " AND featured = true";
+            }
+            
+            if ($category) {
+                $sql .= " AND category = ?";
+                $params[] = $category;
+            }
+            
+            if (!empty($options['exclude_slug'])) {
+                $sql .= " AND slug != ?";
+                $params[] = $options['exclude_slug'];
+            }
+            
+            $sql .= " ORDER BY featured DESC, created_at DESC";
+            
+            if ($limit) {
+                $sql .= " LIMIT " . intval($limit);
+            }
+            
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            $destinations = $stmt->fetchAll();
+            
+            // Convert JSON fields back to arrays and timestamps to integers
+            foreach ($destinations as &$destination) {
+                $destination['highlights'] = json_decode($destination['highlights'], true) ?: [];
+                $destination['activities'] = json_decode($destination['activities'], true) ?: [];
+                $destination['created_at'] = (int)$destination['created_at'];
+                $destination['updated_at'] = (int)$destination['updated_at'];
+                $destination['featured'] = (bool)$destination['featured'];
+                $destination['published'] = (bool)$destination['published'];
+                $destination['entry_permits_required'] = (bool)$destination['entry_permits_required'];
+                $destination['accommodation_available'] = (bool)$destination['accommodation_available'];
+            }
+            
+            return $destinations;
+        } catch (Exception $e) {
+            error_log('Database query error: ' . $e->getMessage());
+        }
+    }
+    
+    return [];
+}
+
+/**
+ * Load all destinations including unpublished (for admin)
+ */
+function loadAllDestinations() {
+    $pdo = getDbConnection();
+    
+    if ($pdo !== null) {
+        try {
+            $sql = "SELECT id, name, slug, description, long_description, featured_image, 
+                           category, region, altitude_range, best_time_to_visit, duration, 
+                           difficulty_level, highlights, activities, location_coordinates,
+                           entry_permits_required, accommodation_available, transportation_info,
+                           featured, published, meta_title, meta_description,
+                           EXTRACT(EPOCH FROM created_at) as created_at,
+                           EXTRACT(EPOCH FROM updated_at) as updated_at
+                    FROM destinations ORDER BY created_at DESC";
+            
+            $stmt = $pdo->query($sql);
+            $destinations = $stmt->fetchAll();
+            
+            // Convert JSON fields back to arrays and timestamps to integers
+            foreach ($destinations as &$destination) {
+                $destination['highlights'] = json_decode($destination['highlights'], true) ?: [];
+                $destination['activities'] = json_decode($destination['activities'], true) ?: [];
+                $destination['created_at'] = (int)$destination['created_at'];
+                $destination['updated_at'] = (int)$destination['updated_at'];
+                $destination['featured'] = (bool)$destination['featured'];
+                $destination['published'] = (bool)$destination['published'];
+                $destination['entry_permits_required'] = (bool)$destination['entry_permits_required'];
+                $destination['accommodation_available'] = (bool)$destination['accommodation_available'];
+            }
+            
+            return $destinations;
+        } catch (Exception $e) {
+            error_log('Database query error: ' . $e->getMessage());
+        }
+    }
+    
+    return [];
+}
+
+/**
+ * Load a single destination by slug
+ */
+function loadDestination($slug) {
+    $pdo = getDbConnection();
+    
+    if ($pdo !== null) {
+        try {
+            $sql = "SELECT id, name, slug, description, long_description, featured_image, 
+                           category, region, altitude_range, best_time_to_visit, duration, 
+                           difficulty_level, highlights, activities, location_coordinates,
+                           entry_permits_required, accommodation_available, transportation_info,
+                           featured, published, meta_title, meta_description,
+                           EXTRACT(EPOCH FROM created_at) as created_at,
+                           EXTRACT(EPOCH FROM updated_at) as updated_at
+                    FROM destinations WHERE slug = ? LIMIT 1";
+            
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$slug]);
+            $destination = $stmt->fetch();
+            
+            if ($destination) {
+                // Convert JSON fields back to arrays and timestamps to integers
+                $destination['highlights'] = json_decode($destination['highlights'], true) ?: [];
+                $destination['activities'] = json_decode($destination['activities'], true) ?: [];
+                $destination['created_at'] = (int)$destination['created_at'];
+                $destination['updated_at'] = (int)$destination['updated_at'];
+                $destination['featured'] = (bool)$destination['featured'];
+                $destination['published'] = (bool)$destination['published'];
+                $destination['entry_permits_required'] = (bool)$destination['entry_permits_required'];
+                $destination['accommodation_available'] = (bool)$destination['accommodation_available'];
+            }
+            
+            return $destination;
+        } catch (Exception $e) {
+            error_log('Database query error: ' . $e->getMessage());
+        }
+    }
+    
+    return null;
+}
+
+/**
+ * Save destination to database
+ */
+function saveDestination($data) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return false;
+    }
+    
+    try {
+        // Convert arrays to JSON
+        $highlights = isset($data['highlights']) ? json_encode($data['highlights']) : '[]';
+        $activities = isset($data['activities']) ? json_encode($data['activities']) : '[]';
+        
+        // Check if this is an update or insert
+        if (isset($data['slug']) && !empty($data['slug'])) {
+            // Update existing destination
+            $sql = "UPDATE destinations SET 
+                        name = ?, description = ?, long_description = ?, featured_image = ?,
+                        category = ?, region = ?, altitude_range = ?, best_time_to_visit = ?,
+                        duration = ?, difficulty_level = ?, highlights = ?, activities = ?,
+                        location_coordinates = ?, entry_permits_required = ?, accommodation_available = ?,
+                        transportation_info = ?, featured = ?, published = ?,
+                        meta_title = ?, meta_description = ?, updated_at = CURRENT_TIMESTAMP
+                    WHERE slug = ?";
+            
+            $params = [
+                $data['name'],
+                $data['description'] ?? '',
+                $data['long_description'] ?? '',
+                $data['featured_image'] ?? '',
+                $data['category'] ?? '',
+                $data['region'] ?? '',
+                $data['altitude_range'] ?? '',
+                $data['best_time_to_visit'] ?? '',
+                $data['duration'] ?? '',
+                $data['difficulty_level'] ?? '',
+                $highlights,
+                $activities,
+                $data['location_coordinates'] ?? '',
+                isset($data['entry_permits_required']) ? (bool)$data['entry_permits_required'] : false,
+                isset($data['accommodation_available']) ? (bool)$data['accommodation_available'] : true,
+                $data['transportation_info'] ?? '',
+                isset($data['featured']) ? (bool)$data['featured'] : false,
+                isset($data['published']) ? (bool)$data['published'] : true,
+                $data['meta_title'] ?? $data['name'],
+                $data['meta_description'] ?? $data['description'],
+                $data['slug']
+            ];
+        } else {
+            // Insert new destination
+            $slug = generateSlug($data['name']);
+            $sql = "INSERT INTO destinations (name, slug, description, long_description, featured_image,
+                        category, region, altitude_range, best_time_to_visit, duration, difficulty_level,
+                        highlights, activities, location_coordinates, entry_permits_required,
+                        accommodation_available, transportation_info, featured, published,
+                        meta_title, meta_description)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            
+            $params = [
+                $data['name'],
+                $slug,
+                $data['description'] ?? '',
+                $data['long_description'] ?? '',
+                $data['featured_image'] ?? '',
+                $data['category'] ?? '',
+                $data['region'] ?? '',
+                $data['altitude_range'] ?? '',
+                $data['best_time_to_visit'] ?? '',
+                $data['duration'] ?? '',
+                $data['difficulty_level'] ?? '',
+                $highlights,
+                $activities,
+                $data['location_coordinates'] ?? '',
+                isset($data['entry_permits_required']) ? (bool)$data['entry_permits_required'] : false,
+                isset($data['accommodation_available']) ? (bool)$data['accommodation_available'] : true,
+                $data['transportation_info'] ?? '',
+                isset($data['featured']) ? (bool)$data['featured'] : false,
+                isset($data['published']) ? (bool)$data['published'] : true,
+                $data['meta_title'] ?? $data['name'],
+                $data['meta_description'] ?? $data['description']
+            ];
+        }
+        
+        $stmt = $pdo->prepare($sql);
+        return $stmt->execute($params);
+        
+    } catch (Exception $e) {
+        error_log('Failed to save destination: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Delete destination
+ */
+function deleteDestination($slug) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return false;
+    }
+    
+    try {
+        $stmt = $pdo->prepare("DELETE FROM destinations WHERE slug = ?");
+        return $stmt->execute([$slug]);
+    } catch (Exception $e) {
+        error_log('Failed to delete destination: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Get destination categories
+ */
+function getDestinationCategories() {
+    return [
+        'Trekking',
+        'Cultural',
+        'Wildlife',
+        'Pilgrimage',
+        'Adventure',
+        'Photography',
+        'Spiritual',
+        'Heritage'
+    ];
+}
+
+/**
+ * Get destination regions
+ */
+function getDestinationRegions() {
+    return [
+        'Everest Region',
+        'Annapurna Region',
+        'Langtang Region',
+        'Kathmandu Valley',
+        'Pokhara Valley',
+        'Terai Plains',
+        'Western Nepal',
+        'Eastern Nepal',
+        'Far Western Nepal'
+    ];
+}
+
+/**
+ * Get difficulty levels
+ */
+function getDifficultyLevels() {
+    return [
+        'Easy',
+        'Moderate',
+        'Challenging',
+        'Difficult',
+        'Expert'
+    ];
+}
 ?>

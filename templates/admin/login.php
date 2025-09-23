@@ -127,10 +127,17 @@ function togglePassword() {
 
 document.getElementById('login-form').addEventListener('submit', function(e) {
     const btn = document.getElementById('login-btn');
-    const resetLoading = showLoading(btn);
+    
+    // Show loading state
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Signing In...';
+    btn.disabled = true;
     
     // Reset loading state after form submission
-    setTimeout(resetLoading, 2000);
+    setTimeout(function() {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }, 2000);
 });
 
 // Add floating label effect

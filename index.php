@@ -18,6 +18,23 @@ $router->get('/blog', function() {
     includeTemplate('blog/index', compact('posts'));
 });
 
+// Destinations listing
+$router->get('/destinations', function() {
+    $destinations = loadDestinations();
+    includeTemplate('destinations', compact('destinations'));
+});
+
+// Individual destination
+$router->get('/destination/{slug}', function($slug) {
+    $destination = loadDestination($slug);
+    if (!$destination) {
+        http_response_code(404);
+        includeTemplate('404');
+        return;
+    }
+    includeTemplate('destination/detail', compact('destination'));
+});
+
 // Individual blog post
 $router->get('/blog/{slug}', function($slug) {
     $post = loadBlogPost($slug);
@@ -65,7 +82,8 @@ $router->get('/admin/logout', function() {
 $router->get('/admin/dashboard', function() {
     requireAuth();
     $posts = loadAllBlogPosts();
-    includeTemplate('admin/dashboard', compact('posts'));
+    $destinations = loadAllDestinations();
+    includeTemplate('admin/dashboard', compact('posts', 'destinations'));
 });
 
 // Create/Edit post form
@@ -210,11 +228,6 @@ $router->post('/admin/category/delete/{id}', function($id) {
     }
 });
 
-// Destinations page
-$router->get('/destinations', function() {
-    includeTemplate('destinations');
-});
-
 // About page
 $router->get('/about', function() {
     includeTemplate('about');
@@ -296,6 +309,100 @@ $router->get('/uploads/{year}/{month}/{file}', function($year, $month, $file) {
     } else {
         http_response_code(404);
     }
+});
+
+// Destination CRUD routes
+$router->get('/admin/destination/create', function() {
+    requireAuth();
+    includeTemplate('admin/destination-form');
+});
+
+$router->get('/admin/destination/edit/{slug}', function($slug) {
+    requireAuth();
+    $destination = loadDestination($slug);
+    if (!$destination) {
+        http_response_code(404);
+        return;
+    }
+    includeTemplate('admin/destination-form', compact('destination'));
+});
+
+$router->post('/admin/destination/save', function() {
+    requireAuth();
+    requireCSRF();
+    
+    $data = [
+        'name' => sanitize($_POST['name']),
+        'description' => sanitize($_POST['description']),
+        'long_description' => $_POST['long_description'] ?? '', // Allow HTML
+        'featured_image' => sanitize($_POST['featured_image']),
+        'category' => sanitize($_POST['category']),
+        'region' => sanitize($_POST['region']),
+        'altitude_range' => sanitize($_POST['altitude_range']),
+        'best_time_to_visit' => sanitize($_POST['best_time_to_visit']),
+        'duration' => sanitize($_POST['duration']),
+        'difficulty_level' => sanitize($_POST['difficulty_level']),
+        'highlights' => array_filter(array_map('sanitize', explode(',', $_POST['highlights'] ?? ''))),
+        'activities' => array_filter(array_map('sanitize', explode(',', $_POST['activities'] ?? ''))),
+        'location_coordinates' => sanitize($_POST['location_coordinates']),
+        'entry_permits_required' => isset($_POST['entry_permits_required']),
+        'accommodation_available' => isset($_POST['accommodation_available']),
+        'transportation_info' => sanitize($_POST['transportation_info']),
+        'featured' => isset($_POST['featured']),
+        'published' => isset($_POST['published']),
+        'meta_title' => sanitize($_POST['meta_title']),
+        'meta_description' => sanitize($_POST['meta_description'])
+    ];
+    
+    // Handle file upload if present
+    if (isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $uploadResult = handleFileUpload($_FILES['image_upload']);
+        
+        if ($uploadResult['success']) {
+            $data['featured_image'] = $uploadResult['url'];
+        } else {
+            $error = 'Image upload failed: ' . $uploadResult['error'];
+            $destination = $data;
+            includeTemplate('admin/destination-form', compact('destination', 'error'));
+            return;
+        }
+    }
+    
+    // Validate required fields
+    if (empty($data['name']) || empty($data['description'])) {
+        $error = 'Name and description are required';
+        $destination = $data;
+        includeTemplate('admin/destination-form', compact('destination', 'error'));
+        return;
+    }
+    
+    // Check if this is an edit (slug provided)
+    if (isset($_POST['slug']) && !empty($_POST['slug'])) {
+        $data['slug'] = sanitize($_POST['slug']);
+    }
+    
+    if (saveDestination($data)) {
+        header('Location: /admin/dashboard?destination_saved=1');
+    } else {
+        $error = 'Failed to save destination';
+        $destination = $data;
+        includeTemplate('admin/destination-form', compact('destination', 'error'));
+    }
+    exit();
+});
+
+$router->post('/admin/destination/delete', function() {
+    requireAuth();
+    requireCSRF();
+    
+    $slug = sanitize($_POST['slug']);
+    
+    if (deleteDestination($slug)) {
+        header('Location: /admin/dashboard?destination_deleted=1');
+    } else {
+        header('Location: /admin/dashboard?error=destination_delete_failed');
+    }
+    exit();
 });
 
 // Run the router

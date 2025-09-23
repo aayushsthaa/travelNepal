@@ -38,187 +38,67 @@ ob_start();
             </p>
         </div>
         
+        <?php if (!empty($destinations)): ?>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Everest Region -->
+            <?php foreach ($destinations as $destination): ?>
             <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div class="relative h-64">
-                    <img src="/assets/images/Everest_sunrise_panorama_20949daa.png" 
-                         alt="Everest Region" 
+                    <img src="<?php echo htmlspecialchars($destination['featured_image']); ?>" 
+                         alt="<?php echo htmlspecialchars($destination['name']); ?>" 
                          class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 text-white">
-                        <span class="bg-nepal-500 px-3 py-1 rounded-full text-sm font-medium">Trekking</span>
+                        <?php
+                        $categoryColors = [
+                            'Trekking' => 'bg-nepal-500',
+                            'Cultural' => 'bg-purple-500',
+                            'Adventure' => 'bg-green-500',
+                            'Wildlife' => 'bg-orange-500',
+                            'Pilgrimage' => 'bg-yellow-500',
+                            'Spiritual' => 'bg-yellow-500',
+                            'Heritage' => 'bg-purple-500',
+                            'Photography' => 'bg-blue-500'
+                        ];
+                        $colorClass = $categoryColors[$destination['category']] ?? 'bg-gray-500';
+                        ?>
+                        <span class="<?php echo $colorClass; ?> px-3 py-1 rounded-full text-sm font-medium">
+                            <?php echo htmlspecialchars($destination['category']); ?>
+                        </span>
                     </div>
                 </div>
                 <div class="p-6">
-                    <h3 class="text-2xl font-bold text-mountain-800 mb-3">Everest Region</h3>
+                    <h3 class="text-2xl font-bold text-mountain-800 mb-3">
+                        <?php echo htmlspecialchars($destination['name']); ?>
+                    </h3>
                     <p class="text-mountain-600 mb-4">
-                        Home to the world's highest peak, offering the ultimate trekking experience through Sherpa villages and Buddhist monasteries.
+                        <?php echo htmlspecialchars($destination['description']); ?>
                     </p>
+                    <?php if (!empty($destination['highlights']) && is_array($destination['highlights'])): ?>
                     <ul class="text-sm text-mountain-600 space-y-1 mb-4">
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Everest Base Camp Trek</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Gokyo Lakes</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Tengboche Monastery</li>
+                        <?php foreach (array_slice($destination['highlights'], 0, 3) as $highlight): ?>
+                        <li><i class="fas fa-check text-nepal-500 mr-2"></i><?php echo htmlspecialchars($highlight); ?></li>
+                        <?php endforeach; ?>
                     </ul>
+                    <?php endif; ?>
                     <div class="flex items-center justify-between">
-                        <span class="text-nepal-600 font-semibold">14-16 days</span>
-                        <a href="/blog" class="text-nepal-600 hover:text-nepal-700 font-semibold">
+                        <span class="text-nepal-600 font-semibold">
+                            <?php echo htmlspecialchars($destination['duration'] ?: 'Varies'); ?>
+                        </span>
+                        <a href="/destination/<?php echo htmlspecialchars($destination['slug']); ?>" class="text-nepal-600 hover:text-nepal-700 font-semibold">
                             Learn More <i class="fas fa-arrow-right ml-1"></i>
                         </a>
                     </div>
                 </div>
             </div>
-            
-            <!-- Annapurna Region -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="relative h-64">
-                    <img src="/assets/images/Prayer_flags_mountain_vista_1f2256d5.png" 
-                         alt="Annapurna Region" 
-                         class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-white">
-                        <span class="bg-blue-500 px-3 py-1 rounded-full text-sm font-medium">Trekking</span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold text-mountain-800 mb-3">Annapurna Region</h3>
-                    <p class="text-mountain-600 mb-4">
-                        Diverse landscapes from subtropical forests to high-altitude deserts, with spectacular mountain views.
-                    </p>
-                    <ul class="text-sm text-mountain-600 space-y-1 mb-4">
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Annapurna Circuit</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Annapurna Base Camp</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Thorong La Pass</li>
-                    </ul>
-                    <div class="flex items-center justify-between">
-                        <span class="text-nepal-600 font-semibold">12-21 days</span>
-                        <a href="/blog" class="text-nepal-600 hover:text-nepal-700 font-semibold">
-                            Learn More <i class="fas fa-arrow-right ml-1"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Kathmandu Valley -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="relative h-64">
-                    <img src="/assets/images/Kathmandu_temple_architecture_df1e8ace.png" 
-                         alt="Kathmandu Valley" 
-                         class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-white">
-                        <span class="bg-purple-500 px-3 py-1 rounded-full text-sm font-medium">Culture</span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold text-mountain-800 mb-3">Kathmandu Valley</h3>
-                    <p class="text-mountain-600 mb-4">
-                        A living museum of ancient art and architecture with seven UNESCO World Heritage Sites.
-                    </p>
-                    <ul class="text-sm text-mountain-600 space-y-1 mb-4">
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Durbar Squares</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Swayambhunath (Monkey Temple)</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Pashupatinath Temple</li>
-                    </ul>
-                    <div class="flex items-center justify-between">
-                        <span class="text-nepal-600 font-semibold">3-5 days</span>
-                        <a href="/blog" class="text-nepal-600 hover:text-nepal-700 font-semibold">
-                            Learn More <i class="fas fa-arrow-right ml-1"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Pokhara -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="relative h-64">
-                    <img src="/assets/images/Pokhara_lake_reflections_ada62be7.png" 
-                         alt="Pokhara" 
-                         class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-white">
-                        <span class="bg-green-500 px-3 py-1 rounded-full text-sm font-medium">Adventure</span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold text-mountain-800 mb-3">Pokhara</h3>
-                    <p class="text-mountain-600 mb-4">
-                        Nepal's adventure capital with stunning lake views and the gateway to Annapurna region.
-                    </p>
-                    <ul class="text-sm text-mountain-600 space-y-1 mb-4">
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Phewa Lake</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Paragliding</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>World Peace Pagoda</li>
-                    </ul>
-                    <div class="flex items-center justify-between">
-                        <span class="text-nepal-600 font-semibold">2-4 days</span>
-                        <a href="/blog" class="text-nepal-600 hover:text-nepal-700 font-semibold">
-                            Learn More <i class="fas fa-arrow-right ml-1"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Chitwan National Park -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="relative h-64">
-                    <img src="/assets/images/Prayer_flags_mountain_vista_1f2256d5.png" 
-                         alt="Chitwan National Park" 
-                         class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-white">
-                        <span class="bg-orange-500 px-3 py-1 rounded-full text-sm font-medium">Wildlife</span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold text-mountain-800 mb-3">Chitwan National Park</h3>
-                    <p class="text-mountain-600 mb-4">
-                        Nepal's first national park, home to endangered species including tigers and one-horned rhinos.
-                    </p>
-                    <ul class="text-sm text-mountain-600 space-y-1 mb-4">
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Jungle Safari</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Elephant Bathing</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Tharu Culture</li>
-                    </ul>
-                    <div class="flex items-center justify-between">
-                        <span class="text-nepal-600 font-semibold">2-3 days</span>
-                        <a href="/blog" class="text-nepal-600 hover:text-nepal-700 font-semibold">
-                            Learn More <i class="fas fa-arrow-right ml-1"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Lumbini -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="relative h-64">
-                    <img src="/assets/images/Kathmandu_temple_architecture_df1e8ace.png" 
-                         alt="Lumbini" 
-                         class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-white">
-                        <span class="bg-yellow-500 px-3 py-1 rounded-full text-sm font-medium">Spiritual</span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold text-mountain-800 mb-3">Lumbini</h3>
-                    <p class="text-mountain-600 mb-4">
-                        The birthplace of Lord Buddha, a sacred pilgrimage site for Buddhists worldwide.
-                    </p>
-                    <ul class="text-sm text-mountain-600 space-y-1 mb-4">
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Maya Devi Temple</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>International Monasteries</li>
-                        <li><i class="fas fa-check text-nepal-500 mr-2"></i>Sacred Garden</li>
-                    </ul>
-                    <div class="flex items-center justify-between">
-                        <span class="text-nepal-600 font-semibold">1-2 days</span>
-                        <a href="/blog" class="text-nepal-600 hover:text-nepal-700 font-semibold">
-                            Learn More <i class="fas fa-arrow-right ml-1"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
+        <?php else: ?>
+        <div class="text-center py-16">
+            <i class="fas fa-mountain text-6xl text-mountain-300 mb-6"></i>
+            <h3 class="text-2xl font-bold text-mountain-800 mb-4">No Destinations Found</h3>
+            <p class="text-mountain-600">Check back soon for amazing Nepal destinations!</p>
+        </div>
+        <?php endif; ?>
     </div>
 </section>
 
