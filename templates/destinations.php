@@ -38,73 +38,130 @@ ob_start();
             </p>
         </div>
         
-        <div class="space-y-12">
-            
-            <!-- Everest Base Camp -->
-            <div class="border-b border-gray-200 pb-8">
-                <h3 class="text-2xl font-bold text-mountain-800 mb-4">Everest Base Camp</h3>
-                <p class="text-lg text-mountain-600 leading-relaxed">
-                    The ultimate trekking destination. Journey to the base of the world's highest peak and experience the raw beauty of the Himalayas at 5,364 meters. This challenging trek takes you through authentic Sherpa villages, past the historic Tengboche Monastery, and offers breathtaking views of the world's tallest mountains. The journey typically takes 12-16 days and is best undertaken during the clear seasons of October-November and March-May.
-                </p>
+<?php if (!empty($destinations)): ?>
+        <div class="grid gap-8 md:gap-12">
+            <?php foreach ($destinations as $index => $destination): ?>
+            <!-- <?= htmlspecialchars($destination['name']) ?> -->
+            <div class="<?= $index < count($destinations) - 1 ? 'border-b border-gray-200 pb-8' : 'pb-8' ?>">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <!-- Destination Image -->
+                    <div class="lg:col-span-4">
+                        <div class="relative overflow-hidden rounded-xl group">
+                            <img src="<?= htmlspecialchars($destination['featured_image']) ?>" 
+                                 alt="<?= htmlspecialchars($destination['name']) ?>" 
+                                 class="w-full h-64 lg:h-48 object-cover transition-transform duration-300 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                            
+                            <!-- Difficulty Badge -->
+                            <div class="absolute top-3 left-3">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/90 text-mountain-800">
+                                    <i class="fas fa-mountain mr-1"></i>
+                                    <?= htmlspecialchars($destination['difficulty_level']) ?>
+                                </span>
+                            </div>
+                            
+                            <!-- Duration Badge -->
+                            <div class="absolute top-3 right-3">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-nepal-500 text-white">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    <?= htmlspecialchars($destination['duration']) ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Destination Content -->
+                    <div class="lg:col-span-8">
+                        <div class="flex items-center gap-3 mb-3">
+                            <h3 class="text-2xl md:text-3xl font-bold text-mountain-800">
+                                <a href="/destination/<?= htmlspecialchars($destination['slug']) ?>" 
+                                   class="hover:text-nepal-600 transition-colors">
+                                    <?= htmlspecialchars($destination['name']) ?>
+                                </a>
+                            </h3>
+                            <?php if ($destination['featured']): ?>
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                <i class="fas fa-star mr-1"></i>
+                                Featured
+                            </span>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <!-- Quick Info -->
+                        <div class="flex flex-wrap gap-4 mb-4 text-sm text-mountain-600">
+                            <span class="flex items-center">
+                                <i class="fas fa-map-marker-alt mr-1 text-nepal-500"></i>
+                                <?= htmlspecialchars($destination['region']) ?>
+                            </span>
+                            <span class="flex items-center">
+                                <i class="fas fa-calendar-alt mr-1 text-nepal-500"></i>
+                                <?= htmlspecialchars($destination['best_time_to_visit']) ?>
+                            </span>
+                            <?php if (!empty($destination['altitude_range'])): ?>
+                            <span class="flex items-center">
+                                <i class="fas fa-arrow-up mr-1 text-nepal-500"></i>
+                                <?= htmlspecialchars($destination['altitude_range']) ?>
+                            </span>
+                            <?php endif; ?>
+                            <span class="flex items-center">
+                                <i class="fas fa-tag mr-1 text-nepal-500"></i>
+                                <?= htmlspecialchars($destination['category']) ?>
+                            </span>
+                        </div>
+                        
+                        <!-- Description -->
+                        <p class="text-lg text-mountain-600 leading-relaxed mb-4">
+                            <?= htmlspecialchars($destination['description']) ?>
+                        </p>
+                        
+                        <!-- Highlights -->
+                        <?php if (!empty($destination['highlights']) && is_array($destination['highlights'])): ?>
+                        <div class="mb-4">
+                            <h4 class="text-sm font-semibold text-mountain-800 mb-2">Key Highlights:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <?php foreach (array_slice($destination['highlights'], 0, 3) as $highlight): ?>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-nepal-50 text-nepal-700 border border-nepal-200">
+                                    <i class="fas fa-check mr-1"></i>
+                                    <?= htmlspecialchars($highlight) ?>
+                                </span>
+                                <?php endforeach; ?>
+                                <?php if (count($destination['highlights']) > 3): ?>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-gray-100 text-gray-600">
+                                    +<?= count($destination['highlights']) - 3 ?> more
+                                </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap gap-3">
+                            <a href="/destination/<?= htmlspecialchars($destination['slug']) ?>" 
+                               class="inline-flex items-center px-4 py-2 bg-nepal-600 hover:bg-nepal-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Learn More
+                            </a>
+                            <?php if ($destination['entry_permits_required']): ?>
+                            <span class="inline-flex items-center px-3 py-2 bg-yellow-50 text-yellow-700 text-xs rounded-lg border border-yellow-200">
+                                <i class="fas fa-id-card mr-1"></i>
+                                Permits Required
+                            </span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <!-- Annapurna Circuit -->
-            <div class="border-b border-gray-200 pb-8">
-                <h3 class="text-2xl font-bold text-mountain-800 mb-4">Annapurna Circuit</h3>
-                <p class="text-lg text-mountain-600 leading-relaxed">
-                    This classic Himalayan trek offers diverse landscapes from subtropical forests to alpine deserts, crossing the famous Thorong La Pass at 5,416 meters. Experience diverse climate zones and traditional Gurung villages as you journey through one of Nepal's most varied trekking routes. The circuit typically requires 15-20 days and showcases the incredible biodiversity and cultural richness of the Annapurna region.
-                </p>
-            </div>
-
-            <!-- Kathmandu Valley -->
-            <div class="border-b border-gray-200 pb-8">
-                <h3 class="text-2xl font-bold text-mountain-800 mb-4">Kathmandu Valley</h3>
-                <p class="text-lg text-mountain-600 leading-relaxed">
-                    A UNESCO World Heritage site with seven monument zones showcasing ancient temples, palaces, and traditional Newari architecture spanning centuries. Visit the sacred Pashupatinath Temple, the magnificent Boudhanath Stupa, and the historic Durbar Squares that tell the story of Nepal's rich cultural heritage. This cultural treasure can be explored comfortably in 2-4 days and offers year-round accessibility.
-                </p>
-            </div>
-
-            <!-- Pokhara -->
-            <div class="border-b border-gray-200 pb-8">
-                <h3 class="text-2xl font-bold text-mountain-800 mb-4">Pokhara</h3>
-                <p class="text-lg text-mountain-600 leading-relaxed">
-                    Nepal's adventure capital offers stunning lake views, world-class paragliding, and serves as the gateway to Annapurna treks. Enjoy serene boat rides on Phewa Lake, experience thrilling paragliding adventures with stunning Annapurna range views, and explore the laid-back atmosphere of this beautiful lakeside city. The ideal destination for 2-5 days, with the best weather from October to April.
-                </p>
-            </div>
-
-            <!-- Chitwan National Park -->
-            <div class="border-b border-gray-200 pb-8">
-                <h3 class="text-2xl font-bold text-mountain-800 mb-4">Chitwan National Park</h3>
-                <p class="text-lg text-mountain-600 leading-relaxed">
-                    This UNESCO World Heritage site protects endangered Bengal tigers, one-horned rhinos, and diverse wildlife in pristine tropical lowlands. Experience Bengal tiger spotting safaris, encounter one-horned rhinos in their natural habitat, and visit the elephant breeding center. The park offers an excellent wildlife experience over 2-4 days, with the ideal visiting season from October to March.
-                </p>
-            </div>
-
-            <!-- Langtang Valley -->
-            <div class="border-b border-gray-200 pb-8">
-                <h3 class="text-2xl font-bold text-mountain-800 mb-4">Langtang Valley</h3>
-                <p class="text-lg text-mountain-600 leading-relaxed">
-                    Known as the "Valley of Glaciers," this destination offers spectacular mountain views, rich Tibetan culture, and sacred lakes closest to Kathmandu. Marvel at majestic Langtang Lirung views, visit the ancient Kyanjin Gompa monastery, and trek to the sacred Gosaikunda lakes. This moderate trek takes 7-12 days and is best experienced during October-November and March-May.
-                </p>
-            </div>
-
-            <!-- Bandipur -->
-            <div class="border-b border-gray-200 pb-8">
-                <h3 class="text-2xl font-bold text-mountain-800 mb-4">Bandipur</h3>
-                <p class="text-lg text-mountain-600 leading-relaxed">
-                    A beautifully preserved medieval hilltop town with authentic 18th-century Newari architecture offering a glimpse into traditional Nepal. Explore the well-preserved architecture, visit the sacred Bindyabasini Temple, and enjoy panoramic Himalayan views from this charming settlement. This peaceful destination can be enjoyed in 1-2 days and offers year-round accessibility.
-                </p>
-            </div>
-
-            <!-- Lumbini -->
-            <div class="pb-8">
-                <h3 class="text-2xl font-bold text-mountain-800 mb-4">Lumbini</h3>
-                <p class="text-lg text-mountain-600 leading-relaxed">
-                    UNESCO World Heritage site and sacred birthplace of Lord Buddha, featuring ancient ruins, peaceful gardens, and international monasteries. Visit the holy Maya Devi Temple, stroll through the sacred Bodhi Tree garden, and explore the international monastery zone representing Buddhist traditions from around the world. This spiritual pilgrimage site can be explored in 1-3 days and welcomes visitors year-round.
-                </p>
-            </div>
-
+            <?php endforeach; ?>
         </div>
+        <?php else: ?>
+        <div class="text-center py-12">
+            <div class="mx-auto max-w-md">
+                <i class="fas fa-mountain text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">No Destinations Found</h3>
+                <p class="text-gray-500">We're working on adding more amazing destinations to explore. Check back soon!</p>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 </section>
 

@@ -6,6 +6,7 @@ $current_page = $_SERVER['REQUEST_URI'] ?? '';
 $is_dashboard = str_contains($current_page, '/admin/dashboard');
 $is_post_create = str_contains($current_page, '/admin/post/create');
 $is_post_edit = str_contains($current_page, '/admin/post/edit');
+$is_change_password = str_contains($current_page, '/admin/change-password');
 ?>
 
 <!-- Admin Sidebar -->
@@ -87,6 +88,12 @@ $is_post_edit = str_contains($current_page, '/admin/post/edit');
                     <p class="text-xs text-mountain-500">travelNepal Admin</p>
                 </div>
             </div>
+            
+            <!-- Change Password -->
+            <a href="/admin/change-password" class="flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg transition-colors mb-2 <?php echo $is_change_password ? 'bg-nepal-50 text-nepal-700 border-l-4 border-nepal-500' : 'text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600'; ?>">
+                <i class="fas fa-key mr-3 w-5"></i>
+                Change Password
+            </a>
             
             <!-- Logout -->
             <a href="/admin/logout" class="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors">

@@ -34,6 +34,15 @@ ob_start();
             </div>
             <?php endif; ?>
 
+            <?php if (isset($success)): ?>
+            <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                    <span class="text-green-700"><?php echo htmlspecialchars($success); ?></span>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <form method="POST" action="/admin/login" class="space-y-6" id="login-form">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 <div>
@@ -169,5 +178,5 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php
 $content = ob_get_contents();
 ob_end_clean();
-include TEMPLATES_PATH . '/layout.php';
+include TEMPLATES_PATH . '/admin-layout.php';
 ?>

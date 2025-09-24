@@ -439,5 +439,5 @@ textarea {
 <?php
 $content = ob_get_contents();
 ob_end_clean();
-include TEMPLATES_PATH . '/layout.php';
+include TEMPLATES_PATH . '/admin-layout.php';
 ?>

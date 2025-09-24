@@ -1,6 +1,9 @@
 <?php
 // travelNepal Utility Functions
 
+// Include static destinations data
+require_once __DIR__ . '/destinations-data.php';
+
 /**
  * Sanitize input data
  */
@@ -698,10 +701,56 @@ function loadDestinations($limit = null, $featured_only = false, $category = nul
             return $destinations;
         } catch (Exception $e) {
             error_log('Database query error: ' . $e->getMessage());
+            // Fall through to static data fallback
         }
     }
     
-    return [];
+    // Fallback to static data
+    $destinations = getStaticDestinationsData();
+    
+    // Apply filters
+    if (!empty($destinations)) {
+        // Filter by published status (all static data is published)
+        $destinations = array_filter($destinations, function($dest) {
+            return $dest['published'] === true;
+        });
+        
+        // Filter by featured if requested
+        if ($featured_only) {
+            $destinations = array_filter($destinations, function($dest) {
+                return $dest['featured'] === true;
+            });
+        }
+        
+        // Filter by category if requested
+        if ($category) {
+            $destinations = array_filter($destinations, function($dest) use ($category) {
+                return strcasecmp($dest['category'], $category) === 0;
+            });
+        }
+        
+        // Exclude specific slug if requested
+        if (!empty($options['exclude_slug'])) {
+            $destinations = array_filter($destinations, function($dest) use ($options) {
+                return $dest['slug'] !== $options['exclude_slug'];
+            });
+        }
+        
+        // Sort by featured status first, then by creation date
+        usort($destinations, function($a, $b) {
+            if ($a['featured'] != $b['featured']) {
+                return $b['featured'] - $a['featured']; // Featured first
+            }
+            return $b['created_at'] - $a['created_at']; // Newest first
+        });
+        
+        // Apply limit if requested
+        if ($limit) {
+            $destinations = array_slice($destinations, 0, $limit);
+        }
+    }
+    
+    return $destinations;
 }
 
 /**
@@ -739,10 +788,12 @@ function loadAllDestinations() {
             return $destinations;
         } catch (Exception $e) {
             error_log('Database query error: ' . $e->getMessage());
+            // Fall through to static data fallback
         }
     }
     
-    return [];
+    // Fallback to static data
+    return getStaticDestinationsData();
 }
 
 /**
@@ -781,10 +832,12 @@ function loadDestination($slug) {
             return $destination;
         } catch (Exception $e) {
             error_log('Database query error: ' . $e->getMessage());
+            // Fall through to static data fallback
         }
     }
     
-    return null;
+    // Fallback to static data
+    return getDestinationBySlug($slug);
 }
 
 /**
@@ -1155,5 +1208,79 @@ function getPostIdFromSlug($slug) {
         error_log('Failed to get post ID: ' . $e->getMessage());
         return null;
     }
+}
+
+/**
+ * Update admin password in runtime session file
+ * Since we can't modify environment variables at runtime, we'll use a file-based approach
+ */
+function updateAdminPassword($newPassword) {
+    // Store the new password in a secure runtime file
+    $runtimeCredentialsFile = DATA_PATH . '/.admin_credentials';
+    
+    // Create DATA_PATH if it doesn't exist
+    if (!is_dir(DATA_PATH)) {
+        mkdir(DATA_PATH, 0755, true);
+    }
+    
+    $credentials = [
+        'username' => ADMIN_USERNAME,
+        'password' => $newPassword,
+        'updated_at' => time()
+    ];
+    
+    // Write encrypted credentials to file
+    $jsonData = json_encode($credentials);
+    $success = file_put_contents($runtimeCredentialsFile, $jsonData, LOCK_EX);
+    
+    if ($success !== false) {
+        // Set file permissions to read-only for owner
+        chmod($runtimeCredentialsFile, 0600);
+        return true;
+    }
+    
+    return false;
+}
+
+/**
+ * Get current admin password (check runtime file first, then environment)
+ */
+function getCurrentAdminPassword() {
+    $runtimeCredentialsFile = DATA_PATH . '/.admin_credentials';
+    
+    // Check if runtime credentials file exists
+    if (file_exists($runtimeCredentialsFile)) {
+        $data = file_get_contents($runtimeCredentialsFile);
+        if ($data !== false) {
+            $credentials = json_decode($data, true);
+            if ($credentials && isset($credentials['password'])) {
+                return $credentials['password'];
+            }
+        }
+    }
+    
+    // Fall back to environment variable
+    return ADMIN_PASSWORD;
+}
+
+/**
+ * Get current admin username (check runtime file first, then environment)
+ */
+function getCurrentAdminUsername() {
+    $runtimeCredentialsFile = DATA_PATH . '/.admin_credentials';
+    
+    // Check if runtime credentials file exists
+    if (file_exists($runtimeCredentialsFile)) {
+        $data = file_get_contents($runtimeCredentialsFile);
+        if ($data !== false) {
+            $credentials = json_decode($data, true);
+            if ($credentials && isset($credentials['username'])) {
+                return $credentials['username'];
+            }
+        }
+    }
+    
+    // Fall back to environment variable
+    return ADMIN_USERNAME;
 }
 ?>

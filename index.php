@@ -20,7 +20,9 @@ $router->get('/blog', function() {
 
 // Destinations listing
 $router->get('/destinations', function() {
-    includeTemplate('destinations');
+    $destinations = loadDestinations();
+    $featured_destinations = loadDestinations(null, true); // Get featured destinations
+    includeTemplate('destinations', compact('destinations', 'featured_destinations'));
 });
 
 // Individual destination
@@ -51,7 +53,15 @@ $router->get('/admin/login', function() {
         header('Location: /admin/dashboard');
         exit();
     }
-    includeTemplate('admin/login');
+    
+    // Check for password change success message
+    $success = null;
+    if (isset($_SESSION['password_change_success'])) {
+        $success = $_SESSION['password_change_success'];
+        unset($_SESSION['password_change_success']);
+    }
+    
+    includeTemplate('admin/login', compact('success'));
 });
 
 $router->post('/admin/login', function() {
@@ -60,7 +70,7 @@ $router->post('/admin/login', function() {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     
-    if ($username === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
+    if ($username === getCurrentAdminUsername() && $password === getCurrentAdminPassword()) {
         // Regenerate session ID to prevent session fixation
         session_regenerate_id(true);
         $_SESSION['admin_logged_in'] = true;
@@ -75,6 +85,74 @@ $router->post('/admin/login', function() {
 $router->get('/admin/logout', function() {
     session_destroy();
     header('Location: /');
+});
+
+// Admin change password
+$router->get('/admin/change-password', function() {
+    requireAuth();
+    includeTemplate('admin/change-password');
+});
+
+$router->post('/admin/change-password', function() {
+    requireAuth();
+    requireCSRF();
+    
+    $current_password = $_POST['current_password'] ?? '';
+    $new_password = $_POST['new_password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+    
+    // Validate inputs
+    if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
+        $error = 'All password fields are required.';
+        includeTemplate('admin/change-password', compact('error'));
+        return;
+    }
+    
+    // Verify current password
+    if ($current_password !== getCurrentAdminPassword()) {
+        $error = 'Current password is incorrect.';
+        includeTemplate('admin/change-password', compact('error'));
+        return;
+    }
+    
+    // Validate new password
+    if (strlen($new_password) < 8) {
+        $error = 'New password must be at least 8 characters long.';
+        includeTemplate('admin/change-password', compact('error'));
+        return;
+    }
+    
+    // Confirm passwords match
+    if ($new_password !== $confirm_password) {
+        $error = 'New password and confirmation do not match.';
+        includeTemplate('admin/change-password', compact('error'));
+        return;
+    }
+    
+    // Don't allow same password
+    if ($current_password === $new_password) {
+        $error = 'New password must be different from current password.';
+        includeTemplate('admin/change-password', compact('error'));
+        return;
+    }
+    
+    // Update password in session storage
+    if (updateAdminPassword($new_password)) {
+        $success = 'Password changed successfully! Please login again with your new password.';
+        
+        // Log out user for security - they need to login with new password
+        session_destroy();
+        
+        // Create a new session for the success message
+        session_start();
+        $_SESSION['password_change_success'] = $success;
+        
+        header('Location: /admin/login');
+        exit();
+    } else {
+        $error = 'Failed to update password. Please try again.';
+        includeTemplate('admin/change-password', compact('error'));
+    }
 });
 
 // Admin dashboard

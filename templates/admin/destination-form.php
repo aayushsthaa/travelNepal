@@ -364,5 +364,5 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-include TEMPLATES_PATH . '/layout.php';
+include TEMPLATES_PATH . '/admin-layout.php';
 ?>
