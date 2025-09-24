@@ -1,4 +1,11 @@
 <?php
+// Check if post data exists, otherwise show 404
+if (!isset($post) || !$post || !is_array($post)) {
+    http_response_code(404);
+    include TEMPLATES_PATH . '/404.php';
+    exit;
+}
+
 $page_title = htmlspecialchars($post['title'] ?? 'Blog Post');
 $page_description = htmlspecialchars($post['excerpt'] ?? 'Read this amazing Nepal travel story and adventure guide.');
 
@@ -98,15 +105,61 @@ ob_start();
                 </div>
             </div>
             
+            <!-- Image Gallery -->
+            <?php
+            $postId = getPostIdFromSlug($post['slug']);
+            $galleryImages = $postId ? loadPostImages($postId) : [];
+            if (!empty($galleryImages)):
+            ?>
+            <div class="mt-12 pt-8 border-t border-mountain-200">
+                <h3 class="text-lg font-semibold text-mountain-800 mb-6 flex items-center">
+                    <i class="fas fa-images mr-2 text-nepal-500"></i>
+                    Gallery
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <?php foreach ($galleryImages as $index => $image): ?>
+                    <div class="group cursor-pointer" onclick="openLightbox(<?php echo $index; ?>)">
+                        <img src="<?php echo htmlspecialchars($image['image_url']); ?>" 
+                             alt="<?php echo htmlspecialchars($image['alt_text'] ?: 'Gallery image ' . ($index + 1)); ?>"
+                             class="w-full h-32 object-cover rounded-lg border border-mountain-200 group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            
+            <!-- Lightbox Modal -->
+            <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-90 hidden z-50 flex items-center justify-center p-4">
+                <div class="relative max-w-4xl max-h-full">
+                    <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300 z-10">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button onclick="prevImage()" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-2xl hover:text-gray-300 z-10">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button onclick="nextImage()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white text-2xl hover:text-gray-300 z-10">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <img id="lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg">
+                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-center">
+                        <span id="lightbox-counter" class="text-sm opacity-80"></span>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+            
             <!-- Tags -->
             <div class="mt-12 pt-8 border-t border-mountain-200">
                 <h3 class="text-lg font-semibold text-mountain-800 mb-4">Tags</h3>
                 <div class="flex flex-wrap gap-3">
-                    <?php foreach ($post['tags'] as $tag): ?>
-                    <span class="bg-mountain-100 hover:bg-nepal-100 text-mountain-700 hover:text-nepal-700 px-4 py-2 rounded-full text-sm transition-colors cursor-pointer">
-                        #<?php echo htmlspecialchars($tag); ?>
-                    </span>
-                    <?php endforeach; ?>
+                    <?php if (isset($post['tags']) && is_array($post['tags']) && !empty($post['tags'])): ?>
+                        <?php foreach ($post['tags'] as $tag): ?>
+                        <span class="bg-mountain-100 hover:bg-nepal-100 text-mountain-700 hover:text-nepal-700 px-4 py-2 rounded-full text-sm transition-colors cursor-pointer">
+                            #<?php echo htmlspecialchars($tag); ?>
+                        </span>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <span class="text-mountain-500 italic">No tags available</span>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -122,12 +175,15 @@ ob_start();
         
         <?php
         $all_posts = loadBlogPosts();
-        $related_posts = array_filter($all_posts, function($p) use ($post) {
-            return $p['slug'] !== $post['slug'] && 
-                   (in_array($post['category'], [$p['category']]) || 
-                    count(array_intersect($post['tags'], $p['tags'])) > 0);
-        });
-        $related_posts = array_slice($related_posts, 0, 3);
+        $related_posts = [];
+        if (is_array($all_posts)) {
+            $related_posts = array_filter($all_posts, function($p) use ($post) {
+                return $p['slug'] !== $post['slug'] && 
+                       (in_array($post['category'] ?? '', [$p['category'] ?? '']) || 
+                        count(array_intersect($post['tags'] ?? [], $p['tags'] ?? [])) > 0);
+            });
+            $related_posts = array_slice($related_posts, 0, 3);
+        }
         ?>
         
         <?php if (!empty($related_posts)): ?>
@@ -252,6 +308,76 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Gallery Lightbox Functions
+<?php if (!empty($galleryImages)): ?>
+let currentImageIndex = 0;
+const galleryImages = <?php echo json_encode(array_values($galleryImages)); ?>;
+
+function openLightbox(index) {
+    currentImageIndex = index;
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxCounter = document.getElementById('lightbox-counter');
+    
+    lightboxImage.src = galleryImages[currentImageIndex].image_url;
+    lightboxImage.alt = galleryImages[currentImageIndex].alt_text || `Gallery image ${currentImageIndex + 1}`;
+    lightboxCounter.textContent = `${currentImageIndex + 1} of ${galleryImages.length}`;
+    
+    lightbox.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    lightbox.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+    updateLightboxImage();
+}
+
+function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+    updateLightboxImage();
+}
+
+function updateLightboxImage() {
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxCounter = document.getElementById('lightbox-counter');
+    
+    lightboxImage.src = galleryImages[currentImageIndex].image_url;
+    lightboxImage.alt = galleryImages[currentImageIndex].alt_text || `Gallery image ${currentImageIndex + 1}`;
+    lightboxCounter.textContent = `${currentImageIndex + 1} of ${galleryImages.length}`;
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+    const lightbox = document.getElementById('lightbox');
+    if (!lightbox.classList.contains('hidden')) {
+        switch(e.key) {
+            case 'Escape':
+                closeLightbox();
+                break;
+            case 'ArrowLeft':
+                prevImage();
+                break;
+            case 'ArrowRight':
+                nextImage();
+                break;
+        }
+    }
+});
+
+// Close lightbox when clicking outside the image
+document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeLightbox();
+    }
+});
+<?php endif; ?>
 </script>
 
 <?php

@@ -130,6 +130,7 @@ ob_start();
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Post</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Category</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Images</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-mountain-500 uppercase tracking-wider">Actions</th>
@@ -157,6 +158,33 @@ ob_start();
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-nepal-100 text-nepal-800">
                                 <?php echo htmlspecialchars($post['category']); ?>
                             </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <?php 
+                            $postId = getPostIdFromSlug($post['slug']);
+                            $galleryImages = $postId ? loadPostImages($postId) : [];
+                            $imageCount = count($galleryImages);
+                            ?>
+                            <div class="flex items-center space-x-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $imageCount > 0 ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'; ?>">
+                                    <i class="fas fa-images mr-1"></i>
+                                    <?php echo $imageCount; ?> gallery
+                                </span>
+                                <?php if ($imageCount > 0): ?>
+                                <div class="flex -space-x-1">
+                                    <?php foreach (array_slice($galleryImages, 0, 3) as $img): ?>
+                                    <img src="<?php echo htmlspecialchars($img['image_url']); ?>" 
+                                         alt="Gallery preview" 
+                                         class="w-6 h-6 rounded border border-white object-cover">
+                                    <?php endforeach; ?>
+                                    <?php if ($imageCount > 3): ?>
+                                    <div class="w-6 h-6 rounded bg-gray-200 border border-white text-xs flex items-center justify-center">
+                                        +<?php echo $imageCount - 3; ?>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                                <?php endif; ?>
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $post['published'] ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">

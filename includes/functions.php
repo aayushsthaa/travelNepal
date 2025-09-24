@@ -263,6 +263,15 @@ function deleteBlogPost($slug) {
     // If database connection available, use it
     if ($pdo !== null) {
         try {
+            // First get the post ID to clean up gallery images
+            $postId = getPostIdFromSlug($slug);
+            
+            if ($postId) {
+                // Delete all gallery images (this will clean up files too)
+                deletePostImages($postId);
+            }
+            
+            // Delete the post (CASCADE will handle remaining DB records)
             $sql = "DELETE FROM posts WHERE slug = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$slug]);
@@ -935,5 +944,216 @@ function getDifficultyLevels() {
         'Difficult',
         'Expert'
     ];
+}
+
+/**
+ * Load images for a specific post
+ */
+function loadPostImages($postId) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return [];
+    }
+    
+    try {
+        $sql = "SELECT id, image_url, alt_text, sort_order, 
+                       EXTRACT(EPOCH FROM created_at) as created_at 
+                FROM post_images 
+                WHERE post_id = ? 
+                ORDER BY sort_order ASC, created_at ASC";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$postId]);
+        $images = $stmt->fetchAll();
+        
+        // Convert timestamps to integers
+        foreach ($images as &$image) {
+            $image['created_at'] = (int)$image['created_at'];
+        }
+        
+        return $images;
+    } catch (Exception $e) {
+        error_log('Failed to load post images: ' . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Save multiple images for a post
+ */
+function savePostImages($postId, $images) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null || empty($images)) {
+        return false;
+    }
+    
+    try {
+        $sql = "INSERT INTO post_images (post_id, image_url, alt_text, sort_order) 
+                VALUES (?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        
+        foreach ($images as $index => $image) {
+            $stmt->execute([
+                $postId,
+                $image['url'],
+                $image['alt_text'] ?? '',
+                $index + 1
+            ]);
+        }
+        
+        return true;
+    } catch (Exception $e) {
+        error_log('Failed to save post images: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Delete all images for a post
+ */
+function deletePostImages($postId) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return false;
+    }
+    
+    try {
+        // Get image URLs before deleting to clean up files
+        $images = loadPostImages($postId);
+        
+        // Delete from database
+        $stmt = $pdo->prepare("DELETE FROM post_images WHERE post_id = ?");
+        $result = $stmt->execute([$postId]);
+        
+        // Clean up image files
+        if ($result) {
+            foreach ($images as $image) {
+                $filePath = BASE_PATH . $image['image_url'];
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+        }
+        
+        return $result;
+    } catch (Exception $e) {
+        error_log('Failed to delete post images: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Delete a specific image
+ */
+function deletePostImage($imageId) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return false;
+    }
+    
+    try {
+        // Get image details before deleting
+        $stmt = $pdo->prepare("SELECT image_url FROM post_images WHERE id = ?");
+        $stmt->execute([$imageId]);
+        $image = $stmt->fetch();
+        
+        if (!$image) {
+            return false;
+        }
+        
+        // Delete from database
+        $stmt = $pdo->prepare("DELETE FROM post_images WHERE id = ?");
+        $result = $stmt->execute([$imageId]);
+        
+        // Clean up file
+        if ($result) {
+            $filePath = BASE_PATH . $image['image_url'];
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+        
+        return $result;
+    } catch (Exception $e) {
+        error_log('Failed to delete post image: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Handle multiple file uploads
+ */
+function handleMultipleFileUploads($files) {
+    if (empty($files['name'][0])) {
+        return ['success' => true, 'images' => []]; // No files uploaded is okay
+    }
+    
+    $uploadedImages = [];
+    $errors = [];
+    
+    // Process each uploaded file
+    for ($i = 0; $i < count($files['name']); $i++) {
+        // Skip empty file slots
+        if (empty($files['name'][$i])) {
+            continue;
+        }
+        
+        // Create individual file array for handleFileUpload
+        $file = [
+            'name' => $files['name'][$i],
+            'type' => $files['type'][$i],
+            'tmp_name' => $files['tmp_name'][$i],
+            'error' => $files['error'][$i],
+            'size' => $files['size'][$i]
+        ];
+        
+        $result = handleFileUpload($file);
+        
+        if ($result['success']) {
+            $uploadedImages[] = [
+                'url' => $result['url'],
+                'filename' => $result['filename'],
+                'alt_text' => ''  // Can be filled later
+            ];
+        } else {
+            $errors[] = "Error uploading {$files['name'][$i]}: " . $result['error'];
+        }
+    }
+    
+    if (!empty($errors) && empty($uploadedImages)) {
+        return ['success' => false, 'error' => implode('; ', $errors)];
+    }
+    
+    return [
+        'success' => true, 
+        'images' => $uploadedImages,
+        'partial_errors' => $errors
+    ];
+}
+
+/**
+ * Get post ID from slug
+ */
+function getPostIdFromSlug($slug) {
+    $pdo = getDbConnection();
+    
+    if ($pdo === null) {
+        return null;
+    }
+    
+    try {
+        $stmt = $pdo->prepare("SELECT id FROM posts WHERE slug = ?");
+        $stmt->execute([$slug]);
+        $result = $stmt->fetch();
+        
+        return $result ? $result['id'] : null;
+    } catch (Exception $e) {
+        error_log('Failed to get post ID: ' . $e->getMessage());
+        return null;
+    }
 }
 ?>

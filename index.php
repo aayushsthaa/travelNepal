@@ -171,6 +171,40 @@ $router->post('/admin/post/save', function() {
     }
     
     if (saveBlogPost($data)) {
+        // Get post ID for gallery image operations
+        $postId = getPostIdFromSlug($data['slug']);
+        
+        if ($postId) {
+            // Handle gallery image deletions
+            if (isset($_POST['delete_images']) && is_array($_POST['delete_images'])) {
+                foreach ($_POST['delete_images'] as $imageId) {
+                    deletePostImage(intval($imageId));
+                }
+            }
+            
+            // Handle new gallery image uploads
+            if (isset($_FILES['gallery_images']) && !empty($_FILES['gallery_images']['name'][0])) {
+                $uploadResult = handleMultipleFileUploads($_FILES['gallery_images']);
+                
+                if ($uploadResult['success']) {
+                    if (!empty($uploadResult['images'])) {
+                        // Save the new gallery images
+                        if (!savePostImages($postId, $uploadResult['images'])) {
+                            error_log('Failed to save gallery images for post: ' . $data['slug']);
+                        }
+                    }
+                    
+                    // Log any partial errors but don't fail the entire operation
+                    if (!empty($uploadResult['partial_errors'])) {
+                        error_log('Some gallery images failed to upload: ' . implode('; ', $uploadResult['partial_errors']));
+                    }
+                } else {
+                    // Gallery upload failed, but don't fail the entire post save
+                    error_log('Gallery image upload failed for post: ' . $data['slug'] . ' - ' . $uploadResult['error']);
+                }
+            }
+        }
+        
         header('Location: /admin/dashboard');
     } else {
         $error = 'Failed to save post';

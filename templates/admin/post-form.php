@@ -105,6 +105,61 @@ ob_start();
                     </div>
                 </div>
 
+                <!-- Gallery Images -->
+                <div>
+                    <label class="block text-sm font-medium text-mountain-700 mb-4">
+                        <i class="fas fa-images mr-2"></i>Gallery Images
+                    </label>
+                    
+                    <div class="mb-4">
+                        <label for="gallery_images" class="block text-sm font-medium text-mountain-600 mb-2">
+                            <i class="fas fa-upload mr-2"></i>Upload Additional Images
+                        </label>
+                        <input type="file" 
+                               id="gallery_images" 
+                               name="gallery_images[]" 
+                               multiple
+                               accept=".jpg,.jpeg,.png,.webp"
+                               class="w-full px-4 py-3 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-nepal-50 file:text-nepal-700 hover:file:bg-nepal-100"
+                               onchange="previewGalleryImages(this)">
+                        <p class="mt-2 text-sm text-mountain-500">
+                            <strong>Optional:</strong> Upload multiple images for your blog post gallery • 
+                            <strong>Allowed:</strong> JPEG, PNG, WebP • <strong>Max size:</strong> 5MB each
+                        </p>
+                    </div>
+
+                    <!-- Gallery Images Preview -->
+                    <div id="gallery-preview" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4"></div>
+
+                    <!-- Existing Gallery Images (for editing) -->
+                    <?php if ($isEditing): ?>
+                    <?php 
+                    $postId = getPostIdFromSlug($post['slug']);
+                    $existingImages = $postId ? loadPostImages($postId) : [];
+                    if (!empty($existingImages)): 
+                    ?>
+                    <div class="mt-6">
+                        <h4 class="text-sm font-medium text-mountain-700 mb-3">Current Gallery Images</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="existing-gallery">
+                            <?php foreach ($existingImages as $image): ?>
+                            <div class="relative group" data-image-id="<?php echo $image['id']; ?>">
+                                <img src="<?php echo htmlspecialchars($image['image_url']); ?>" 
+                                     alt="<?php echo htmlspecialchars($image['alt_text'] ?: 'Gallery image'); ?>"
+                                     class="w-full h-24 object-cover rounded-lg border border-mountain-200">
+                                <button type="button" 
+                                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onclick="removeExistingImage(<?php echo $image['id']; ?>)"
+                                        title="Remove image">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+
                 <!-- Category and Tags Row -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Category -->
@@ -283,6 +338,63 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial character count
     excerptInput.dispatchEvent(new Event('input'));
 });
+
+// Gallery Images Functions
+function previewGalleryImages(input) {
+    const previewContainer = document.getElementById('gallery-preview');
+    previewContainer.innerHTML = '';
+    
+    if (input.files && input.files.length > 0) {
+        for (let i = 0; i < input.files.length; i++) {
+            const file = input.files[i];
+            
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const imageDiv = document.createElement('div');
+                    imageDiv.className = 'relative group';
+                    imageDiv.innerHTML = `
+                        <img src="${e.target.result}" 
+                             alt="Gallery preview" 
+                             class="w-full h-24 object-cover rounded-lg border border-mountain-200">
+                        <div class="absolute top-1 right-1 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                            ${i + 1}
+                        </div>
+                    `;
+                    previewContainer.appendChild(imageDiv);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+    }
+}
+
+// Array to track images marked for deletion
+let imagesToDelete = [];
+
+function removeExistingImage(imageId) {
+    if (confirm('Are you sure you want to remove this image from the gallery?')) {
+        // Hide the image element
+        const imageDiv = document.querySelector(`[data-image-id="${imageId}"]`);
+        if (imageDiv) {
+            imageDiv.style.display = 'none';
+            
+            // Add to deletion list
+            if (!imagesToDelete.includes(imageId)) {
+                imagesToDelete.push(imageId);
+            }
+            
+            // Add hidden input to track deletions
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'delete_images[]';
+            hiddenInput.value = imageId;
+            document.getElementById('post-form').appendChild(hiddenInput);
+        }
+    }
+}
 
 </script>
 
