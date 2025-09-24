@@ -14,8 +14,9 @@ Design: Modern UI inspired by professional travel websites and design platforms
 
 ## Technical Stack
 - **Backend**: Pure PHP with custom routing system (no frameworks)
+- **Database**: PostgreSQL with PDO prepared statements for security
 - **Frontend**: HTML5, Tailwind CSS with custom travelNepal branding, Vanilla JavaScript
-- **Content Storage**: JSON-based file system for blog posts and data
+- **Content Storage**: PostgreSQL database for blog posts and categories with fallback to JSON
 - **Authentication**: PHP sessions with secure admin login system
 - **Server**: PHP built-in development server (port 5000)
 
@@ -57,6 +58,14 @@ Design: Modern UI inspired by professional travel websites and design platforms
 - **Modern Interactions**: Hover effects, animations, and professional styling
 
 # Recent Changes (September 2025)
+
+## Replit Environment Setup (September 24, 2025)
+- **Environment Configuration**: Successfully configured for Replit hosting environment
+- **Database Setup**: Created and configured PostgreSQL database with proper tables (posts, categories)
+- **Workflow Configuration**: Set up PHP server workflow on port 5000 with proper host settings
+- **Deployment Configuration**: Configured autoscale deployment target for production
+- **Environment Variables**: Properly configured admin credentials and database connection
+- **Testing Complete**: Verified all functionality working correctly in Replit environment
 
 ## Database Migration & Security Fixes (September 23, 2025)
 - **Database Migration**: Successfully migrated from JSON file storage to PostgreSQL database
