@@ -2,6 +2,9 @@
 $page_title = 'Destinations - Explore Nepal\'s Most Beautiful Places';
 $page_description = 'Discover Nepal\'s top destinations from the towering Himalayas to ancient cultural sites. Plan your perfect journey through Everest, Annapurna, Kathmandu Valley and more.';
 
+// Initialize variables with defaults if not set
+$destinations = $destinations ?? [];
+
 ob_start();
 ?>
 

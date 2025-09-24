@@ -644,68 +644,10 @@ function sanitizeFilePath($path) {
 }
 
 /**
- * Load destinations from database
+ * Load destinations from static data (completely bypassing database)
  */
 function loadDestinations($limit = null, $featured_only = false, $category = null, $options = []) {
-    $pdo = getDbConnection();
-    
-    if ($pdo !== null) {
-        try {
-            $sql = "SELECT id, name, slug, description, long_description, featured_image, 
-                           category, region, altitude_range, best_time_to_visit, duration, 
-                           difficulty_level, highlights, activities, location_coordinates,
-                           entry_permits_required, accommodation_available, transportation_info,
-                           featured, published, meta_title, meta_description,
-                           EXTRACT(EPOCH FROM created_at) as created_at,
-                           EXTRACT(EPOCH FROM updated_at) as updated_at
-                    FROM destinations WHERE published = true";
-            
-            $params = [];
-            
-            if ($featured_only) {
-                $sql .= " AND featured = true";
-            }
-            
-            if ($category) {
-                $sql .= " AND category = ?";
-                $params[] = $category;
-            }
-            
-            if (!empty($options['exclude_slug'])) {
-                $sql .= " AND slug != ?";
-                $params[] = $options['exclude_slug'];
-            }
-            
-            $sql .= " ORDER BY featured DESC, created_at DESC";
-            
-            if ($limit) {
-                $sql .= " LIMIT " . intval($limit);
-            }
-            
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            $destinations = $stmt->fetchAll();
-            
-            // Convert JSON fields back to arrays and timestamps to integers
-            foreach ($destinations as &$destination) {
-                $destination['highlights'] = json_decode($destination['highlights'], true) ?: [];
-                $destination['activities'] = json_decode($destination['activities'], true) ?: [];
-                $destination['created_at'] = (int)$destination['created_at'];
-                $destination['updated_at'] = (int)$destination['updated_at'];
-                $destination['featured'] = (bool)$destination['featured'];
-                $destination['published'] = (bool)$destination['published'];
-                $destination['entry_permits_required'] = (bool)$destination['entry_permits_required'];
-                $destination['accommodation_available'] = (bool)$destination['accommodation_available'];
-            }
-            
-            return $destinations;
-        } catch (Exception $e) {
-            error_log('Database query error: ' . $e->getMessage());
-            // Fall through to static data fallback
-        }
-    }
-    
-    // Fallback to static data
+    // Always use static data - no database dependency
     $destinations = getStaticDestinationsData();
     
     // Apply filters
@@ -754,89 +696,18 @@ function loadDestinations($limit = null, $featured_only = false, $category = nul
 }
 
 /**
- * Load all destinations including unpublished (for admin)
+ * Load all destinations including unpublished (for admin) from static data (completely bypassing database)
  */
 function loadAllDestinations() {
-    $pdo = getDbConnection();
-    
-    if ($pdo !== null) {
-        try {
-            $sql = "SELECT id, name, slug, description, long_description, featured_image, 
-                           category, region, altitude_range, best_time_to_visit, duration, 
-                           difficulty_level, highlights, activities, location_coordinates,
-                           entry_permits_required, accommodation_available, transportation_info,
-                           featured, published, meta_title, meta_description,
-                           EXTRACT(EPOCH FROM created_at) as created_at,
-                           EXTRACT(EPOCH FROM updated_at) as updated_at
-                    FROM destinations ORDER BY created_at DESC";
-            
-            $stmt = $pdo->query($sql);
-            $destinations = $stmt->fetchAll();
-            
-            // Convert JSON fields back to arrays and timestamps to integers
-            foreach ($destinations as &$destination) {
-                $destination['highlights'] = json_decode($destination['highlights'], true) ?: [];
-                $destination['activities'] = json_decode($destination['activities'], true) ?: [];
-                $destination['created_at'] = (int)$destination['created_at'];
-                $destination['updated_at'] = (int)$destination['updated_at'];
-                $destination['featured'] = (bool)$destination['featured'];
-                $destination['published'] = (bool)$destination['published'];
-                $destination['entry_permits_required'] = (bool)$destination['entry_permits_required'];
-                $destination['accommodation_available'] = (bool)$destination['accommodation_available'];
-            }
-            
-            return $destinations;
-        } catch (Exception $e) {
-            error_log('Database query error: ' . $e->getMessage());
-            // Fall through to static data fallback
-        }
-    }
-    
-    // Fallback to static data
+    // Always use static data - no database dependency
     return getStaticDestinationsData();
 }
 
 /**
- * Load a single destination by slug
+ * Load a single destination by slug from static data (completely bypassing database)
  */
 function loadDestination($slug) {
-    $pdo = getDbConnection();
-    
-    if ($pdo !== null) {
-        try {
-            $sql = "SELECT id, name, slug, description, long_description, featured_image, 
-                           category, region, altitude_range, best_time_to_visit, duration, 
-                           difficulty_level, highlights, activities, location_coordinates,
-                           entry_permits_required, accommodation_available, transportation_info,
-                           featured, published, meta_title, meta_description,
-                           EXTRACT(EPOCH FROM created_at) as created_at,
-                           EXTRACT(EPOCH FROM updated_at) as updated_at
-                    FROM destinations WHERE slug = ? LIMIT 1";
-            
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$slug]);
-            $destination = $stmt->fetch();
-            
-            if ($destination) {
-                // Convert JSON fields back to arrays and timestamps to integers
-                $destination['highlights'] = json_decode($destination['highlights'], true) ?: [];
-                $destination['activities'] = json_decode($destination['activities'], true) ?: [];
-                $destination['created_at'] = (int)$destination['created_at'];
-                $destination['updated_at'] = (int)$destination['updated_at'];
-                $destination['featured'] = (bool)$destination['featured'];
-                $destination['published'] = (bool)$destination['published'];
-                $destination['entry_permits_required'] = (bool)$destination['entry_permits_required'];
-                $destination['accommodation_available'] = (bool)$destination['accommodation_available'];
-            }
-            
-            return $destination;
-        } catch (Exception $e) {
-            error_log('Database query error: ' . $e->getMessage());
-            // Fall through to static data fallback
-        }
-    }
-    
-    // Fallback to static data
+    // Always use static data - no database dependency
     return getDestinationBySlug($slug);
 }
 
