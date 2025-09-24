@@ -15,7 +15,7 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 46207
+localPort = 37223
 externalPort = 3000
 
 [agent]
@@ -42,5 +42,5 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/$REPL_SLUG && source .env && export ADMIN_USERNAME ADMIN_PASSWORD && php -S 0.0.0.0:5000 -t . index.php"
+args = "ADMIN_USERNAME=admin ADMIN_PASSWORD=securepassword123 php -S 0.0.0.0:5000 -t ."
 waitForPort = 5000
