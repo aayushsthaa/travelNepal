@@ -39,115 +39,34 @@ ob_start();
         </div>
         
 <?php if (!empty($destinations)): ?>
-        <div class="grid gap-8 md:gap-12">
+        <div class="space-y-16">
             <?php foreach ($destinations as $index => $destination): ?>
             <!-- <?= htmlspecialchars($destination['name']) ?> -->
-            <div class="<?= $index < count($destinations) - 1 ? 'border-b border-gray-200 pb-8' : 'pb-8' ?>">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                    <!-- Destination Image -->
-                    <div class="lg:col-span-4">
-                        <div class="relative overflow-hidden rounded-xl group">
-                            <img src="<?= htmlspecialchars($destination['featured_image']) ?>" 
-                                 alt="<?= htmlspecialchars($destination['name']) ?>" 
-                                 class="w-full h-64 lg:h-48 object-cover transition-transform duration-300 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                            
-                            <!-- Difficulty Badge -->
-                            <div class="absolute top-3 left-3">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/90 text-mountain-800">
-                                    <i class="fas fa-mountain mr-1"></i>
-                                    <?= htmlspecialchars($destination['difficulty_level']) ?>
-                                </span>
-                            </div>
-                            
-                            <!-- Duration Badge -->
-                            <div class="absolute top-3 right-3">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-nepal-500 text-white">
-                                    <i class="fas fa-clock mr-1"></i>
-                                    <?= htmlspecialchars($destination['duration']) ?>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+            <div class="flex flex-col md:flex-row items-center gap-8 <?= $index % 2 === 1 ? 'md:flex-row-reverse' : '' ?>">
+                <!-- Destination Image -->
+                <div class="w-full md:w-1/2">
+                    <img src="<?= htmlspecialchars($destination['featured_image']) ?>" 
+                         alt="<?= htmlspecialchars($destination['name']) ?>" 
+                         class="w-full h-64 md:h-80 object-cover rounded-lg">
+                </div>
+                
+                <!-- Destination Content -->
+                <div class="w-full md:w-1/2">
+                    <h3 class="text-3xl md:text-4xl font-bold text-mountain-800 mb-4">
+                        <?= htmlspecialchars($destination['name']) ?>
+                    </h3>
                     
-                    <!-- Destination Content -->
-                    <div class="lg:col-span-8">
-                        <div class="flex items-center gap-3 mb-3">
-                            <h3 class="text-2xl md:text-3xl font-bold text-mountain-800">
-                                <a href="/destination/<?= htmlspecialchars($destination['slug']) ?>" 
-                                   class="hover:text-nepal-600 transition-colors">
-                                    <?= htmlspecialchars($destination['name']) ?>
-                                </a>
-                            </h3>
-                            <?php if ($destination['featured']): ?>
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                <i class="fas fa-star mr-1"></i>
-                                Featured
-                            </span>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <!-- Quick Info -->
-                        <div class="flex flex-wrap gap-4 mb-4 text-sm text-mountain-600">
-                            <span class="flex items-center">
-                                <i class="fas fa-map-marker-alt mr-1 text-nepal-500"></i>
-                                <?= htmlspecialchars($destination['region']) ?>
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-calendar-alt mr-1 text-nepal-500"></i>
-                                <?= htmlspecialchars($destination['best_time_to_visit']) ?>
-                            </span>
-                            <?php if (!empty($destination['altitude_range'])): ?>
-                            <span class="flex items-center">
-                                <i class="fas fa-arrow-up mr-1 text-nepal-500"></i>
-                                <?= htmlspecialchars($destination['altitude_range']) ?>
-                            </span>
-                            <?php endif; ?>
-                            <span class="flex items-center">
-                                <i class="fas fa-tag mr-1 text-nepal-500"></i>
-                                <?= htmlspecialchars($destination['category']) ?>
-                            </span>
-                        </div>
-                        
-                        <!-- Description -->
-                        <p class="text-lg text-mountain-600 leading-relaxed mb-4">
-                            <?= htmlspecialchars($destination['description']) ?>
-                        </p>
-                        
-                        <!-- Highlights -->
-                        <?php if (!empty($destination['highlights']) && is_array($destination['highlights'])): ?>
-                        <div class="mb-4">
-                            <h4 class="text-sm font-semibold text-mountain-800 mb-2">Key Highlights:</h4>
-                            <div class="flex flex-wrap gap-2">
-                                <?php foreach (array_slice($destination['highlights'], 0, 3) as $highlight): ?>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-nepal-50 text-nepal-700 border border-nepal-200">
-                                    <i class="fas fa-check mr-1"></i>
-                                    <?= htmlspecialchars($highlight) ?>
-                                </span>
-                                <?php endforeach; ?>
-                                <?php if (count($destination['highlights']) > 3): ?>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-gray-100 text-gray-600">
-                                    +<?= count($destination['highlights']) - 3 ?> more
-                                </span>
-                                <?php endif; ?>
-                            </div>
-                        </div>
+                    <p class="text-lg text-mountain-600 leading-relaxed mb-6">
+                        <?= htmlspecialchars($destination['description']) ?>
+                    </p>
+                    
+                    <!-- Basic Info -->
+                    <div class="space-y-2 text-mountain-600">
+                        <p><strong>Region:</strong> <?= htmlspecialchars($destination['region']) ?></p>
+                        <p><strong>Best Time to Visit:</strong> <?= htmlspecialchars($destination['best_time_to_visit']) ?></p>
+                        <?php if (!empty($destination['duration'])): ?>
+                        <p><strong>Duration:</strong> <?= htmlspecialchars($destination['duration']) ?></p>
                         <?php endif; ?>
-                        
-                        <!-- Action Buttons -->
-                        <div class="flex flex-wrap gap-3">
-                            <a href="/destination/<?= htmlspecialchars($destination['slug']) ?>" 
-                               class="inline-flex items-center px-4 py-2 bg-nepal-600 hover:bg-nepal-700 text-white text-sm font-medium rounded-lg transition-colors">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                Learn More
-                            </a>
-                            <?php if ($destination['entry_permits_required']): ?>
-                            <span class="inline-flex items-center px-3 py-2 bg-yellow-50 text-yellow-700 text-xs rounded-lg border border-yellow-200">
-                                <i class="fas fa-id-card mr-1"></i>
-                                Permits Required
-                            </span>
-                            <?php endif; ?>
-                        </div>
                     </div>
                 </div>
             </div>

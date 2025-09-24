@@ -29,7 +29,7 @@ ob_start();
                 <i class="fas fa-compass mr-3"></i>
                 Explore Adventures
             </a>
-            <a href="#destinations" class="bg-white text-nepal-600 border-2 border-nepal-500 hover:bg-nepal-500 hover:text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
+            <a href="/destinations" class="bg-white text-nepal-600 border-2 border-nepal-500 hover:bg-nepal-500 hover:text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
                 <i class="fas fa-mountain mr-3"></i>
                 Discover Destinations
             </a>
@@ -42,105 +42,6 @@ ob_start();
     </div>
 </section>
 
-<!-- Featured Destinations Section -->
-<section id="destinations" class="py-20 bg-gradient-to-b from-gray-50 to-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16 animate-on-scroll">
-            <h2 class="text-4xl md:text-5xl font-display font-bold text-mountain-800 mb-6">
-                Iconic <span class="text-gradient">Destinations</span>
-            </h2>
-            <p class="text-xl text-mountain-600 max-w-3xl mx-auto">
-                From towering peaks to ancient temples, Nepal offers experiences that will transform your perspective on adventure and spirituality.
-            </p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Everest Base Camp -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden animate-on-scroll">
-                <div class="relative h-64">
-                    <img src="/assets/images/Everest_sunrise_panorama_20949daa.png" 
-                         alt="Everest Base Camp" 
-                         class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-white">
-                        <span class="bg-nepal-500 px-3 py-1 rounded-full text-sm font-medium">Trekking</span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold text-mountain-800 mb-3">Everest Base Camp</h3>
-                    <p class="text-mountain-600 mb-4">
-                        Trek to the base of the world's highest peak and experience the legendary Himalayan adventure.
-                    </p>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center text-nepal-500">
-                            <i class="fas fa-clock mr-2"></i>
-                            <span class="text-sm">14-16 days</span>
-                        </div>
-                        <a href="/blog/ultimate-everest-base-camp-guide-1727089200" class="text-nepal-600 hover:text-nepal-700 font-semibold">
-                            Learn More <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Kathmandu Valley -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden animate-on-scroll">
-                <div class="relative h-64">
-                    <img src="/assets/images/Kathmandu_temple_architecture_df1e8ace.png" 
-                         alt="Kathmandu Temples" 
-                         class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-white">
-                        <span class="bg-purple-500 px-3 py-1 rounded-full text-sm font-medium">Culture</span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold text-mountain-800 mb-3">Kathmandu Valley</h3>
-                    <p class="text-mountain-600 mb-4">
-                        Explore UNESCO World Heritage sites and immerse yourself in ancient Nepalese culture.
-                    </p>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center text-nepal-500">
-                            <i class="fas fa-landmark mr-2"></i>
-                            <span class="text-sm">7 UNESCO Sites</span>
-                        </div>
-                        <a href="/blog/kathmandu-cultural-treasures-1727002800" class="text-nepal-600 hover:text-nepal-700 font-semibold">
-                            Learn More <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Pokhara -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden animate-on-scroll">
-                <div class="relative h-64">
-                    <img src="/assets/images/Pokhara_lake_reflections_ada62be7.png" 
-                         alt="Pokhara Lake" 
-                         class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div class="absolute bottom-4 left-4 text-white">
-                        <span class="bg-blue-500 px-3 py-1 rounded-full text-sm font-medium">Adventure</span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold text-mountain-800 mb-3">Pokhara</h3>
-                    <p class="text-mountain-600 mb-4">
-                        Nepal's adventure capital offering paragliding, boating, and stunning Annapurna views.
-                    </p>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center text-nepal-500">
-                            <i class="fas fa-parachute-box mr-2"></i>
-                            <span class="text-sm">Adventure Hub</span>
-                        </div>
-                        <a href="/blog/pokhara-adventure-paradise-1726916400" class="text-nepal-600 hover:text-nepal-700 font-semibold">
-                            Learn More <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- Featured Blog Posts Section -->
 <section class="py-20 bg-white">
