@@ -56,9 +56,10 @@ RewriteRule ^assets/(.*)$ assets/$1 [L]
 RewriteRule ^uploads/(.*)$ uploads/$1 [L]
 RewriteRule ^attached_assets/(.*)$ attached_assets/$1 [L]
 
-# Block direct access to PHP files except index.php
+# Allow access to index.php and assets
+# Block direct access to other PHP files in sensitive directories
 RewriteCond %{REQUEST_FILENAME} \.php$
-RewriteCond %{REQUEST_URI} !^/travelNepal/index\.php$
+RewriteCond %{REQUEST_URI} ^/(config|includes|data)/.*\.php$
 RewriteRule ^(.*)$ - [F,L]
 
 # Main URL Routing - All requests go through index.php

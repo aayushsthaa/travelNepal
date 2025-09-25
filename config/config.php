@@ -6,14 +6,29 @@ if (file_exists(__DIR__ . '/../.env')) {
     $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         if (strpos(trim($line), '#') === 0) continue;
+        if (strpos($line, '=') === false) continue;
         list($name, $value) = explode('=', $line, 2);
         $name = trim($name);
         $value = trim($value);
-        if (!array_key_exists($name, $_ENV)) {
-            $_ENV[$name] = $value;
-            putenv(sprintf('%s=%s', $name, $value));
-        }
+        $_ENV[$name] = $value;
+        putenv(sprintf('%s=%s', $name, $value));
     }
+}
+
+// Set default admin credentials for XAMPP if not in environment
+if (!isset($_ENV['ADMIN_USERNAME']) || empty($_ENV['ADMIN_USERNAME'])) {
+    $_ENV['ADMIN_USERNAME'] = 'admin';
+    putenv('ADMIN_USERNAME=admin');
+}
+if (!isset($_ENV['ADMIN_PASSWORD']) || empty($_ENV['ADMIN_PASSWORD'])) {
+    $_ENV['ADMIN_PASSWORD'] = 'travelnepal2024';
+    putenv('ADMIN_PASSWORD=travelnepal2024');
+}
+
+// Set default database URL for MySQL/XAMPP if not set
+if (!isset($_ENV['DATABASE_URL']) || empty($_ENV['DATABASE_URL'])) {
+    $_ENV['DATABASE_URL'] = 'mysql://root:@localhost:3306/travelnepal';
+    putenv('DATABASE_URL=mysql://root:@localhost:3306/travelnepal');
 }
 
 // Site Configuration
