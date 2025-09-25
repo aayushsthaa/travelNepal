@@ -14,6 +14,10 @@ deploymentTarget = "autoscale"
 localPort = 5000
 externalPort = 80
 
+[[ports]]
+localPort = 43091
+externalPort = 3000
+
 [agent]
 expertMode = true
 
@@ -38,5 +42,5 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "ADMIN_USERNAME=admin ADMIN_PASSWORD=securepassword123 php -S 0.0.0.0:5000 -t ."
+args = "php -S 0.0.0.0:5000 -t ."
 waitForPort = 5000
