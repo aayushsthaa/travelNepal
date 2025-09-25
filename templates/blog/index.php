@@ -57,7 +57,10 @@ ob_start();
 <!-- Blog Posts Grid -->
 <section class="py-16 bg-gradient-to-b from-gray-50 to-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <?php if (!empty($posts)): ?>
+        <?php 
+        // Ensure $posts is defined for template safety
+        if (!isset($posts)) $posts = [];
+        if (!empty($posts)): ?>
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8" id="blog-grid">
             <?php foreach ($posts as $post): ?>
             <article class="blog-post card-hover bg-white rounded-2xl shadow-lg overflow-hidden animate-on-scroll" data-category="<?php echo htmlspecialchars($post['category']); ?>">

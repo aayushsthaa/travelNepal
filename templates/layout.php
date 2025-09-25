@@ -1,3 +1,20 @@
+<?php
+// Ensure config.php is included for assetUrl function and constants
+if (!function_exists('assetUrl')) {
+    require_once __DIR__ . '/../config/config.php';
+}
+
+// Set fallback values for variables that might not be defined
+if (!isset($page_title)) {
+    $page_title = '';
+}
+if (!isset($page_description)) {
+    $page_description = '';
+}
+if (!isset($content)) {
+    $content = '<div class="container mx-auto px-4 py-8"><div class="text-center"><h1 class="text-2xl font-bold text-gray-600 mb-4">No Content Available</h1><p class="text-gray-500">The page content could not be loaded.</p></div></div>';
+}
+?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -7,7 +24,7 @@
     <meta name="description" content="<?php echo isset($page_description) ? $page_description : SITE_DESCRIPTION; ?>">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="<?php echo assetUrl('assets/favicon.svg'); ?>">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -186,7 +203,7 @@
     
     <!-- Main Content -->
     <main class="min-h-screen">
-        <?php echo $content; ?>
+        <?php echo isset($content) ? $content : '<div class="container mx-auto px-4 py-8"><div class="text-center"><h1 class="text-2xl font-bold text-gray-600 mb-4">No Content Available</h1><p class="text-gray-500">The page content could not be loaded.</p></div></div>'; ?>
     </main>
     
     <!-- Footer -->

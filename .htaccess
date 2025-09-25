@@ -1,0 +1,122 @@
+# travelNepal Apache Configuration for XAMPP
+# Converted from PHP built-in server routing to Apache mod_rewrite
+
+# Enable rewrite engine
+RewriteEngine On
+
+# Set base directory (update this to match your XAMPP folder structure)
+# For XAMPP default: RewriteBase /travelNepal/
+RewriteBase /travelNepal/
+
+# Security: Block access to sensitive files and directories
+<Files "config.php">
+    Require all denied
+</Files>
+
+<Files "*.env">
+    Require all denied
+</Files>
+
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<DirectoryMatch "^(config|includes|data)">
+    Require all denied
+</DirectoryMatch>
+
+# Cache Control Headers for Performance
+<IfModule mod_expires.c>
+    ExpiresActive on
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+# GZIP Compression for better performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+# Handle static assets - serve directly
+RewriteRule ^assets/(.*)$ assets/$1 [L]
+RewriteRule ^uploads/(.*)$ uploads/$1 [L]
+RewriteRule ^attached_assets/(.*)$ attached_assets/$1 [L]
+
+# Block direct access to PHP files except index.php
+RewriteCond %{REQUEST_FILENAME} \.php$
+RewriteCond %{REQUEST_URI} !^/travelNepal/index\.php$
+RewriteRule ^(.*)$ - [F,L]
+
+# Main URL Routing - All requests go through index.php
+# Homepage
+RewriteRule ^$ index.php [L,QSA]
+
+# Blog routes
+RewriteRule ^blog/?$ index.php [L,QSA]
+RewriteRule ^blog/([^/]+)/?$ index.php [L,QSA]
+
+# Destination routes  
+RewriteRule ^destinations/?$ index.php [L,QSA]
+RewriteRule ^destination/([^/]+)/?$ index.php [L,QSA]
+
+# Admin routes
+RewriteRule ^admin/login/?$ index.php [L,QSA]
+RewriteRule ^admin/logout/?$ index.php [L,QSA]
+RewriteRule ^admin/dashboard/?$ index.php [L,QSA]
+RewriteRule ^admin/change-password/?$ index.php [L,QSA]
+RewriteRule ^admin/post/create/?$ index.php [L,QSA]
+RewriteRule ^admin/post/edit/([^/]+)/?$ index.php [L,QSA]
+RewriteRule ^admin/post/save/?$ index.php [L,QSA]
+RewriteRule ^admin/post/delete/([^/]+)/?$ index.php [L,QSA]
+RewriteRule ^admin/destination/create/?$ index.php [L,QSA]
+RewriteRule ^admin/destination/edit/([^/]+)/?$ index.php [L,QSA]
+RewriteRule ^admin/destination/save/?$ index.php [L,QSA]
+RewriteRule ^admin/destination/delete/([^/]+)/?$ index.php [L,QSA]
+RewriteRule ^admin/categories/?$ index.php [L,QSA]
+RewriteRule ^admin/categories/create/?$ index.php [L,QSA]
+RewriteRule ^admin/categories/edit/([^/]+)/?$ index.php [L,QSA]
+RewriteRule ^admin/categories/delete/([^/]+)/?$ index.php [L,QSA]
+
+# API routes for AJAX calls
+RewriteRule ^api/([^/]+)/?$ index.php [L,QSA]
+
+# About and Contact pages
+RewriteRule ^about/?$ index.php [L,QSA]
+RewriteRule ^contact/?$ index.php [L,QSA]
+
+# Catch all other requests and route through index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L,QSA]
+
+# Error pages
+ErrorDocument 404 /travelNepal/index.php
+ErrorDocument 500 /travelNepal/index.php
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Prevent access to backup files and logs
+<FilesMatch "\.(bak|backup|log|old|tmp)$">
+    Require all denied
+</FilesMatch>

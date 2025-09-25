@@ -18,7 +18,7 @@ if (file_exists(__DIR__ . '/../.env')) {
 
 // Site Configuration
 define('SITE_NAME', 'travelNepal');
-define('SITE_URL', 'http://localhost:5000');
+define('SITE_URL', 'http://localhost/travelNepal');
 define('SITE_DESCRIPTION', 'Discover the breathtaking beauty of Nepal - Your ultimate travel guide to the Himalayas');
 
 // Paths
@@ -73,16 +73,23 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Database Configuration
-if (!isset($_ENV['DATABASE_URL']) || empty($_ENV['DATABASE_URL'])) {
-    die('ERROR: DATABASE_URL environment variable is required for database connection.');
+// Database Configuration for MySQL/XAMPP
+// Use either DATABASE_URL or individual connection parameters
+if (isset($_ENV['DATABASE_URL']) && !empty($_ENV['DATABASE_URL'])) {
+    define('DATABASE_URL', $_ENV['DATABASE_URL']);
+} else {
+    // XAMPP default MySQL configuration
+    define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
+    define('DB_NAME', $_ENV['DB_NAME'] ?? 'travel_nepal');
+    define('DB_USER', $_ENV['DB_USER'] ?? 'root');
+    define('DB_PASS', $_ENV['DB_PASS'] ?? '');
+    define('DB_PORT', $_ENV['DB_PORT'] ?? 3306);
 }
 
-define('DATABASE_URL', $_ENV['DATABASE_URL']);
 define('ENVIRONMENT', 'development');
 
 /**
- * Get database connection (returns null if connection fails)
+ * Get MySQL database connection (returns null if connection fails)
  */
 function getDbConnection() {
     static $pdo = null;
@@ -91,29 +98,65 @@ function getDbConnection() {
     if (!$connection_attempted) {
         $connection_attempted = true;
         try {
-            // Parse the PostgreSQL URL to create proper DSN
-            $dbUrl = DATABASE_URL;
-            $parsed = parse_url($dbUrl);
+            if (defined('DATABASE_URL')) {
+                // Parse MySQL URL if provided (e.g., mysql://user:pass@host:port/dbname)
+                $dbUrl = DATABASE_URL;
+                $parsed = parse_url($dbUrl);
+                
+                $host = $parsed['host'] ?? 'localhost';
+                $port = $parsed['port'] ?? 3306;
+                $dbname = trim($parsed['path'], '/');
+                $username = $parsed['user'] ?? 'root';
+                $password = $parsed['pass'] ?? '';
+            } else {
+                // Use individual connection parameters (XAMPP default)
+                $host = DB_HOST;
+                $port = DB_PORT;
+                $dbname = DB_NAME;
+                $username = DB_USER;
+                $password = DB_PASS;
+            }
             
-            // Build DSN in the format PDO expects
-            $dsn = sprintf("pgsql:host=%s;port=%d;dbname=%s;sslmode=prefer", 
-                          $parsed['host'], 
-                          $parsed['port'] ?? 5432, 
-                          trim($parsed['path'], '/'));
+            // Build MySQL DSN
+            $dsn = sprintf("mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4", 
+                          $host, $port, $dbname);
             
-            // Create PDO connection with parsed credentials
-            $pdo = new PDO($dsn, $parsed['user'], $parsed['pass'], [
+            // Create PDO connection with MySQL-specific options
+            $pdo = new PDO($dsn, $username, $password, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
+                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
             ]);
+            
+            // Set MySQL session variables for better compatibility
+            $pdo->exec("SET SESSION sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO'");
+            $pdo->exec("SET SESSION time_zone = '+00:00'");
+            
         } catch (PDOException $e) {
-            error_log('Database connection failed: ' . $e->getMessage());
+            error_log('MySQL database connection failed: ' . $e->getMessage());
             $pdo = null; // Set to null so functions can handle gracefully
         }
     }
     
     return $pdo;
+}
+
+/**
+ * Helper function to generate asset URLs for XAMPP compatibility
+ */
+function assetUrl($path) {
+    $basePath = '/travelNepal'; // Change this if your XAMPP directory structure is different
+    return $basePath . '/' . ltrim($path, '/');
+}
+
+/**
+ * Helper function to generate site URLs for XAMPP compatibility
+ */
+function siteUrl($path = '') {
+    $basePath = '/travelNepal'; // Change this if your XAMPP directory structure is different
+    return $basePath . '/' . ltrim($path, '/');
 }
 
 // Create necessary directories

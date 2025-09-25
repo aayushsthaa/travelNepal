@@ -68,12 +68,12 @@ function loadBlogPosts($limit = null, $includeUnpublished = false) {
     if ($pdo !== null) {
         try {
             $sql = "SELECT id, title, slug, excerpt, content, category, tags, featured_image, published, 
-                           EXTRACT(EPOCH FROM created_at) as created_at, 
-                           EXTRACT(EPOCH FROM updated_at) as updated_at 
+                           UNIX_TIMESTAMP(created_at) as created_at, 
+                           UNIX_TIMESTAMP(updated_at) as updated_at 
                     FROM posts";
             
             if (!$includeUnpublished) {
-                $sql .= " WHERE published = true";
+                $sql .= " WHERE published = 1";
             }
             
             $sql .= " ORDER BY created_at DESC";
@@ -137,8 +137,8 @@ function loadBlogPost($slug) {
     if ($pdo !== null) {
         try {
             $sql = "SELECT id, title, slug, excerpt, content, category, tags, featured_image, published, 
-                           EXTRACT(EPOCH FROM created_at) as created_at, 
-                           EXTRACT(EPOCH FROM updated_at) as updated_at 
+                           UNIX_TIMESTAMP(created_at) as created_at, 
+                           UNIX_TIMESTAMP(updated_at) as updated_at 
                     FROM posts WHERE slug = ?";
             
             $stmt = $pdo->prepare($sql);
@@ -184,7 +184,7 @@ function saveBlogPost($data) {
             
             // Prepare data for database insertion
             $tags_json = json_encode($data['tags']);
-            $published = $data['published'] ? 'true' : 'false';
+            $published = $data['published'] ? 1 : 0;
             
             // Get category_id from category name
             $category_id = null;
@@ -207,7 +207,7 @@ function saveBlogPost($data) {
                             tags = ?,
                             featured_image = ?,
                             published = ?,
-                            updated_at = CURRENT_TIMESTAMP
+                            updated_at = NOW()
                         WHERE slug = ?";
                         
                 $stmt = $pdo->prepare($sql);
@@ -225,7 +225,7 @@ function saveBlogPost($data) {
             } else {
                 // Insert new post
                 $sql = "INSERT INTO posts (title, slug, excerpt, content, category, category_id, tags, featured_image, published, created_at, updated_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
                         
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
@@ -381,7 +381,7 @@ function createCategory($name, $slug = null) {
             $slug = trim($slug, '-');
         }
         
-        $sql = "INSERT INTO categories (name, slug, created_at, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+        $sql = "INSERT INTO categories (name, slug, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$name, $slug]);
         return $pdo->lastInsertId();
@@ -402,7 +402,7 @@ function updateCategory($id, $name, $slug) {
     }
     
     try {
-        $sql = "UPDATE categories SET name = ?, slug = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+        $sql = "UPDATE categories SET name = ?, slug = ?, updated_at = NOW() WHERE id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$name, $slug, $id]);
         return true;
@@ -735,7 +735,7 @@ function saveDestination($data) {
                         duration = ?, difficulty_level = ?, highlights = ?, activities = ?,
                         location_coordinates = ?, entry_permits_required = ?, accommodation_available = ?,
                         transportation_info = ?, featured = ?, published = ?,
-                        meta_title = ?, meta_description = ?, updated_at = CURRENT_TIMESTAMP
+                        meta_title = ?, meta_description = ?, updated_at = NOW()
                     WHERE slug = ?";
             
             $params = [
@@ -768,8 +768,8 @@ function saveDestination($data) {
                         category, region, altitude_range, best_time_to_visit, duration, difficulty_level,
                         highlights, activities, location_coordinates, entry_permits_required,
                         accommodation_available, transportation_info, featured, published,
-                        meta_title, meta_description)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        meta_title, meta_description, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
             
             $params = [
                 $data['name'],
@@ -882,7 +882,7 @@ function loadPostImages($postId) {
     
     try {
         $sql = "SELECT id, image_url, alt_text, sort_order, 
-                       EXTRACT(EPOCH FROM created_at) as created_at 
+                       UNIX_TIMESTAMP(created_at) as created_at 
                 FROM post_images 
                 WHERE post_id = ? 
                 ORDER BY sort_order ASC, created_at ASC";
@@ -914,8 +914,8 @@ function savePostImages($postId, $images) {
     }
     
     try {
-        $sql = "INSERT INTO post_images (post_id, image_url, alt_text, sort_order) 
-                VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO post_images (post_id, image_url, alt_text, sort_order, created_at) 
+                VALUES (?, ?, ?, ?, NOW())";
         $stmt = $pdo->prepare($sql);
         
         foreach ($images as $index => $image) {
