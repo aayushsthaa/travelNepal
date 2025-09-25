@@ -210,7 +210,7 @@ if (!isset($content)) {
     <?php include __DIR__ . '/components/footer.php'; ?>
     
     <!-- JavaScript -->
-    <script src="/assets/js/main.js"></script>
+    <script src="<?= SITE_URL ?>/assets/js/main.js"></script>
     
     <!-- Leaflet JavaScript for Maps -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

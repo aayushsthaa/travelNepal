@@ -20,7 +20,7 @@ ob_start();
                 <i class="fas fa-home mr-2"></i>
                 Back to Home
             </a>
-            <a href="/blog" class="bg-white text-nepal-600 border-2 border-nepal-500 hover:bg-nepal-500 hover:text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
+            <a href="http://localhost/travelNepal/blog" class="bg-white text-nepal-600 border-2 border-nepal-500 hover:bg-nepal-500 hover:text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
                 <i class="fas fa-compass mr-2"></i>
                 Explore Blog
             </a>

@@ -1,6 +1,17 @@
 <?php
 // travelNepal - Professional Travel Website for Nepal
+// Error reporting for debugging (comment out in production)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Load configuration before starting session
 require_once 'config/config.php';
+
+// Start session after loading configuration (only if not already started)
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once 'includes/functions.php';
 require_once 'includes/router.php';
 
@@ -18,23 +29,7 @@ $router->get('/blog', function() {
     includeTemplate('blog/index', compact('posts'));
 });
 
-// Destinations listing
-$router->get('/destinations', function() {
-    $destinations = loadDestinations();
-    $featured_destinations = loadDestinations(null, true); // Get featured destinations
-    includeTemplate('destinations', compact('destinations', 'featured_destinations'));
-});
 
-// Individual destination
-$router->get('/destination/{slug}', function($slug) {
-    $destination = loadDestination($slug);
-    if (!$destination) {
-        http_response_code(404);
-        includeTemplate('404');
-        return;
-    }
-    includeTemplate('destination/detail', compact('destination'));
-});
 
 // Individual blog post
 $router->get('/blog/{slug}', function($slug) {
@@ -50,7 +45,7 @@ $router->get('/blog/{slug}', function($slug) {
 // Admin login
 $router->get('/admin/login', function() {
     if (isLoggedIn()) {
-        header('Location: /admin/dashboard');
+        header('Location: ' . SITE_URL . '/admin/dashboard');
         exit();
     }
     
@@ -70,11 +65,10 @@ $router->post('/admin/login', function() {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     
-    if ($username === getCurrentAdminUsername() && $password === getCurrentAdminPassword()) {
-        // Regenerate session ID to prevent session fixation
-        session_regenerate_id(true);
-        $_SESSION['admin_logged_in'] = true;
-        header('Location: /admin/dashboard');
+    if (authenticateUser($username, $password)) {
+        // Authentication successful - session is set in authenticateUser function
+        header('Location: ' . SITE_URL . '/admin/dashboard');
+        exit();
     } else {
         $error = 'Invalid credentials';
         includeTemplate('admin/login', compact('error'));
@@ -102,55 +96,38 @@ $router->post('/admin/change-password', function() {
     $confirm_password = $_POST['confirm_password'] ?? '';
     
     // Validate inputs
-    if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
-        $error = 'All password fields are required.';
+    if (empty($current_password)) {
+        $error = "Current password is required";
         includeTemplate('admin/change-password', compact('error'));
         return;
     }
     
-    // Verify current password
-    if ($current_password !== getCurrentAdminPassword()) {
-        $error = 'Current password is incorrect.';
+    if (empty($new_password)) {
+        $error = "New password is required";
         includeTemplate('admin/change-password', compact('error'));
         return;
     }
     
-    // Validate new password
-    if (strlen($new_password) < 8) {
-        $error = 'New password must be at least 8 characters long.';
-        includeTemplate('admin/change-password', compact('error'));
-        return;
-    }
-    
-    // Confirm passwords match
     if ($new_password !== $confirm_password) {
-        $error = 'New password and confirmation do not match.';
+        $error = "New passwords do not match";
         includeTemplate('admin/change-password', compact('error'));
         return;
     }
     
-    // Don't allow same password
-    if ($current_password === $new_password) {
-        $error = 'New password must be different from current password.';
+    if (strlen($new_password) < 8) {
+        $error = "Password must be at least 8 characters long";
         includeTemplate('admin/change-password', compact('error'));
         return;
     }
     
-    // Update password in session storage
-    if (updateAdminPassword($new_password)) {
-        $success = 'Password changed successfully! Please login again with your new password.';
-        
-        // Log out user for security - they need to login with new password
-        session_destroy();
-        
-        // Create a new session for the success message
-        session_start();
-        $_SESSION['password_change_success'] = $success;
-        
-        header('Location: /admin/login');
-        exit();
+    // Verify current password and update
+    $result = changePassword($current_password, $new_password);
+    
+    if ($result === true) {
+        $success = "Password changed successfully";
+        includeTemplate('admin/change-password', compact('success'));
     } else {
-        $error = 'Failed to update password. Please try again.';
+        $error = $result;
         includeTemplate('admin/change-password', compact('error'));
     }
 });
@@ -283,7 +260,8 @@ $router->post('/admin/post/save', function() {
             }
         }
         
-        header('Location: /admin/dashboard');
+        header('Location: ' . SITE_URL . '/admin/dashboard');
+    exit();
     } else {
         $error = 'Failed to save post';
         $post = $data; // Keep form data for redisplay
@@ -291,12 +269,20 @@ $router->post('/admin/post/save', function() {
     }
 });
 
-// Delete post
-$router->post('/admin/post/delete/{slug}', function($slug) {
+// Delete a blog post
+$router->get('/admin/post/delete/{slug}', function($slug) {
     requireAuth();
-    requireCSRF();
-    deleteBlogPost($slug);
-    header('Location: /admin/dashboard');
+    
+    $result = deleteBlogPost($slug);
+    
+    if ($result) {
+        $_SESSION['success_message'] = "Post deleted successfully";
+    } else {
+        $_SESSION['error_message'] = "Failed to delete post";
+    }
+    
+    header('Location: ' . SITE_URL . '/admin/dashboard');
+    exit;
 });
 
 // Category CRUD routes
@@ -348,10 +334,10 @@ $router->post('/admin/category/delete/{id}', function($id) {
     requireCSRF();
     
     if (deleteCategory($id)) {
-        header('Location: /admin/dashboard');
+        header('Location: ' . SITE_URL . '/admin/dashboard');
     } else {
         // Return to dashboard with error - could implement flash messages
-        header('Location: /admin/dashboard');
+        header('Location: ' . SITE_URL . '/admin/dashboard');
     }
 });
 

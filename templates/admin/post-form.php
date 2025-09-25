@@ -28,7 +28,7 @@ ob_start();
                         <?php echo $isEditing ? 'Update your Nepal travel story' : 'Share your Nepal adventure with the world'; ?>
                     </p>
                 </div>
-                <a href="/admin/dashboard" class="text-mountain-600 hover:text-nepal-600 font-medium">
+                <a href="<?php echo SITE_URL; ?>/admin/dashboard" class="text-mountain-600 hover:text-nepal-600 font-medium">
                     <i class="fas fa-arrow-left mr-2"></i>
                     Back to Dashboard
                 </a>
@@ -39,7 +39,7 @@ ob_start();
     <!-- Form -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="bg-white rounded-2xl shadow-lg">
-            <form method="POST" action="/admin/post/save" enctype="multipart/form-data" class="p-8 space-y-8" id="post-form">
+            <form method="POST" action="http://localhost/travelNepal/admin/post/save" enctype="multipart/form-data" class="p-8 space-y-8" id="post-form">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 <?php if ($isEditing): ?>
                 <input type="hidden" name="slug" value="<?php echo htmlspecialchars($post['slug'] ?? ''); ?>">
@@ -143,9 +143,9 @@ ob_start();
                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="existing-gallery">
                             <?php foreach ($existingImages as $image): ?>
                             <div class="relative group" data-image-id="<?php echo $image['id']; ?>">
-                                <img src="<?php echo htmlspecialchars($image['image_url']); ?>" 
-                                     alt="<?php echo htmlspecialchars($image['alt_text'] ?: 'Gallery image'); ?>"
-                                     class="w-full h-24 object-cover rounded-lg border border-mountain-200">
+                                <img src="<?php echo ensureFullImageUrl(htmlspecialchars($image['image_url'])); ?>" 
+                                 alt="<?php echo htmlspecialchars($image['alt_text'] ?: 'Gallery image'); ?>"
+                                 class="w-full h-24 object-cover rounded-lg border border-mountain-200">
                                 <button type="button" 
                                         class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                                         onclick="removeExistingImage(<?php echo $image['id']; ?>)"
@@ -229,7 +229,7 @@ ob_start();
                         </div>
                         
                         <div class="flex space-x-4">
-                            <a href="/admin/dashboard" 
+                            <a href="<?php echo SITE_URL; ?>/admin/dashboard" 
                                class="bg-mountain-200 text-mountain-700 px-6 py-3 rounded-lg font-semibold hover:bg-mountain-300 transition-colors">
                                 Cancel
                             </a>

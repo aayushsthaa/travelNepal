@@ -1,32 +1,29 @@
--- travelNepal MySQL Database Schema
--- Converted from PostgreSQL for XAMPP deployment
--- Date: 2025-09-25
+-- travelNepal MySQL Database Schema 
+-- Converted from PostgreSQL for XAMPP deployment 
+-- Date: 2025-09-25 
+-- All image paths should use SITE_URL format 
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
-
--- Create database (uncomment and modify database name as needed)
--- CREATE DATABASE IF NOT EXISTS `travel_nepal` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
--- USE `travel_nepal`;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories`
+-- Table structure for table `users`
 --
 
-CREATE TABLE `categories` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `username` varchar(50) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `role` varchar(20) NOT NULL DEFAULT 'user',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `slug` (`slug`),
-  KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -34,66 +31,24 @@ CREATE TABLE `categories` (
 -- Table structure for table `posts`
 --
 
-CREATE TABLE `posts` (
+CREATE TABLE IF NOT EXISTS `posts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `excerpt` text COLLATE utf8mb4_unicode_ci,
-  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `category_id` int(11) DEFAULT NULL,
-  `tags` json DEFAULT NULL,
-  `featured_image` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `published` tinyint(1) NOT NULL DEFAULT '1',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `title` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `excerpt` text DEFAULT NULL,
+  `featured_image` varchar(255) DEFAULT NULL,
+  `category` varchar(50) DEFAULT NULL,
+  `tags` text DEFAULT NULL,
+  `author_id` int(11) DEFAULT NULL,
+  `published` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`),
-  KEY `published` (`published`),
-  KEY `category_id` (`category_id`),
-  KEY `created_at` (`created_at`),
-  FULLTEXT KEY `title_content` (`title`,`content`,`excerpt`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `destinations`
---
-
-CREATE TABLE `destinations` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `long_description` longtext COLLATE utf8mb4_unicode_ci,
-  `featured_image` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `category` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `region` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `altitude_range` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `best_time_to_visit` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `duration` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `difficulty_level` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `highlights` json DEFAULT NULL,
-  `activities` json DEFAULT NULL,
-  `location_coordinates` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `entry_permits_required` tinyint(1) NOT NULL DEFAULT '0',
-  `accommodation_available` tinyint(1) NOT NULL DEFAULT '1',
-  `transportation_info` text COLLATE utf8mb4_unicode_ci,
-  `featured` tinyint(1) NOT NULL DEFAULT '0',
-  `published` tinyint(1) NOT NULL DEFAULT '1',
-  `meta_title` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `slug` (`slug`),
-  KEY `category` (`category`),
-  KEY `region` (`region`),
-  KEY `featured` (`featured`),
-  KEY `published` (`published`),
-  FULLTEXT KEY `name_description` (`name`,`description`,`long_description`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `author_id` (`author_id`),
+  CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -101,52 +56,56 @@ CREATE TABLE `destinations` (
 -- Table structure for table `post_images`
 --
 
-CREATE TABLE `post_images` (
+CREATE TABLE IF NOT EXISTS `post_images` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `post_id` int(11) NOT NULL,
-  `image_url` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `alt_text` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sort_order` int(11) NOT NULL DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `image_url` varchar(255) NOT NULL,
+  `alt_text` varchar(255) DEFAULT NULL,
+  `sort_order` int(11) DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `post_id` (`post_id`),
-  KEY `sort_order` (`sort_order`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `post_images_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
 
 -- --------------------------------------------------------
 
 --
--- Foreign key constraints
+-- Table structure for table `categories`
 --
 
-ALTER TABLE `posts`
-  ADD CONSTRAINT `posts_category_fk` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
-
-ALTER TABLE `post_images`
-  ADD CONSTRAINT `post_images_post_fk` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE;
+CREATE TABLE IF NOT EXISTS `categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
--- Insert default categories
+-- Table structure for table `contact_messages`
 --
 
-INSERT INTO `categories` (`name`, `slug`) VALUES
-('Trekking', 'trekking'),
-('Culture', 'culture'),
-('Adventure', 'adventure'),
-('Photography', 'photography'),
-('Food', 'food');
+CREATE TABLE IF NOT EXISTS `contact_messages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `subject` varchar(200) DEFAULT NULL,
+  `message` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` varchar(20) NOT NULL DEFAULT 'unread',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
---
--- Set AUTO_INCREMENT values
---
-
-ALTER TABLE `categories` AUTO_INCREMENT = 10;
-ALTER TABLE `posts` AUTO_INCREMENT = 1;
-ALTER TABLE `destinations` AUTO_INCREMENT = 1;
-ALTER TABLE `post_images` AUTO_INCREMENT = 1;
+-- Add default admin user (password: admin123)
+INSERT INTO `users` (`username`, `password_hash`, `email`, `role`) VALUES
+('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@example.com', 'admin');
 
 COMMIT;

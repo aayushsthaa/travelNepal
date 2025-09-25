@@ -8,7 +8,7 @@ ob_start();
 <!-- About Hero Section -->
 <section class="relative h-96 md:h-[500px] overflow-hidden">
     <div class="absolute inset-0 z-0">
-        <img src="/assets/images/Kathmandu_temple_architecture_df1e8ace.png" 
+        <img src="<?php echo SITE_URL; ?>/assets/images/Kathmandu_temple_architecture_df1e8ace.png" 
              alt="Nepal Culture" 
              class="w-full h-full object-cover">
         <div class="absolute inset-0 bg-gradient-to-r from-mountain-800/80 to-mountain-600/60"></div>
@@ -45,7 +45,7 @@ ob_start();
                 </p>
             </div>
             <div class="animate-on-scroll">
-                <img src="/assets/images/Everest_sunrise_panorama_20949daa.png" 
+                <img src="<?php echo SITE_URL; ?>/assets/images/Everest_sunrise_panorama_20949daa.png" 
                      alt="Nepal Mountains" 
                      class="w-full h-96 object-cover rounded-2xl shadow-lg">
             </div>
@@ -196,11 +196,8 @@ ob_start();
         </div>
         
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/destinations" class="bg-white text-nepal-600 hover:text-nepal-700 font-semibold px-8 py-3 rounded-full transition-colors">
-                <i class="fas fa-map-marked-alt mr-2"></i>
-                Explore Destinations
-            </a>
-            <a href="/contact" class="border-2 border-white hover:bg-white hover:text-nepal-600 font-semibold px-8 py-3 rounded-full transition-colors">
+
+            <a href="http://localhost/travelNepal/contact" class="border-2 border-white hover:bg-white hover:text-nepal-600 font-semibold px-8 py-3 rounded-full transition-colors">
                 <i class="fas fa-envelope mr-2"></i>
                 Get in Touch
             </a>

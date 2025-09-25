@@ -7,7 +7,7 @@
     <meta name="description" content="<?php echo isset($page_description) ? $page_description : SITE_DESCRIPTION; ?>">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="http://localhost/travelNepal/assets/favicon.svg">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -167,6 +167,6 @@
     </script>
     
     <!-- Include main.js for any shared functionality -->
-    <script src="/assets/js/main.js"></script>
+    <script src="<?= SITE_URL ?>/assets/js/main.js"></script>
 </body>
 </html>

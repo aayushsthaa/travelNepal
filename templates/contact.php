@@ -8,7 +8,7 @@ ob_start();
 <!-- Contact Hero Section -->
 <section class="relative h-96 md:h-[500px] overflow-hidden">
     <div class="absolute inset-0 z-0">
-        <img src="/assets/images/Pokhara_lake_reflections_ada62be7.png" 
+        <img src="<?php echo SITE_URL; ?>/assets/images/Pokhara_lake_reflections_ada62be7.png" 
              alt="Pokhara Lake" 
              class="w-full h-full object-cover">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-600/80 to-nepal-500/60"></div>

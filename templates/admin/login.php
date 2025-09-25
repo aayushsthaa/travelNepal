@@ -43,7 +43,7 @@ ob_start();
             </div>
             <?php endif; ?>
 
-            <form method="POST" action="/admin/login" class="space-y-6" id="login-form">
+            <form method="POST" action="http://localhost/travelNepal/admin/login" class="space-y-6" id="login-form">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 <div>
                     <label for="username" class="block text-sm font-medium text-mountain-700 mb-2">

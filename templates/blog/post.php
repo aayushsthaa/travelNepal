@@ -16,7 +16,7 @@ ob_start();
 <article class="max-w-4xl mx-auto">
     <!-- Hero Image -->
     <div class="relative h-96 md:h-[500px] overflow-hidden">
-        <img src="<?php echo htmlspecialchars($post['featured_image']); ?>" 
+        <img src="<?php echo ensureFullImageUrl(htmlspecialchars($post['featured_image'])); ?>" 
              alt="<?php echo htmlspecialchars($post['title']); ?>" 
              class="w-full h-full object-cover">
         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -29,7 +29,7 @@ ob_start();
                     <ol class="flex items-center space-x-2 text-sm opacity-80">
                         <li><a href="/" class="hover:text-yellow-300 transition-colors">Home</a></li>
                         <li><i class="fas fa-chevron-right mx-2"></i></li>
-                        <li><a href="/blog" class="hover:text-yellow-300 transition-colors">Blog</a></li>
+                        <li><a href="http://localhost/travelNepal/blog" class="hover:text-yellow-300 transition-colors">Blog</a></li>
                         <li><i class="fas fa-chevron-right mx-2"></i></li>
                         <li class="text-yellow-300"><?php echo htmlspecialchars($post['category']); ?></li>
                     </ol>
@@ -119,7 +119,7 @@ ob_start();
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <?php foreach ($galleryImages as $index => $image): ?>
                     <div class="group cursor-pointer" onclick="openLightbox(<?php echo $index; ?>)">
-                        <img src="<?php echo htmlspecialchars($image['image_url']); ?>" 
+                        <img src="<?php echo ensureFullImageUrl(htmlspecialchars($image['image_url'])); ?>" 
                              alt="<?php echo htmlspecialchars($image['alt_text'] ?: 'Gallery image ' . ($index + 1)); ?>"
                              class="w-full h-32 object-cover rounded-lg border border-mountain-200 group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
                     </div>
@@ -202,7 +202,7 @@ ob_start();
                 </div>
                 <div class="p-6">
                     <h3 class="text-xl font-bold text-mountain-800 mb-3">
-                        <a href="/blog/<?php echo htmlspecialchars($related_post['slug']); ?>" 
+                        <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($related_post['slug']); ?>" 
                            class="hover:text-nepal-600 transition-colors">
                             <?php echo htmlspecialchars($related_post['title']); ?>
                         </a>
@@ -210,7 +210,7 @@ ob_start();
                     <p class="text-mountain-600 mb-4">
                         <?php echo htmlspecialchars(truncateText($related_post['excerpt'], 100)); ?>
                     </p>
-                    <a href="/blog/<?php echo htmlspecialchars($related_post['slug']); ?>" 
+                    <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($related_post['slug']); ?>" 
                        class="text-nepal-600 hover:text-nepal-700 font-semibold text-sm">
                         Read More <i class="fas fa-arrow-right ml-2"></i>
                     </a>
@@ -232,7 +232,7 @@ ob_start();
             Let this story inspire your own Himalayan adventure. Start planning your journey today.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/blog" class="bg-white text-nepal-600 hover:text-nepal-700 font-semibold px-8 py-3 rounded-full transition-colors">
+            <a href="http://localhost/travelNepal/blog" class="bg-white text-nepal-600 hover:text-nepal-700 font-semibold px-8 py-3 rounded-full transition-colors">
                 <i class="fas fa-compass mr-2"></i>
                 More Adventures
             </a>
@@ -320,7 +320,7 @@ function openLightbox(index) {
     const lightboxImage = document.getElementById('lightbox-image');
     const lightboxCounter = document.getElementById('lightbox-counter');
     
-    lightboxImage.src = galleryImages[currentImageIndex].image_url;
+    lightboxImage.src = '<?php echo SITE_URL; ?>' + galleryImages[currentImageIndex].image_url;
     lightboxImage.alt = galleryImages[currentImageIndex].alt_text || `Gallery image ${currentImageIndex + 1}`;
     lightboxCounter.textContent = `${currentImageIndex + 1} of ${galleryImages.length}`;
     
@@ -348,7 +348,7 @@ function updateLightboxImage() {
     const lightboxImage = document.getElementById('lightbox-image');
     const lightboxCounter = document.getElementById('lightbox-counter');
     
-    lightboxImage.src = galleryImages[currentImageIndex].image_url;
+    lightboxImage.src = '<?php echo SITE_URL; ?>' + galleryImages[currentImageIndex].image_url;
     lightboxImage.alt = galleryImages[currentImageIndex].alt_text || `Gallery image ${currentImageIndex + 1}`;
     lightboxCounter.textContent = `${currentImageIndex + 1} of ${galleryImages.length}`;
 }

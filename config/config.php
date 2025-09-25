@@ -1,36 +1,6 @@
 <?php
 // travelNepal Configuration File
 
-// Load environment variables from .env file if it exists
-if (file_exists(__DIR__ . '/../.env')) {
-    $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0) continue;
-        if (strpos($line, '=') === false) continue;
-        list($name, $value) = explode('=', $line, 2);
-        $name = trim($name);
-        $value = trim($value);
-        $_ENV[$name] = $value;
-        putenv(sprintf('%s=%s', $name, $value));
-    }
-}
-
-// Set default admin credentials for XAMPP if not in environment
-if (!isset($_ENV['ADMIN_USERNAME']) || empty($_ENV['ADMIN_USERNAME'])) {
-    $_ENV['ADMIN_USERNAME'] = 'admin';
-    putenv('ADMIN_USERNAME=admin');
-}
-if (!isset($_ENV['ADMIN_PASSWORD']) || empty($_ENV['ADMIN_PASSWORD'])) {
-    $_ENV['ADMIN_PASSWORD'] = 'travelnepal2024';
-    putenv('ADMIN_PASSWORD=travelnepal2024');
-}
-
-// Set default database URL for MySQL/XAMPP if not set
-if (!isset($_ENV['DATABASE_URL']) || empty($_ENV['DATABASE_URL'])) {
-    $_ENV['DATABASE_URL'] = 'mysql://root:@localhost:3306/travelnepal';
-    putenv('DATABASE_URL=mysql://root:@localhost:3306/travelnepal');
-}
-
 // Site Configuration
 define('SITE_NAME', 'travelNepal');
 define('SITE_URL', 'http://localhost/travelNepal');
@@ -54,16 +24,9 @@ ini_set('post_max_size', '6M'); // Slightly larger to account for form data
 ini_set('max_input_time', 60);
 ini_set('memory_limit', '128M');
 
-// Admin Configuration - Require environment variables for security
-if (!isset($_ENV['ADMIN_USERNAME']) || empty($_ENV['ADMIN_USERNAME'])) {
-    die('ERROR: ADMIN_USERNAME environment variable is required for security. Please set it in your environment.');
-}
-if (!isset($_ENV['ADMIN_PASSWORD']) || empty($_ENV['ADMIN_PASSWORD'])) {
-    die('ERROR: ADMIN_PASSWORD environment variable is required for security. Please set it in your environment.');
-}
-
-define('ADMIN_USERNAME', $_ENV['ADMIN_USERNAME']);
-define('ADMIN_PASSWORD', $_ENV['ADMIN_PASSWORD']);
+// Admin Configuration - Hardcoded for simplicity
+define('ADMIN_USERNAME', 'admin');
+define('ADMIN_PASSWORD', 'admin123');
 
 // Session Configuration
 ini_set('session.cookie_httponly', 1);
@@ -88,18 +51,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Database Configuration for MySQL/XAMPP
-// Use either DATABASE_URL or individual connection parameters
-if (isset($_ENV['DATABASE_URL']) && !empty($_ENV['DATABASE_URL'])) {
-    define('DATABASE_URL', $_ENV['DATABASE_URL']);
-} else {
-    // XAMPP default MySQL configuration
-    define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
-    define('DB_NAME', $_ENV['DB_NAME'] ?? 'travel_nepal');
-    define('DB_USER', $_ENV['DB_USER'] ?? 'root');
-    define('DB_PASS', $_ENV['DB_PASS'] ?? '');
-    define('DB_PORT', $_ENV['DB_PORT'] ?? 3306);
-}
+// Database Configuration for MySQL/XAMPP - Hardcoded for simplicity
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'travelnepal');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_PORT', 3306);
 
 define('ENVIRONMENT', 'development');
 
@@ -113,24 +70,12 @@ function getDbConnection() {
     if (!$connection_attempted) {
         $connection_attempted = true;
         try {
-            if (defined('DATABASE_URL')) {
-                // Parse MySQL URL if provided (e.g., mysql://user:pass@host:port/dbname)
-                $dbUrl = DATABASE_URL;
-                $parsed = parse_url($dbUrl);
-                
-                $host = $parsed['host'] ?? 'localhost';
-                $port = $parsed['port'] ?? 3306;
-                $dbname = trim($parsed['path'], '/');
-                $username = $parsed['user'] ?? 'root';
-                $password = $parsed['pass'] ?? '';
-            } else {
-                // Use individual connection parameters (XAMPP default)
-                $host = DB_HOST;
-                $port = DB_PORT;
-                $dbname = DB_NAME;
-                $username = DB_USER;
-                $password = DB_PASS;
-            }
+            // Use hardcoded database connection values
+            $host = DB_HOST;
+            $port = DB_PORT;
+            $dbname = DB_NAME;
+            $username = DB_USER;
+            $password = DB_PASS;
             
             // Build MySQL DSN
             $dsn = sprintf("mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4", 

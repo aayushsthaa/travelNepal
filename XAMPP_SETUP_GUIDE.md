@@ -1,33 +1,36 @@
-# travelNepal - XAMPP Setup Guide
+# XAMPP Setup Guide for travelNepal
+
+This guide will help you set up the travelNepal website on your local machine using XAMPP.
 
 ## Prerequisites
-- XAMPP installed with Apache, MySQL, and PHP
-- Web browser
 
-## Installation Steps
+- XAMPP installed on your machine
+- Basic knowledge of PHP and MySQL
 
-### 1. Database Setup
+## Quick Setup (Recommended)
+
+1. Start XAMPP Control Panel and ensure Apache and MySQL services are running
+2. Open your browser and navigate to:
+   ```
+   http://localhost/travelNepal/setup.php
+   ```
+3. This script will automatically:
+   - Create the database if it doesn't exist
+   - Import the database schema
+   - Add sample data if tables are empty
+4. After setup completes, visit:
+   ```
+   http://localhost/travelNepal
+   ```
+
+## Manual Setup Instructions
+
+If the quick setup doesn't work, follow these manual steps:
+
+### 1. Start XAMPP Services
+
 1. Start XAMPP Control Panel
-2. Start **Apache** and **MySQL** services
-3. Open **phpMyAdmin** (http://localhost/phpmyadmin)
-4. Create a new database named `travelnepal`
-5. Import the `database.sql` file into the `travelnepal` database
-
-### 2. File Setup
-1. Copy the entire project folder to `C:\xampp\htdocs\travelNepal\`
-2. Ensure the folder structure looks like:
-   ```
-   C:\xampp\htdocs\travelNepal\
-   ├── assets/
-   ├── config/
-   ├── includes/
-   ├── templates/
-   ├── uploads/
-   ├── .htaccess
-   ├── index.php
-   ├── database.sql
-   └── XAMPP_SETUP_GUIDE.md
-   ```
+2. Start Apache and MySQL services
 
 ### 3. Configuration (Optional)
 Create a `.env` file in the root directory if you want to customize settings:

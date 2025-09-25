@@ -1,14 +1,42 @@
 <?php
 // travelNepal Utility Functions
 
-// Include static destinations data
-require_once __DIR__ . '/destinations-data.php';
+
+
+/**
+ * Database connection is defined in config.php
+ * This comment is kept as a reference
+ */
 
 /**
  * Sanitize input data
  */
 function sanitize($data) {
     return htmlspecialchars(strip_tags(trim($data)));
+}
+
+/**
+ * Authenticate user against database
+ */
+function authenticateUser($username, $password) {
+    $db = getDbConnection();
+    if (!$db) {
+        return false;
+    }
+    
+    $stmt = $db->prepare("SELECT id, username, password_hash, role FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    $user = $stmt->fetch();
+    
+    if ($user && password_verify($password, $user['password_hash'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['admin_logged_in'] = ($user['role'] === 'admin');
+        return true;
+    }
+    
+    return false;
 }
 
 /**
@@ -19,11 +47,51 @@ function isLoggedIn() {
 }
 
 /**
+ * Change user password
+ */
+function changePassword($current_password, $new_password) {
+    if (!isLoggedIn()) {
+        return "You must be logged in to change your password";
+    }
+    
+    $db = getDbConnection();
+    if (!$db) {
+        return "Database connection error";
+    }
+    
+    // Get current user
+    $userId = $_SESSION['user_id'];
+    $stmt = $db->prepare("SELECT password_hash FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+    
+    if (!$user) {
+        return "User not found";
+    }
+    
+    // Verify current password
+    if (!password_verify($current_password, $user['password_hash'])) {
+        return "Current password is incorrect";
+    }
+    
+    // Update with new password
+    $passwordHash = password_hash($new_password, PASSWORD_DEFAULT);
+    $stmt = $db->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
+    $result = $stmt->execute([$passwordHash, $userId]);
+    
+    if ($result) {
+        return true;
+    } else {
+        return "Failed to update password";
+    }
+}
+
+/**
  * Redirect to login if not authenticated
  */
 function requireAuth() {
     if (!isLoggedIn()) {
-        header('Location: /admin/login');
+        header('Location: ' . SITE_URL . '/admin/login');
         exit();
     }
 }
@@ -179,22 +247,15 @@ function saveBlogPost($data) {
     // If database connection available, use it
     if ($pdo !== null) {
         try {
+            // Start transaction for data integrity
+            $pdo->beginTransaction();
+            
             // Check if this is an update (post exists) or insert (new post)
             $existingPost = loadBlogPost($data['slug']);
             
             // Prepare data for database insertion
             $tags_json = json_encode($data['tags']);
             $published = $data['published'] ? 1 : 0;
-            
-            // Get category_id from category name
-            $category_id = null;
-            if (!empty($data['category'])) {
-                $category_id = getCategoryIdByName($data['category']);
-                if (!$category_id) {
-                    // Category doesn't exist, create it
-                    $category_id = createCategory($data['category']);
-                }
-            }
             
             if ($existingPost) {
                 // Update existing post
@@ -203,7 +264,6 @@ function saveBlogPost($data) {
                             excerpt = ?,
                             content = ?,
                             category = ?,
-                            category_id = ?,
                             tags = ?,
                             featured_image = ?,
                             published = ?,
@@ -211,37 +271,46 @@ function saveBlogPost($data) {
                         WHERE slug = ?";
                         
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute([
+                $result = $stmt->execute([
                     $data['title'],
                     $data['excerpt'], 
                     $data['content'],
-                    $data['category'], // Keep for backward compatibility
-                    $category_id,
+                    $data['category'] ?? '',
                     $tags_json,
-                    $data['featured_image'],
+                    $data['featured_image'] ?? '',
                     $published,
                     $data['slug']
                 ]);
             } else {
                 // Insert new post
-                $sql = "INSERT INTO posts (title, slug, excerpt, content, category, category_id, tags, featured_image, published, created_at, updated_at)
+                $sql = "INSERT INTO posts (title, slug, excerpt, content, category, tags, featured_image, published, author_id, created_at, updated_at)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
                         
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute([
+                $result = $stmt->execute([
                     $data['title'],
                     $data['slug'],
                     $data['excerpt'],
                     $data['content'], 
-                    $data['category'], // Keep for backward compatibility
-                    $category_id,
+                    $data['category'] ?? '',
                     $tags_json,
-                    $data['featured_image'],
-                    $published
+                    $data['featured_image'] ?? '',
+                    $published,
+                    $_SESSION['user_id'] ?? 1
                 ]);
             }
-            return true;
+            
+            if ($result) {
+                $pdo->commit();
+                return true;
+            } else {
+                $pdo->rollBack();
+                return false;
+            }
         } catch (Exception $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             error_log('Database save error: ' . $e->getMessage());
             // Fall through to JSON fallback
         }
@@ -266,22 +335,50 @@ function deleteBlogPost($slug) {
     // If database connection available, use it
     if ($pdo !== null) {
         try {
-            // First get the post ID to clean up gallery images
-            $postId = getPostIdFromSlug($slug);
+            // Start transaction for data integrity
+            $pdo->beginTransaction();
             
-            if ($postId) {
-                // Delete all gallery images (this will clean up files too)
-                deletePostImages($postId);
+            // Get post ID first for image cleanup
+            $stmt = $pdo->prepare("SELECT id, featured_image FROM posts WHERE slug = ?");
+            $stmt->execute([$slug]);
+            $post = $stmt->fetch();
+            
+            if (!$post) {
+                $pdo->rollBack();
+                return false;
             }
             
-            // Delete the post (CASCADE will handle remaining DB records)
-            $sql = "DELETE FROM posts WHERE slug = ?";
+            $postId = $post['id'];
+            
+            // Delete featured image file if exists
+            if (!empty($post['featured_image'])) {
+                $featuredImagePath = BASE_PATH . $post['featured_image'];
+                if (file_exists($featuredImagePath)) {
+                    unlink($featuredImagePath);
+                }
+            }
+            
+            // Delete all gallery images (this will clean up files too)
+            deletePostImages($postId);
+            
+            // Delete the post (CASCADE will handle post_images records)
+            $sql = "DELETE FROM posts WHERE id = ?";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$slug]);
-            return true;
+            $result = $stmt->execute([$postId]);
+            
+            if ($result) {
+                $pdo->commit();
+                return true;
+            } else {
+                $pdo->rollBack();
+                return false;
+            }
         } catch (Exception $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             error_log('Database delete error: ' . $e->getMessage());
-            // Fall through to JSON fallback
+            return false;
         }
     }
     
@@ -325,8 +422,73 @@ function requireCSRF() {
  * Include template with variables
  */
 function includeTemplate($template, $variables = []) {
+    // Define TEMPLATES_PATH if not already defined
+    if (!defined('TEMPLATES_PATH')) {
+        define('TEMPLATES_PATH', dirname(__DIR__) . '/templates');
+    }
+    
+    // Define SITE_URL if not already defined
+    if (!defined('SITE_URL')) {
+        define('SITE_URL', 'http://localhost/travelNepal');
+    }
+    
+    $template_file = TEMPLATES_PATH . '/' . $template . '.php';
+    
+    // Check if template file exists
+    if (!file_exists($template_file)) {
+        error_log("Template file not found: $template_file");
+        echo "Error: Template '$template' not found.";
+        return;
+    }
+    
+    // Extract variables to make them available in template
     extract($variables);
-    include TEMPLATES_PATH . '/' . $template . '.php';
+    
+    // Include the template file
+    include $template_file;
+}
+
+/**
+ * Format image path to ensure it has the full site URL
+ */
+function formatImagePath($path) {
+    // If path already has the site URL, return as is
+    if (strpos($path, SITE_URL) === 0) {
+        return $path;
+    }
+    
+    // If path is absolute (starts with /), append to SITE_URL
+    if (strpos($path, '/') === 0) {
+        return SITE_URL . $path;
+    }
+    
+    // Otherwise, assume it's relative to SITE_URL
+    return SITE_URL . '/' . $path;
+}
+
+/**
+ * Helper function to ensure all image paths use SITE_URL
+ */
+function ensureFullImageUrl($path) {
+    if (empty($path)) return '';
+    
+    // If already a full URL, return as is
+    if (strpos($path, 'http://') === 0 || strpos($path, 'https://') === 0) {
+        return $path;
+    }
+    
+    // If already has SITE_URL, return as is
+    if (strpos($path, SITE_URL) === 0) {
+        return $path;
+    }
+    
+    // If starts with /, append to SITE_URL
+    if (strpos($path, '/') === 0) {
+        return SITE_URL . $path;
+    }
+    
+    // Otherwise, append to SITE_URL with /
+    return SITE_URL . '/' . $path;
 }
 
 /**
@@ -643,232 +805,7 @@ function sanitizeFilePath($path) {
     return $path;
 }
 
-/**
- * Load destinations from static data (completely bypassing database)
- */
-function loadDestinations($limit = null, $featured_only = false, $category = null, $options = []) {
-    // Always use static data - no database dependency
-    $destinations = getStaticDestinationsData();
-    
-    // Apply filters
-    if (!empty($destinations)) {
-        // Filter by published status (all static data is published)
-        $destinations = array_filter($destinations, function($dest) {
-            return $dest['published'] === true;
-        });
-        
-        // Filter by featured if requested
-        if ($featured_only) {
-            $destinations = array_filter($destinations, function($dest) {
-                return $dest['featured'] === true;
-            });
-        }
-        
-        // Filter by category if requested
-        if ($category) {
-            $destinations = array_filter($destinations, function($dest) use ($category) {
-                return strcasecmp($dest['category'], $category) === 0;
-            });
-        }
-        
-        // Exclude specific slug if requested
-        if (!empty($options['exclude_slug'])) {
-            $destinations = array_filter($destinations, function($dest) use ($options) {
-                return $dest['slug'] !== $options['exclude_slug'];
-            });
-        }
-        
-        // Sort by featured status first, then by creation date
-        usort($destinations, function($a, $b) {
-            if ($a['featured'] != $b['featured']) {
-                return $b['featured'] - $a['featured']; // Featured first
-            }
-            return $b['created_at'] - $a['created_at']; // Newest first
-        });
-        
-        // Apply limit if requested
-        if ($limit) {
-            $destinations = array_slice($destinations, 0, $limit);
-        }
-    }
-    
-    return $destinations;
-}
 
-/**
- * Load all destinations including unpublished (for admin) from static data (completely bypassing database)
- */
-function loadAllDestinations() {
-    // Always use static data - no database dependency
-    return getStaticDestinationsData();
-}
-
-/**
- * Load a single destination by slug from static data (completely bypassing database)
- */
-function loadDestination($slug) {
-    // Always use static data - no database dependency
-    return getDestinationBySlug($slug);
-}
-
-/**
- * Save destination to database
- */
-function saveDestination($data) {
-    $pdo = getDbConnection();
-    
-    if ($pdo === null) {
-        return false;
-    }
-    
-    try {
-        // Convert arrays to JSON
-        $highlights = isset($data['highlights']) ? json_encode($data['highlights']) : '[]';
-        $activities = isset($data['activities']) ? json_encode($data['activities']) : '[]';
-        
-        // Check if this is an update or insert
-        if (isset($data['slug']) && !empty($data['slug'])) {
-            // Update existing destination
-            $sql = "UPDATE destinations SET 
-                        name = ?, description = ?, long_description = ?, featured_image = ?,
-                        category = ?, region = ?, altitude_range = ?, best_time_to_visit = ?,
-                        duration = ?, difficulty_level = ?, highlights = ?, activities = ?,
-                        location_coordinates = ?, entry_permits_required = ?, accommodation_available = ?,
-                        transportation_info = ?, featured = ?, published = ?,
-                        meta_title = ?, meta_description = ?, updated_at = NOW()
-                    WHERE slug = ?";
-            
-            $params = [
-                $data['name'],
-                $data['description'] ?? '',
-                $data['long_description'] ?? '',
-                $data['featured_image'] ?? '',
-                $data['category'] ?? '',
-                $data['region'] ?? '',
-                $data['altitude_range'] ?? '',
-                $data['best_time_to_visit'] ?? '',
-                $data['duration'] ?? '',
-                $data['difficulty_level'] ?? '',
-                $highlights,
-                $activities,
-                $data['location_coordinates'] ?? '',
-                isset($data['entry_permits_required']) ? (bool)$data['entry_permits_required'] : false,
-                isset($data['accommodation_available']) ? (bool)$data['accommodation_available'] : true,
-                $data['transportation_info'] ?? '',
-                isset($data['featured']) ? (bool)$data['featured'] : false,
-                isset($data['published']) ? (bool)$data['published'] : true,
-                $data['meta_title'] ?? $data['name'],
-                $data['meta_description'] ?? $data['description'],
-                $data['slug']
-            ];
-        } else {
-            // Insert new destination
-            $slug = generateSlug($data['name']);
-            $sql = "INSERT INTO destinations (name, slug, description, long_description, featured_image,
-                        category, region, altitude_range, best_time_to_visit, duration, difficulty_level,
-                        highlights, activities, location_coordinates, entry_permits_required,
-                        accommodation_available, transportation_info, featured, published,
-                        meta_title, meta_description, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
-            
-            $params = [
-                $data['name'],
-                $slug,
-                $data['description'] ?? '',
-                $data['long_description'] ?? '',
-                $data['featured_image'] ?? '',
-                $data['category'] ?? '',
-                $data['region'] ?? '',
-                $data['altitude_range'] ?? '',
-                $data['best_time_to_visit'] ?? '',
-                $data['duration'] ?? '',
-                $data['difficulty_level'] ?? '',
-                $highlights,
-                $activities,
-                $data['location_coordinates'] ?? '',
-                isset($data['entry_permits_required']) ? (bool)$data['entry_permits_required'] : false,
-                isset($data['accommodation_available']) ? (bool)$data['accommodation_available'] : true,
-                $data['transportation_info'] ?? '',
-                isset($data['featured']) ? (bool)$data['featured'] : false,
-                isset($data['published']) ? (bool)$data['published'] : true,
-                $data['meta_title'] ?? $data['name'],
-                $data['meta_description'] ?? $data['description']
-            ];
-        }
-        
-        $stmt = $pdo->prepare($sql);
-        return $stmt->execute($params);
-        
-    } catch (Exception $e) {
-        error_log('Failed to save destination: ' . $e->getMessage());
-        return false;
-    }
-}
-
-/**
- * Delete destination
- */
-function deleteDestination($slug) {
-    $pdo = getDbConnection();
-    
-    if ($pdo === null) {
-        return false;
-    }
-    
-    try {
-        $stmt = $pdo->prepare("DELETE FROM destinations WHERE slug = ?");
-        return $stmt->execute([$slug]);
-    } catch (Exception $e) {
-        error_log('Failed to delete destination: ' . $e->getMessage());
-        return false;
-    }
-}
-
-/**
- * Get destination categories
- */
-function getDestinationCategories() {
-    return [
-        'Trekking',
-        'Cultural',
-        'Wildlife',
-        'Pilgrimage',
-        'Adventure',
-        'Photography',
-        'Spiritual',
-        'Heritage'
-    ];
-}
-
-/**
- * Get destination regions
- */
-function getDestinationRegions() {
-    return [
-        'Everest Region',
-        'Annapurna Region',
-        'Langtang Region',
-        'Kathmandu Valley',
-        'Pokhara Valley',
-        'Terai Plains',
-        'Western Nepal',
-        'Eastern Nepal',
-        'Far Western Nepal'
-    ];
-}
-
-/**
- * Get difficulty levels
- */
-function getDifficultyLevels() {
-    return [
-        'Easy',
-        'Moderate',
-        'Challenging',
-        'Difficult',
-        'Expert'
-    ];
-}
 
 /**
  * Load images for a specific post

@@ -33,24 +33,14 @@
                 <h3 class="text-lg font-semibold mb-4">Explore</h3>
                 <ul class="space-y-3">
                     <li><a href="/" class="text-mountain-300 hover:text-nepal-400 transition-colors">Home</a></li>
-                    <li><a href="/blog" class="text-mountain-300 hover:text-nepal-400 transition-colors">Travel Blog</a></li>
-                    <li><a href="/destinations" class="text-mountain-300 hover:text-nepal-400 transition-colors">Destinations</a></li>
-                    <li><a href="/guides" class="text-mountain-300 hover:text-nepal-400 transition-colors">Travel Guides</a></li>
-                    <li><a href="/about" class="text-mountain-300 hover:text-nepal-400 transition-colors">About Us</a></li>
+                    <li><a href="<?php echo SITE_URL; ?>/blog" class="text-mountain-300 hover:text-nepal-400 transition-colors">Travel Blog</a></li>
+
+<li><a href="<?php echo SITE_URL; ?>/guides" class="text-mountain-300 hover:text-nepal-400 transition-colors">Travel Guides</a></li>
+<li><a href="<?php echo SITE_URL; ?>/about" class="text-mountain-300 hover:text-nepal-400 transition-colors">About Us</a></li>
                 </ul>
             </div>
             
-            <!-- Popular Destinations -->
-            <div>
-                <h3 class="text-lg font-semibold mb-4">Popular Destinations</h3>
-                <ul class="space-y-3">
-                    <li><a href="#" class="text-mountain-300 hover:text-nepal-400 transition-colors">Kathmandu Valley</a></li>
-                    <li><a href="#" class="text-mountain-300 hover:text-nepal-400 transition-colors">Everest Base Camp</a></li>
-                    <li><a href="#" class="text-mountain-300 hover:text-nepal-400 transition-colors">Annapurna Circuit</a></li>
-                    <li><a href="#" class="text-mountain-300 hover:text-nepal-400 transition-colors">Pokhara</a></li>
-                    <li><a href="#" class="text-mountain-300 hover:text-nepal-400 transition-colors">Chitwan National Park</a></li>
-                </ul>
-            </div>
+
         </div>
         
         <!-- Bottom Bar -->
@@ -59,9 +49,9 @@
                 &copy; 2025 travelNepal. All rights reserved.
             </p>
             <div class="flex space-x-6 mt-4 md:mt-0">
-                <a href="/privacy" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Privacy Policy</a>
-                <a href="/terms" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Terms of Service</a>
-                <a href="/contact" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Contact</a>
+                <a href="http://localhost/travelNepal/privacy" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Privacy Policy</a>
+                <a href="http://localhost/travelNepal/terms" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Terms of Service</a>
+                <a href="http://localhost/travelNepal/contact" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Contact</a>
             </div>
         </div>
     </div>

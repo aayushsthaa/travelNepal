@@ -16,6 +16,17 @@ class Router {
         $method = $_SERVER['REQUEST_METHOD'];
         $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         
+        // Handle XAMPP subfolder
+        $basePath = '/travelNepal';
+        if (strpos($path, $basePath) === 0) {
+            $path = substr($path, strlen($basePath));
+        }
+        
+        // Ensure path starts with /
+        if (empty($path)) {
+            $path = '/';
+        }
+        
         // Remove trailing slash except for root
         if ($path !== '/' && substr($path, -1) === '/') {
             $path = rtrim($path, '/');

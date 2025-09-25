@@ -69,7 +69,7 @@ ob_start();
             </div>
 
             <!-- Change Password Form -->
-            <form method="POST" action="/admin/change-password" class="space-y-6" id="change-password-form">
+            <form method="POST" action="<?= SITE_URL ?>/admin/change-password" class="space-y-6" id="change-password-form">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
 
                 <!-- Current Password -->
@@ -146,7 +146,7 @@ ob_start();
 
                 <!-- Form Actions -->
                 <div class="flex space-x-4 pt-6">
-                    <a href="/admin/dashboard" 
+                    <a href="http://localhost/travelNepal/admin/dashboard" 
                        class="flex-1 bg-mountain-200 text-mountain-700 py-3 px-6 rounded-lg hover:bg-mountain-300 transition-colors text-center font-medium">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Cancel

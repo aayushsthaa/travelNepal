@@ -12,7 +12,7 @@ ob_start();
 <section class="relative h-screen flex items-center justify-center overflow-hidden">
     <!-- Background Image -->
     <div class="absolute inset-0 z-0">
-        <img src="/assets/images/Everest_sunrise_panorama_20949daa.png" 
+        <img src="<?php echo SITE_URL; ?>/assets/images/Everest_sunrise_panorama_20949daa.png" 
              alt="Mount Everest Sunrise" 
              class="w-full h-full object-cover">
         <div class="absolute inset-0 bg-hero-pattern"></div>
@@ -28,14 +28,11 @@ ob_start();
             and experience adventure like nowhere else on Earth.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="/blog" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
+            <a href="<?= SITE_URL ?>/blog" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                 <i class="fas fa-compass mr-3"></i>
                 Explore Adventures
             </a>
-            <a href="/destinations" class="bg-white text-nepal-600 border-2 border-nepal-500 hover:bg-nepal-500 hover:text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
-                <i class="fas fa-mountain mr-3"></i>
-                Discover Destinations
-            </a>
+
         </div>
     </div>
     
@@ -58,7 +55,7 @@ ob_start();
                     Discover insider tips, stunning photography, and inspiring travel stories from Nepal.
                 </p>
             </div>
-            <a href="/blog" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hidden sm:inline-flex items-center">
+            <a href="http://localhost/travelNepal/blog" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hidden sm:inline-flex items-center">
                 <i class="fas fa-blog mr-2"></i>
                 View All Posts
             </a>
@@ -69,7 +66,7 @@ ob_start();
             <?php foreach ($featured_posts as $index => $post): ?>
             <article class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden animate-on-scroll">
                 <div class="relative h-48">
-                    <img src="<?php echo htmlspecialchars($post['featured_image']); ?>" 
+                    <img src="<?php echo SITE_URL . htmlspecialchars($post['featured_image']); ?>" 
                          alt="<?php echo htmlspecialchars($post['title']); ?>" 
                          class="w-full h-full object-cover">
                     <div class="absolute top-4 left-4">
@@ -86,7 +83,7 @@ ob_start();
                         <span>5 min read</span>
                     </div>
                     <h3 class="text-xl font-bold text-mountain-800 mb-3 leading-tight">
-                        <a href="/blog/<?php echo htmlspecialchars($post['slug']); ?>" class="hover:text-nepal-600 transition-colors">
+                        <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($post['slug']); ?>" class="hover:text-nepal-600 transition-colors">
                             <?php echo htmlspecialchars($post['title']); ?>
                         </a>
                     </h3>
@@ -101,7 +98,7 @@ ob_start();
                             </span>
                             <?php endforeach; ?>
                         </div>
-                        <a href="/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
+                        <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
                            class="text-nepal-600 hover:text-nepal-700 font-semibold text-sm">
                             Read More <i class="fas fa-arrow-right ml-1"></i>
                         </a>
@@ -118,7 +115,7 @@ ob_start();
         <?php endif; ?>
         
         <div class="text-center mt-12 sm:hidden">
-            <a href="/blog" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
+            <a href="http://localhost/travelNepal/blog" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                 <i class="fas fa-blog mr-2"></i>
                 View All Posts
             </a>
@@ -137,11 +134,11 @@ ob_start();
             Start planning your journey to the roof of the world today.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/blog" class="bg-white text-nepal-600 hover:text-nepal-700 font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1">
+            <a href="http://localhost/travelNepal/blog" class="bg-white text-nepal-600 hover:text-nepal-700 font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1">
                 <i class="fas fa-book-open mr-2"></i>
                 Read Travel Guides
             </a>
-            <a href="/contact" class="border-2 border-white hover:bg-white hover:text-nepal-600 font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1">
+            <a href="http://localhost/travelNepal/contact" class="border-2 border-white hover:bg-white hover:text-nepal-600 font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1">
                 <i class="fas fa-envelope mr-2"></i>
                 Plan Your Trip
             </a>

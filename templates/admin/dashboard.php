@@ -24,7 +24,7 @@ ob_start();
             </div>
             <div class="animate-fade-in-up">
                 <div class="flex space-x-4">
-                    <a href="/admin/post/create" class="bg-white text-nepal-600 hover:text-nepal-700 px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+                    <a href="http://localhost/travelNepal/admin/post/create" class="bg-white text-nepal-600 hover:text-nepal-700 px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
                         <i class="fas fa-plus mr-2"></i>
                         New Post
                     </a>
@@ -197,12 +197,12 @@ ob_start();
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex items-center space-x-2">
-                                <a href="/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
+                                <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
                                    class="text-blue-600 hover:text-blue-900 transition-colors" 
                                    title="View Post" target="_blank">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="/admin/post/edit/<?php echo htmlspecialchars($post['slug']); ?>" 
+                                <a href="http://localhost/travelNepal/admin/post/edit/<?php echo htmlspecialchars($post['slug']); ?>" 
                                    class="text-nepal-600 hover:text-nepal-900 transition-colors" 
                                    title="Edit Post">
                                     <i class="fas fa-edit"></i>
@@ -224,7 +224,7 @@ ob_start();
             <i class="fas fa-file-alt text-mountain-300 text-6xl mb-4"></i>
             <h3 class="text-lg font-medium text-mountain-700 mb-2">No posts yet</h3>
             <p class="text-mountain-500 mb-6">Start creating amazing Nepal travel content!</p>
-            <a href="/admin/post/create" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
+            <a href="http://localhost/travelNepal/admin/post/create" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                 <i class="fas fa-plus mr-2"></i>
                 Create Your First Post
             </a>
@@ -406,19 +406,8 @@ function closeDeleteModal() {
 
 function deletePost() {
     if (currentDeleteSlug) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/admin/post/delete/${currentDeleteSlug}`;
-        
-        // Add CSRF token
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = 'csrf_token';
-        csrfInput.value = '<?php echo generateCSRFToken(); ?>';
-        form.appendChild(csrfInput);
-        
-        document.body.appendChild(form);
-        form.submit();
+        // Redirect to the delete URL directly
+        window.location.href = `<?php echo SITE_URL; ?>/admin/post/delete/${currentDeleteSlug}`;
     }
 }
 

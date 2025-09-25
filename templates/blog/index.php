@@ -8,7 +8,7 @@ ob_start();
 <!-- Hero Section -->
 <section class="relative py-24 bg-gradient-to-r from-nepal-500 to-nepal-600 text-white">
     <div class="absolute inset-0 opacity-20">
-        <img src="/assets/images/Prayer_flags_mountain_vista_1f2256d5.png" 
+        <img src="<?php echo SITE_URL; ?>/assets/images/Prayer_flags_mountain_vista_1f2256d5.png" 
              alt="Nepal Mountains" 
              class="w-full h-full object-cover">
     </div>
@@ -65,7 +65,7 @@ ob_start();
             <?php foreach ($posts as $post): ?>
             <article class="blog-post card-hover bg-white rounded-2xl shadow-lg overflow-hidden animate-on-scroll" data-category="<?php echo htmlspecialchars($post['category']); ?>">
                 <div class="relative h-64">
-                    <img src="<?php echo htmlspecialchars($post['featured_image']); ?>" 
+                    <img src="<?php echo ensureFullImageUrl(htmlspecialchars($post['featured_image'])); ?>" 
                          alt="<?php echo htmlspecialchars($post['title']); ?>" 
                          class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -96,7 +96,7 @@ ob_start();
                     </div>
                     
                     <h2 class="text-2xl font-bold text-mountain-800 mb-3 leading-tight">
-                        <a href="/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
+                        <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
                            class="hover:text-nepal-600 transition-colors">
                             <?php echo htmlspecialchars($post['title']); ?>
                         </a>
@@ -107,7 +107,7 @@ ob_start();
                     </p>
                     
                     <div class="flex items-center justify-between">
-                        <a href="/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
+                        <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
                            class="inline-flex items-center text-nepal-600 hover:text-nepal-700 font-semibold transition-colors group">
                             Read Full Article 
                             <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
