@@ -31,7 +31,7 @@ $is_change_password = str_contains($current_page, '/admin/change-password');
         <!-- Navigation Menu -->
         <nav class="flex-1 px-4 py-6 space-y-2">
             <!-- Dashboard -->
-            <a href="<?php echo SITE_URL; ?>/admin/dashboard" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors <?php echo $is_dashboard ? 'bg-nepal-50 text-nepal-700 border-l-4 border-nepal-500' : 'text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600'; ?>">
+            <a href="<?php echo siteUrl('admin/dashboard'); ?>" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors <?php echo $is_dashboard ? 'bg-nepal-50 text-nepal-700 border-l-4 border-nepal-500' : 'text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600'; ?>">
                 <i class="fas fa-tachometer-alt mr-3 w-5"></i>
                 Dashboard
             </a>
@@ -41,19 +41,19 @@ $is_change_password = str_contains($current_page, '/admin/change-password');
                 <h3 class="px-4 text-xs font-semibold text-mountain-500 uppercase tracking-wider mb-2">Blog Management</h3>
                 
                 <!-- Create New Post -->
-                <a href="http://localhost/travelNepal/admin/post/create" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors <?php echo $is_post_create ? 'bg-nepal-50 text-nepal-700 border-l-4 border-nepal-500' : 'text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600'; ?>">
+                <a href="<?php echo siteUrl('admin/post/create'); ?>" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors <?php echo $is_post_create ? 'bg-nepal-50 text-nepal-700 border-l-4 border-nepal-500' : 'text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600'; ?>">
                     <i class="fas fa-plus mr-3 w-5"></i>
                     New Post
                 </a>
 
                 <!-- Manage Posts -->
-                <a href="<?php echo SITE_URL; ?>/admin/dashboard#posts" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors <?php echo ($is_dashboard || $is_post_edit) ? 'bg-mountain-50 text-nepal-600' : 'text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600'; ?>">
+                <a href="<?php echo siteUrl('admin/dashboard'); ?>#posts" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors <?php echo ($is_dashboard || $is_post_edit) ? 'bg-mountain-50 text-nepal-600' : 'text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600'; ?>">
                     <i class="fas fa-file-alt mr-3 w-5"></i>
                     Manage Posts
                 </a>
 
                 <!-- Categories -->
-                <a href="<?php echo SITE_URL; ?>/admin/dashboard#categories" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600">
+                <a href="<?php echo siteUrl('admin/dashboard'); ?>#categories" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600">
                     <i class="fas fa-tags mr-3 w-5"></i>
                     Categories
                 </a>
@@ -64,13 +64,13 @@ $is_change_password = str_contains($current_page, '/admin/change-password');
                 <h3 class="px-4 text-xs font-semibold text-mountain-500 uppercase tracking-wider mb-2">Quick Actions</h3>
                 
                 <!-- View Site -->
-                <a href="/" target="_blank" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600">
+                <a href="<?php echo siteUrl(); ?>" target="_blank" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600">
                     <i class="fas fa-external-link-alt mr-3 w-5"></i>
                     View Site
                 </a>
 
                 <!-- Blog Posts -->
-                <a href="http://localhost/travelNepal/blog" target="_blank" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600">
+                <a href="<?php echo siteUrl('blog'); ?>" target="_blank" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600">
                     <i class="fas fa-blog mr-3 w-5"></i>
                     View Blog
                 </a>
@@ -90,13 +90,13 @@ $is_change_password = str_contains($current_page, '/admin/change-password');
             </div>
             
             <!-- Change Password -->
-            <a href="http://localhost/travelNepal/admin/change-password" class="flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg transition-colors mb-2 <?php echo $is_change_password ? 'bg-nepal-50 text-nepal-700 border-l-4 border-nepal-500' : 'text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600'; ?>">
+            <a href="<?php echo siteUrl('admin/change-password'); ?>" class="flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg transition-colors mb-2 <?php echo $is_change_password ? 'bg-nepal-50 text-nepal-700 border-l-4 border-nepal-500' : 'text-mountain-700 hover:bg-mountain-50 hover:text-nepal-600'; ?>">
                 <i class="fas fa-key mr-3 w-5"></i>
                 Change Password
             </a>
             
             <!-- Logout -->
-            <a href="http://localhost/travelNepal/admin/logout" class="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors">
+            <a href="<?php echo siteUrl('admin/logout'); ?>" class="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors">
                 <i class="fas fa-sign-out-alt mr-3 w-5"></i>
                 Logout
             </a>

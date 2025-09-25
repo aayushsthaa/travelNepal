@@ -91,7 +91,7 @@ function changePassword($current_password, $new_password) {
  */
 function requireAuth() {
     if (!isLoggedIn()) {
-        header('Location: ' . SITE_URL . '/admin/login');
+        header('Location: ' . siteUrl('admin/login'));
         exit();
     }
 }
@@ -155,7 +155,7 @@ function loadBlogPosts($limit = null, $includeUnpublished = false) {
             
             // Convert JSON tags back to array and timestamps to integers
             foreach ($posts as &$post) {
-                $post['tags'] = json_decode($post['tags'], true) ?: [];
+                $post['tags'] = !empty($post['tags']) ? json_decode($post['tags'], true) ?: [] : [];
                 $post['created_at'] = (int)$post['created_at'];
                 $post['updated_at'] = (int)$post['updated_at'];
                 $post['published'] = (bool)$post['published'];
@@ -215,7 +215,7 @@ function loadBlogPost($slug) {
             
             if ($post) {
                 // Convert JSON tags back to array and timestamps to integers
-                $post['tags'] = json_decode($post['tags'], true) ?: [];
+                $post['tags'] = !empty($post['tags']) ? json_decode($post['tags'], true) ?: [] : [];
                 $post['created_at'] = (int)$post['created_at'];
                 $post['updated_at'] = (int)$post['updated_at'];
                 $post['published'] = (bool)$post['published'];
@@ -543,7 +543,7 @@ function createCategory($name, $slug = null) {
             $slug = trim($slug, '-');
         }
         
-        $sql = "INSERT INTO categories (name, slug, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
+        $sql = "INSERT INTO categories (name, slug, created_at) VALUES (?, ?, NOW())";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$name, $slug]);
         return $pdo->lastInsertId();
@@ -564,7 +564,7 @@ function updateCategory($id, $name, $slug) {
     }
     
     try {
-        $sql = "UPDATE categories SET name = ?, slug = ?, updated_at = NOW() WHERE id = ?";
+        $sql = "UPDATE categories SET name = ?, slug = ? WHERE id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$name, $slug, $id]);
         return true;
@@ -585,10 +585,22 @@ function deleteCategory($id) {
     }
     
     try {
-        // First check if category is in use
-        $checkSql = "SELECT COUNT(*) FROM posts WHERE category_id = ?";
+        // Get the category name first
+        $categorySql = "SELECT name FROM categories WHERE id = ?";
+        $categoryStmt = $pdo->prepare($categorySql);
+        $categoryStmt->execute([$id]);
+        $category = $categoryStmt->fetch();
+        
+        if (!$category) {
+            return ['success' => false, 'error' => 'Category not found'];
+        }
+        
+        $categoryName = $category['name'];
+        
+        // Check if category is in use by posts
+        $checkSql = "SELECT COUNT(*) FROM posts WHERE category = ?";
         $checkStmt = $pdo->prepare($checkSql);
-        $checkStmt->execute([$id]);
+        $checkStmt->execute([$categoryName]);
         $postCount = $checkStmt->fetchColumn();
         
         if ($postCount > 0) {
@@ -617,7 +629,7 @@ function getCategory($id) {
     }
     
     try {
-        $sql = "SELECT id, name, slug, created_at, updated_at FROM categories WHERE id = ?";
+        $sql = "SELECT id, name, slug, created_at FROM categories WHERE id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch();
@@ -818,20 +830,16 @@ function loadPostImages($postId) {
     }
     
     try {
-        $sql = "SELECT id, image_url, alt_text, sort_order, 
-                       UNIX_TIMESTAMP(created_at) as created_at 
+        $sql = "SELECT id, image_url, alt_text, sort_order 
                 FROM post_images 
                 WHERE post_id = ? 
-                ORDER BY sort_order ASC, created_at ASC";
+                ORDER BY sort_order ASC";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$postId]);
         $images = $stmt->fetchAll();
         
-        // Convert timestamps to integers
-        foreach ($images as &$image) {
-            $image['created_at'] = (int)$image['created_at'];
-        }
+        // No timestamp conversion needed as created_at column was removed
         
         return $images;
     } catch (Exception $e) {
@@ -851,8 +859,8 @@ function savePostImages($postId, $images) {
     }
     
     try {
-        $sql = "INSERT INTO post_images (post_id, image_url, alt_text, sort_order, created_at) 
-                VALUES (?, ?, ?, ?, NOW())";
+        $sql = "INSERT INTO post_images (post_id, image_url, alt_text, sort_order) 
+                VALUES (?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
         
         foreach ($images as $index => $image) {

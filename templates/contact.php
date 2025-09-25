@@ -17,7 +17,7 @@ ob_start();
     <div class="relative z-10 flex items-center justify-center h-full text-center text-white px-4">
         <div class="max-w-4xl mx-auto animate-fade-in-up">
             <h1 class="text-4xl md:text-6xl font-display font-bold mb-6">
-                Contact <span class="text-yellow-300">Us</span>
+                Contact <span class="text-nepal-300">Us</span>
             </h1>
             <p class="text-xl md:text-2xl max-w-3xl mx-auto font-light">
                 Ready to start your Nepal adventure? We're here to help you plan the perfect journey.

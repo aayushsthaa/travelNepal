@@ -1,21 +1,22 @@
 // travelNepal - Main JavaScript File
 
+// Initialize all functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile Menu Toggle
     initMobileMenu();
-    
-    // Smooth Scrolling
+
+    // Smooth Scrolling for Anchor Links
     initSmoothScrolling();
-    
+
     // Scroll Animations
     initScrollAnimations();
-    
+
     // Navbar Scroll Effect
     initNavbarScrollEffect();
-    
-    // Image Lazy Loading
+
+    // Lazy Loading for Images
     initLazyLoading();
-    
+
     // Form Enhancements
     initFormEnhancements();
 });
@@ -90,6 +91,8 @@ function initScrollAnimations() {
 // Navbar Scroll Effect
 function initNavbarScrollEffect() {
     const navbar = document.getElementById('navbar');
+    if (!navbar) return; // Exit if navbar doesn't exist
+    
     let lastScrollY = window.scrollY;
     
     window.addEventListener('scroll', function() {

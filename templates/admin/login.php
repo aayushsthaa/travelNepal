@@ -43,7 +43,7 @@ ob_start();
             </div>
             <?php endif; ?>
 
-            <form method="POST" action="http://localhost/travelNepal/admin/login" class="space-y-6" id="login-form">
+            <form method="POST" action="<?php echo SITE_URL; ?>/admin/login" class="space-y-6" id="login-form">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 <div>
                     <label for="username" class="block text-sm font-medium text-mountain-700 mb-2">
@@ -110,7 +110,7 @@ ob_start();
             <p class="text-mountain-500 text-sm">
                 &copy; 2025 travelNepal. All rights reserved.
             </p>
-            <a href="/" class="text-nepal-600 hover:text-nepal-500 text-sm font-medium">
+            <a href="<?php echo siteUrl(); ?>" class="text-nepal-600 hover:text-nepal-500 text-sm font-medium">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Back to Website
             </a>

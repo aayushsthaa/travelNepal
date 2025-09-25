@@ -99,7 +99,7 @@ if (!isset($content)) {
     
     <style>
         .bg-hero-pattern {
-            background-image: linear-gradient(135deg, rgba(237, 112, 63, 0.9) 0%, rgba(185, 63, 31, 0.9) 100%);
+            background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(30, 41, 59, 0.8) 100%);
         }
         
         .text-gradient {

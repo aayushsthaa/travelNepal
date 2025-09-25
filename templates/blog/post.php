@@ -27,9 +27,9 @@ ob_start();
                 <!-- Breadcrumb -->
                 <nav class="mb-4">
                     <ol class="flex items-center space-x-2 text-sm opacity-80">
-                        <li><a href="/" class="hover:text-yellow-300 transition-colors">Home</a></li>
+                        <li><a href="<?php echo siteUrl(); ?>" class="hover:text-yellow-300 transition-colors">Home</a></li>
                         <li><i class="fas fa-chevron-right mx-2"></i></li>
-                        <li><a href="http://localhost/travelNepal/blog" class="hover:text-yellow-300 transition-colors">Blog</a></li>
+                        <li><a href="<?php echo siteUrl('blog'); ?>" class="hover:text-yellow-300 transition-colors">Blog</a></li>
                         <li><i class="fas fa-chevron-right mx-2"></i></li>
                         <li class="text-yellow-300"><?php echo htmlspecialchars($post['category']); ?></li>
                     </ol>
@@ -44,9 +44,10 @@ ob_start();
                 </div>
                 
                 <!-- Title -->
-                <h1 class="text-3xl md:text-5xl font-display font-bold mb-4 leading-tight">
+                <h1 class="text-5xl md:text-6xl font-display font-bold mb-4 leading-tight">
                     <?php echo htmlspecialchars($post['title']); ?>
                 </h1>
+                <p class="text-xl text-nepal-300"><?php echo htmlspecialchars($post['excerpt'] ?? ''); ?></p>
                 
                 <!-- Meta Information -->
                 <div class="flex flex-wrap items-center gap-4 text-sm opacity-90">
@@ -191,7 +192,7 @@ ob_start();
             <?php foreach ($related_posts as $related_post): ?>
             <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div class="relative h-48">
-                    <img src="<?php echo htmlspecialchars($related_post['featured_image']); ?>" 
+                    <img src="<?php echo htmlspecialchars(ensureFullImageUrl($related_post['featured_image'])); ?>" 
                          alt="<?php echo htmlspecialchars($related_post['title']); ?>" 
                          class="w-full h-full object-cover">
                     <div class="absolute top-4 left-4">
@@ -202,7 +203,7 @@ ob_start();
                 </div>
                 <div class="p-6">
                     <h3 class="text-xl font-bold text-mountain-800 mb-3">
-                        <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($related_post['slug']); ?>" 
+                        <a href="<?php echo siteUrl('blog/' . htmlspecialchars($related_post['slug'])); ?>" 
                            class="hover:text-nepal-600 transition-colors">
                             <?php echo htmlspecialchars($related_post['title']); ?>
                         </a>
@@ -210,7 +211,7 @@ ob_start();
                     <p class="text-mountain-600 mb-4">
                         <?php echo htmlspecialchars(truncateText($related_post['excerpt'], 100)); ?>
                     </p>
-                    <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($related_post['slug']); ?>" 
+                    <a href="<?php echo siteUrl('blog/' . htmlspecialchars($related_post['slug'])); ?>" 
                        class="text-nepal-600 hover:text-nepal-700 font-semibold text-sm">
                         Read More <i class="fas fa-arrow-right ml-2"></i>
                     </a>
@@ -232,11 +233,11 @@ ob_start();
             Let this story inspire your own Himalayan adventure. Start planning your journey today.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="http://localhost/travelNepal/blog" class="bg-white text-nepal-600 hover:text-nepal-700 font-semibold px-8 py-3 rounded-full transition-colors">
+            <a href="<?php echo siteUrl('blog'); ?>" class="bg-white text-nepal-600 hover:text-nepal-700 font-semibold px-8 py-3 rounded-full transition-colors">
                 <i class="fas fa-compass mr-2"></i>
                 More Adventures
             </a>
-            <a href="/" class="border-2 border-white hover:bg-white hover:text-nepal-600 font-semibold px-8 py-3 rounded-full transition-colors">
+            <a href="<?php echo siteUrl(); ?>" class="border-2 border-white hover:bg-white hover:text-nepal-600 font-semibold px-8 py-3 rounded-full transition-colors">
                 <i class="fas fa-home mr-2"></i>
                 Back to Home
             </a>
@@ -312,7 +313,15 @@ document.addEventListener('DOMContentLoaded', function() {
 // Gallery Lightbox Functions
 <?php if (!empty($galleryImages)): ?>
 let currentImageIndex = 0;
-const galleryImages = <?php echo json_encode(array_values($galleryImages)); ?>;
+
+// Pre-process gallery images to ensure full URLs
+const galleryImages = <?php 
+    $processedImages = array_map(function($image) {
+        $image['image_url'] = ensureFullImageUrl($image['image_url']);
+        return $image;
+    }, array_values($galleryImages));
+    echo json_encode($processedImages); 
+?>;
 
 function openLightbox(index) {
     currentImageIndex = index;
@@ -320,7 +329,7 @@ function openLightbox(index) {
     const lightboxImage = document.getElementById('lightbox-image');
     const lightboxCounter = document.getElementById('lightbox-counter');
     
-    lightboxImage.src = '<?php echo SITE_URL; ?>' + galleryImages[currentImageIndex].image_url;
+    lightboxImage.src = galleryImages[currentImageIndex].image_url;
     lightboxImage.alt = galleryImages[currentImageIndex].alt_text || `Gallery image ${currentImageIndex + 1}`;
     lightboxCounter.textContent = `${currentImageIndex + 1} of ${galleryImages.length}`;
     
@@ -348,7 +357,7 @@ function updateLightboxImage() {
     const lightboxImage = document.getElementById('lightbox-image');
     const lightboxCounter = document.getElementById('lightbox-counter');
     
-    lightboxImage.src = '<?php echo SITE_URL; ?>' + galleryImages[currentImageIndex].image_url;
+    lightboxImage.src = galleryImages[currentImageIndex].image_url;
     lightboxImage.alt = galleryImages[currentImageIndex].alt_text || `Gallery image ${currentImageIndex + 1}`;
     lightboxCounter.textContent = `${currentImageIndex + 1} of ${galleryImages.length}`;
 }

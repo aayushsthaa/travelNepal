@@ -14,15 +14,15 @@ define('DATA_PATH', BASE_PATH . '/data');
 define('UPLOADS_PATH', BASE_PATH . '/uploads');
 
 // Upload Configuration
-define('MAX_UPLOAD_SIZE', 5 * 1024 * 1024); // 5MB in bytes
+define('MAX_UPLOAD_SIZE', 50 * 1024 * 1024); // 50MB in bytes
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/webp']);
 define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'webp']);
 
 // Set PHP upload limits to match our constraints
-ini_set('upload_max_filesize', '5M');
-ini_set('post_max_size', '6M'); // Slightly larger to account for form data
-ini_set('max_input_time', 60);
-ini_set('memory_limit', '128M');
+ini_set('upload_max_filesize', '50M');
+ini_set('post_max_size', '60M'); // Slightly larger to account for form data
+ini_set('max_input_time', 300); // 5 minutes for large uploads
+ini_set('memory_limit', '256M');
 
 // Admin Configuration - Hardcoded for simplicity
 define('ADMIN_USERNAME', 'admin');

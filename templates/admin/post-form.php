@@ -39,7 +39,7 @@ ob_start();
     <!-- Form -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="bg-white rounded-2xl shadow-lg">
-            <form method="POST" action="http://localhost/travelNepal/admin/post/save" enctype="multipart/form-data" class="p-8 space-y-8" id="post-form">
+            <form method="POST" action="<?php echo SITE_URL; ?>/admin/post/save" enctype="multipart/form-data" class="p-8 space-y-8" id="post-form">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 <?php if ($isEditing): ?>
                 <input type="hidden" name="slug" value="<?php echo htmlspecialchars($post['slug'] ?? ''); ?>">
@@ -99,7 +99,7 @@ ob_start();
                                accept=".jpg,.jpeg,.png,.webp"
                                class="w-full px-4 py-3 border border-mountain-200 rounded-lg focus:ring-2 focus:ring-nepal-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-nepal-50 file:text-nepal-700 hover:file:bg-nepal-100">
                         <p class="mt-2 text-sm text-mountain-500">
-                            <strong>Allowed:</strong> JPEG, PNG, WebP • <strong>Max size:</strong> 5MB
+                            <strong>Allowed:</strong> JPEG, PNG, WebP • <strong>Max size:</strong> 50MB
                             <?php if (!$isEditing): ?><br><strong>Required:</strong> You must upload an image for new posts<?php else: ?><br><strong>Optional:</strong> Upload a new image to replace the current one<?php endif; ?>
                         </p>
                     </div>
@@ -124,7 +124,7 @@ ob_start();
                                onchange="previewGalleryImages(this)">
                         <p class="mt-2 text-sm text-mountain-500">
                             <strong>Optional:</strong> Upload multiple images for your blog post gallery • 
-                            <strong>Allowed:</strong> JPEG, PNG, WebP • <strong>Max size:</strong> 5MB each
+                            <strong>Allowed:</strong> JPEG, PNG, WebP • <strong>Max size:</strong> 50MB each
                         </p>
                     </div>
 

@@ -17,7 +17,7 @@ ob_start();
     <div class="relative z-10 flex items-center justify-center h-full text-center text-white px-4">
         <div class="max-w-4xl mx-auto animate-fade-in-up">
             <h1 class="text-4xl md:text-6xl font-display font-bold mb-6">
-                About <span class="text-yellow-300">travelNepal</span>
+                About <span class="text-nepal-300">travelNepal</span>
             </h1>
             <p class="text-xl md:text-2xl max-w-3xl mx-auto font-light">
                 Your trusted companion for discovering the extraordinary beauty and culture of Nepal.
@@ -197,7 +197,7 @@ ob_start();
         
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
 
-            <a href="http://localhost/travelNepal/contact" class="border-2 border-white hover:bg-white hover:text-nepal-600 font-semibold px-8 py-3 rounded-full transition-colors">
+            <a href="<?php echo siteUrl('contact'); ?>" class="border-2 border-white hover:bg-white hover:text-nepal-600 font-semibold px-8 py-3 rounded-full transition-colors">
                 <i class="fas fa-envelope mr-2"></i>
                 Get in Touch
             </a>

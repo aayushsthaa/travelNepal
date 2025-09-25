@@ -32,11 +32,10 @@
             <div>
                 <h3 class="text-lg font-semibold mb-4">Explore</h3>
                 <ul class="space-y-3">
-                    <li><a href="/" class="text-mountain-300 hover:text-nepal-400 transition-colors">Home</a></li>
-                    <li><a href="<?php echo SITE_URL; ?>/blog" class="text-mountain-300 hover:text-nepal-400 transition-colors">Travel Blog</a></li>
-
-<li><a href="<?php echo SITE_URL; ?>/guides" class="text-mountain-300 hover:text-nepal-400 transition-colors">Travel Guides</a></li>
-<li><a href="<?php echo SITE_URL; ?>/about" class="text-mountain-300 hover:text-nepal-400 transition-colors">About Us</a></li>
+                    <li><a href="<?php echo siteUrl(); ?>" class="text-mountain-300 hover:text-nepal-400 transition-colors">Home</a></li>
+                    <li><a href="<?php echo siteUrl('blog'); ?>" class="text-mountain-300 hover:text-nepal-400 transition-colors">Travel Blog</a></li>
+                    <li><a href="<?php echo siteUrl('destinations'); ?>" class="text-mountain-300 hover:text-nepal-400 transition-colors">Destinations</a></li>
+                    <li><a href="<?php echo siteUrl('about'); ?>" class="text-mountain-300 hover:text-nepal-400 transition-colors">About Us</a></li>
                 </ul>
             </div>
             
@@ -49,9 +48,9 @@
                 &copy; 2025 travelNepal. All rights reserved.
             </p>
             <div class="flex space-x-6 mt-4 md:mt-0">
-                <a href="http://localhost/travelNepal/privacy" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Privacy Policy</a>
-                <a href="http://localhost/travelNepal/terms" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Terms of Service</a>
-                <a href="http://localhost/travelNepal/contact" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Contact</a>
+                <a href="<?php echo siteUrl('privacy'); ?>" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Privacy Policy</a>
+                        <a href="<?php echo siteUrl('terms'); ?>" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Terms of Service</a>
+                        <a href="<?php echo siteUrl('contact'); ?>" class="text-mountain-400 hover:text-nepal-400 text-sm transition-colors">Contact</a>
             </div>
         </div>
     </div>

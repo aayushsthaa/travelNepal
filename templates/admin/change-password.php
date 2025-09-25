@@ -146,7 +146,7 @@ ob_start();
 
                 <!-- Form Actions -->
                 <div class="flex space-x-4 pt-6">
-                    <a href="http://localhost/travelNepal/admin/dashboard" 
+                    <a href="<?php echo SITE_URL; ?>/admin/dashboard" 
                        class="flex-1 bg-mountain-200 text-mountain-700 py-3 px-6 rounded-lg hover:bg-mountain-300 transition-colors text-center font-medium">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Cancel

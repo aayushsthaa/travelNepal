@@ -16,11 +16,11 @@ ob_start();
         </div>
         
         <div class="space-x-4 animate-fade-in-up">
-            <a href="/" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
+            <a href="<?php echo siteUrl(); ?>" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                 <i class="fas fa-home mr-2"></i>
                 Back to Home
             </a>
-            <a href="http://localhost/travelNepal/blog" class="bg-white text-nepal-600 border-2 border-nepal-500 hover:bg-nepal-500 hover:text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
+            <a href="<?php echo siteUrl('blog'); ?>" class="bg-white text-nepal-600 border-2 border-nepal-500 hover:bg-nepal-500 hover:text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
                 <i class="fas fa-compass mr-2"></i>
                 Explore Blog
             </a>

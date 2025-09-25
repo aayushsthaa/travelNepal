@@ -24,7 +24,7 @@ ob_start();
             </div>
             <div class="animate-fade-in-up">
                 <div class="flex space-x-4">
-                    <a href="http://localhost/travelNepal/admin/post/create" class="bg-white text-nepal-600 hover:text-nepal-700 px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+                    <a href="<?php echo SITE_URL; ?>/admin/post/create" class="bg-white text-nepal-600 hover:text-nepal-700 px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
                         <i class="fas fa-plus mr-2"></i>
                         New Post
                     </a>
@@ -141,7 +141,7 @@ ob_start();
                     <tr class="post-row hover:bg-mountain-50 transition-colors" data-category="<?php echo htmlspecialchars($post['category']); ?>" data-status="<?php echo $post['published'] ? 'published' : 'draft'; ?>">
                         <td class="px-6 py-4">
                             <div class="flex items-center">
-                                <img src="<?php echo htmlspecialchars($post['featured_image']); ?>" 
+                                <img src="<?php echo htmlspecialchars(ensureFullImageUrl($post['featured_image'])); ?>" 
                                      alt="<?php echo htmlspecialchars($post['title']); ?>"
                                      class="w-16 h-12 rounded-lg object-cover mr-4">
                                 <div>
@@ -173,7 +173,7 @@ ob_start();
                                 <?php if ($imageCount > 0): ?>
                                 <div class="flex -space-x-1">
                                     <?php foreach (array_slice($galleryImages, 0, 3) as $img): ?>
-                                    <img src="<?php echo htmlspecialchars($img['image_url']); ?>" 
+                                    <img src="<?php echo htmlspecialchars(ensureFullImageUrl($img['image_url'])); ?>" 
                                          alt="Gallery preview" 
                                          class="w-6 h-6 rounded border border-white object-cover">
                                     <?php endforeach; ?>
@@ -197,12 +197,12 @@ ob_start();
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex items-center space-x-2">
-                                <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
+                                <a href="<?php echo SITE_URL; ?>/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
                                    class="text-blue-600 hover:text-blue-900 transition-colors" 
                                    title="View Post" target="_blank">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="http://localhost/travelNepal/admin/post/edit/<?php echo htmlspecialchars($post['slug']); ?>" 
+                                <a href="<?php echo SITE_URL; ?>/admin/post/edit/<?php echo htmlspecialchars($post['slug']); ?>" 
                                    class="text-nepal-600 hover:text-nepal-900 transition-colors" 
                                    title="Edit Post">
                                     <i class="fas fa-edit"></i>
@@ -224,7 +224,7 @@ ob_start();
             <i class="fas fa-file-alt text-mountain-300 text-6xl mb-4"></i>
             <h3 class="text-lg font-medium text-mountain-700 mb-2">No posts yet</h3>
             <p class="text-mountain-500 mb-6">Start creating amazing Nepal travel content!</p>
-            <a href="http://localhost/travelNepal/admin/post/create" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
+            <a href="<?php echo SITE_URL; ?>/admin/post/create" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                 <i class="fas fa-plus mr-2"></i>
                 Create Your First Post
             </a>
@@ -482,7 +482,8 @@ function deleteCategory() {
     if (currentDeleteCategoryId) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `/admin/category/delete/${currentDeleteCategoryId}`;
+        const baseUrl = '<?php echo SITE_URL; ?>';
+        form.action = `${baseUrl}/admin/category/delete/${currentDeleteCategoryId}`;
         
         // Add CSRF token
         const csrfInput = document.createElement('input');
@@ -502,7 +503,8 @@ document.getElementById('categoryForm').addEventListener('submit', function(e) {
     
     const formData = new FormData(this);
     const categoryId = formData.get('category_id');
-    const action = categoryId ? `/admin/category/update/${categoryId}` : '/admin/category/create';
+    const baseUrl = '<?php echo SITE_URL; ?>';
+    const action = categoryId ? `${baseUrl}/admin/category/update/${categoryId}` : `${baseUrl}/admin/category/create`;
     
     // Add CSRF token
     formData.append('csrf_token', '<?php echo generateCSRFToken(); ?>');

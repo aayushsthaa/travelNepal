@@ -42,10 +42,16 @@ $router->get('/blog/{slug}', function($slug) {
     includeTemplate('blog/post', compact('post'));
 });
 
+// Admin root redirect
+$router->get('/admin', function() {
+    header('Location: ' . siteUrl('admin/login'));
+    exit();
+});
+
 // Admin login
 $router->get('/admin/login', function() {
     if (isLoggedIn()) {
-        header('Location: ' . SITE_URL . '/admin/dashboard');
+        header('Location: ' . siteUrl('admin/dashboard'));
         exit();
     }
     
@@ -67,7 +73,7 @@ $router->post('/admin/login', function() {
     
     if (authenticateUser($username, $password)) {
         // Authentication successful - session is set in authenticateUser function
-        header('Location: ' . SITE_URL . '/admin/dashboard');
+        header('Location: ' . siteUrl('admin/dashboard'));
         exit();
     } else {
         $error = 'Invalid credentials';
@@ -78,7 +84,8 @@ $router->post('/admin/login', function() {
 // Admin logout
 $router->get('/admin/logout', function() {
     session_destroy();
-    header('Location: /');
+    header('Location: ' . siteUrl());
+    exit();
 });
 
 // Admin change password
@@ -260,7 +267,7 @@ $router->post('/admin/post/save', function() {
             }
         }
         
-        header('Location: ' . SITE_URL . '/admin/dashboard');
+        header('Location: ' . siteUrl('admin/dashboard'));
     exit();
     } else {
         $error = 'Failed to save post';
@@ -281,7 +288,7 @@ $router->get('/admin/post/delete/{slug}', function($slug) {
         $_SESSION['error_message'] = "Failed to delete post";
     }
     
-    header('Location: ' . SITE_URL . '/admin/dashboard');
+    header('Location: ' . siteUrl('admin/dashboard'));
     exit;
 });
 
@@ -333,17 +340,32 @@ $router->post('/admin/category/delete/{id}', function($id) {
     requireAuth();
     requireCSRF();
     
-    if (deleteCategory($id)) {
-        header('Location: ' . SITE_URL . '/admin/dashboard');
+    $result = deleteCategory($id);
+    
+    if (is_array($result) && isset($result['success'])) {
+        if ($result['success']) {
+            $_SESSION['success_message'] = "Category deleted successfully";
+        } else {
+            $_SESSION['error_message'] = $result['error'] ?? "Failed to delete category";
+        }
+    } elseif ($result === true) {
+        $_SESSION['success_message'] = "Category deleted successfully";
     } else {
-        // Return to dashboard with error - could implement flash messages
-        header('Location: ' . SITE_URL . '/admin/dashboard');
+        $_SESSION['error_message'] = "Failed to delete category";
     }
+    
+    header('Location: ' . siteUrl('admin/dashboard'));
+    exit;
 });
 
 // About page
 $router->get('/about', function() {
     includeTemplate('about');
+});
+
+// Destinations page
+$router->get('/destinations', function() {
+    includeTemplate('destinations');
 });
 
 // Contact page

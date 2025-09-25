@@ -14,7 +14,7 @@ ob_start();
     </div>
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 class="text-4xl md:text-6xl font-display font-bold mb-6 animate-fade-in-down">
-            Nepal Travel <span class="text-yellow-300">Adventures</span>
+            Nepal Travel <span class="text-nepal-300">Adventures</span>
         </h1>
         <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90 animate-fade-in-up">
             Expert guides, stunning photography, and insider tips for your Himalayan journey. 
@@ -96,7 +96,7 @@ ob_start();
                     </div>
                     
                     <h2 class="text-2xl font-bold text-mountain-800 mb-3 leading-tight">
-                        <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
+                        <a href="<?php echo siteUrl('blog/' . htmlspecialchars($post['slug'])); ?>" 
                            class="hover:text-nepal-600 transition-colors">
                             <?php echo htmlspecialchars($post['title']); ?>
                         </a>
@@ -107,7 +107,7 @@ ob_start();
                     </p>
                     
                     <div class="flex items-center justify-between">
-                        <a href="http://localhost/travelNepal/blog/<?php echo htmlspecialchars($post['slug']); ?>" 
+                        <a href="<?php echo siteUrl('blog/' . htmlspecialchars($post['slug'])); ?>" 
                            class="inline-flex items-center text-nepal-600 hover:text-nepal-700 font-semibold transition-colors group">
                             Read Full Article 
                             <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
@@ -135,7 +135,7 @@ ob_start();
                 <p class="text-mountain-500 mb-6">
                     We're currently crafting amazing Nepal travel stories for you. Check back soon!
                 </p>
-                <a href="/" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
+                <a href="<?php echo siteUrl(); ?>" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                     <i class="fas fa-home mr-2"></i>
                     Back to Home
                 </a>
