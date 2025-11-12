@@ -1010,5 +1010,22 @@ function getPostIdFromSlug($slug) {
 /**
  * Get current admin username (check runtime file first, then environment)
  */
- 
+
+/**
+ * Calculate estimated read time for blog post content
+ */
+function calculateReadTime($content, $wordsPerMinute = 200) {
+    // Strip HTML tags and get plain text
+    $plainText = strip_tags($content);
+
+    // Count words
+    $wordCount = str_word_count($plainText);
+
+    // Calculate minutes (round up to nearest minute, minimum 1 minute)
+    $minutes = max(1, ceil($wordCount / $wordsPerMinute));
+
+    // Return formatted string
+    return $minutes . ' min read';
+}
+
 ?>

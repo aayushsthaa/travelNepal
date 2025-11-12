@@ -77,7 +77,7 @@ ob_start();
                     <div class="absolute bottom-4 left-4 text-white">
                         <div class="flex items-center text-sm">
                             <i class="fas fa-clock mr-2"></i>
-                            <span>8 min read</span>
+                            <span><?php echo calculateReadTime($post['content']); ?></span>
                         </div>
                     </div>
                 </div>

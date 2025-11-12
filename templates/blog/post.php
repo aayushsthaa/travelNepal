@@ -47,7 +47,6 @@ ob_start();
                 <h1 class="text-5xl md:text-6xl font-display font-bold mb-4 leading-tight">
                     <?php echo htmlspecialchars($post['title']); ?>
                 </h1>
-                <p class="text-xl text-nepal-300"><?php echo htmlspecialchars($post['excerpt'] ?? ''); ?></p>
                 
                 <!-- Meta Information -->
                 <div class="flex flex-wrap items-center gap-4 text-sm opacity-90">
@@ -57,7 +56,7 @@ ob_start();
                     </div>
                     <div class="flex items-center">
                         <i class="fas fa-clock mr-2"></i>
-                        <span>8 min read</span>
+                        <span><?php echo calculateReadTime($post['content']); ?></span>
                     </div>
                     <div class="flex items-center">
                         <i class="fas fa-user mr-2"></i>
@@ -72,12 +71,14 @@ ob_start();
     <div class="px-4 sm:px-6 lg:px-8 py-12">
         <div class="max-w-4xl mx-auto">
             <!-- Article Excerpt -->
+            <?php if (!empty($post['excerpt'])): ?>
             <div class="bg-nepal-50 border-l-4 border-nepal-500 p-6 mb-8 rounded-r-lg">
-                <p class="text-lg text-mountain-700 leading-relaxed font-medium italic">
+                <blockquote class="text-lg text-mountain-700 leading-relaxed font-medium italic">
                     "<?php echo htmlspecialchars($post['excerpt']); ?>"
-                </p>
+                </blockquote>
             </div>
-            
+            <?php endif; ?>
+
             <!-- Share Buttons -->
             <div class="flex items-center justify-between mb-8 pb-6 border-b border-mountain-200">
                 <div class="text-mountain-600">
@@ -98,7 +99,7 @@ ob_start();
                     </button>
                 </div>
             </div>
-            
+
             <!-- Article Body -->
             <div class="prose prose-lg prose-mountain max-w-none">
                 <div class="article-content text-mountain-700 leading-relaxed">

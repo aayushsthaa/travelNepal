@@ -83,7 +83,7 @@ ob_start();
                         <i class="fas fa-calendar-alt mr-2"></i>
                         <span><?php echo formatDate($post['created_at']); ?></span>
                         <i class="fas fa-clock ml-4 mr-2"></i>
-                        <span>5 min read</span>
+                        <span><?php echo calculateReadTime($post['content']); ?></span>
                     </div>
                     <h3 class="text-xl font-bold text-mountain-800 mb-3 leading-tight hover:text-nepal-600 transition-colors">
                         <a href="<?php echo siteUrl('blog/' . htmlspecialchars($post['slug'])); ?>">
