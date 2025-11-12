@@ -8,16 +8,16 @@ ob_start();
 <!-- About Hero Section -->
 <section class="relative h-96 md:h-[500px] overflow-hidden">
     <div class="absolute inset-0 z-0">
-        <img src="<?php echo SITE_URL; ?>/assets/images/Kathmandu_temple_architecture_df1e8ace.png" 
-             alt="Nepal Culture" 
+        <img src="<?php echo SITE_URL; ?>/assets/images/Kathmandu_temple_architecture_df1e8ace.png"
+             alt="Nepal Culture"
              class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-r from-mountain-800/80 to-mountain-600/60"></div>
+        <div class="absolute inset-0 bg-hero-pattern"></div>
     </div>
     
     <div class="relative z-10 flex items-center justify-center h-full text-center text-white px-4">
         <div class="max-w-4xl mx-auto animate-fade-in-up">
             <h1 class="text-4xl md:text-6xl font-display font-bold mb-6">
-                About <span class="text-nepal-300">travelNepal</span>
+                About <span class="text-nepal-600">travelNepal</span>
             </h1>
             <p class="text-xl md:text-2xl max-w-3xl mx-auto font-light">
                 Your trusted companion for discovering the extraordinary beauty and culture of Nepal.

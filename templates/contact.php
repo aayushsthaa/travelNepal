@@ -8,16 +8,16 @@ ob_start();
 <!-- Contact Hero Section -->
 <section class="relative h-96 md:h-[500px] overflow-hidden">
     <div class="absolute inset-0 z-0">
-        <img src="<?php echo SITE_URL; ?>/assets/images/Pokhara_lake_reflections_ada62be7.png" 
-             alt="Pokhara Lake" 
+        <img src="<?php echo SITE_URL; ?>/assets/images/Pokhara_lake_reflections_ada62be7.png"
+             alt="Pokhara Lake"
              class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/80 to-nepal-500/60"></div>
+        <div class="absolute inset-0 bg-hero-pattern"></div>
     </div>
     
     <div class="relative z-10 flex items-center justify-center h-full text-center text-white px-4">
         <div class="max-w-4xl mx-auto animate-fade-in-up">
             <h1 class="text-4xl md:text-6xl font-display font-bold mb-6">
-                Contact <span class="text-nepal-300">Us</span>
+                Contact <span class="text-nepal-600">Us</span>
             </h1>
             <p class="text-xl md:text-2xl max-w-3xl mx-auto font-light">
                 Ready to start your Nepal adventure? We're here to help you plan the perfect journey.

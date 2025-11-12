@@ -21,7 +21,7 @@ ob_start();
     <!-- Hero Content -->
     <div class="relative z-10 text-center text-white px-4 max-w-5xl mx-auto animate-fade-in-up">
         <h1 class="text-5xl md:text-7xl font-display font-bold mb-6 leading-tight">
-            Discover the <br><span class="text-nepal-300">Soul of Nepal</span>
+            Discover the <br><span class="text-nepal-600">Soul of Nepal</span>
         </h1>
         <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto font-light">
             Journey through the breathtaking Himalayas, explore ancient cultural treasures, 
@@ -139,7 +139,7 @@ ob_start();
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16 animate-on-scroll">
             <h2 class="text-4xl md:text-5xl font-display font-bold text-center mb-4">Why Choose Nepal?</h2>
-            <p class="text-xl text-nepal-300 text-center mb-16">Discover what makes Nepal truly magical</p>
+            <p class="text-xl text-nepal-600 text-center mb-16">Discover what makes Nepal truly magical</p>
             <p class="text-xl text-mountain-600 max-w-3xl mx-auto">
                 From the world's highest peaks to ancient spiritual traditions, Nepal offers experiences that will transform your perspective forever.
             </p>
@@ -267,17 +267,17 @@ ob_start();
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                    <i class="fas fa-hiking text-4xl text-nepal-300 mb-4"></i>
+                    <i class="fas fa-hiking text-4xl text-nepal-600 mb-4"></i>
                     <h4 class="text-xl font-semibold mb-3">Trekking Adventures</h4>
                     <p class="opacity-80">From gentle day hikes to challenging multi-day expeditions</p>
                 </div>
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                    <i class="fas fa-camera text-4xl text-nepal-300 mb-4"></i>
+                    <i class="fas fa-camera text-4xl text-nepal-600 mb-4"></i>
                     <h4 class="text-xl font-semibold mb-3">Photography Tours</h4>
                     <p class="opacity-80">Capture stunning landscapes and vibrant cultural moments</p>
                 </div>
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                    <i class="fas fa-spa text-4xl text-nepal-300 mb-4"></i>
+                    <i class="fas fa-spa text-4xl text-nepal-600 mb-4"></i>
                     <h4 class="text-xl font-semibold mb-3">Wellness Retreats</h4>
                     <p class="opacity-80">Find peace and rejuvenation in the Himalayas</p>
                 </div>

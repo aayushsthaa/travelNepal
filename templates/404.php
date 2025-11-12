@@ -28,7 +28,7 @@ ob_start();
         
         <!-- Decorative Elements -->
         <div class="mt-16 opacity-20">
-            <div class="flex justify-center space-x-8 text-nepal-300">
+            <div class="flex justify-center space-x-8 text-nepal-600">
                 <i class="fas fa-mountain text-4xl"></i>
                 <i class="fas fa-hiking text-3xl mt-2"></i>
                 <i class="fas fa-camera text-3xl mt-1"></i>

@@ -8,13 +8,14 @@ ob_start();
 <!-- Hero Section -->
 <section class="relative py-24 bg-gradient-to-r from-nepal-500 to-nepal-600 text-white">
     <div class="absolute inset-0 opacity-20">
-        <img src="<?php echo SITE_URL; ?>/assets/images/Prayer_flags_mountain_vista_1f2256d5.png" 
-             alt="Nepal Mountains" 
+        <img src="<?php echo SITE_URL; ?>/assets/images/Prayer_flags_mountain_vista_1f2256d5.png"
+             alt="Nepal Mountains"
              class="w-full h-full object-cover">
     </div>
+    <div class="absolute inset-0 bg-hero-pattern"></div>
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 class="text-4xl md:text-6xl font-display font-bold mb-6 animate-fade-in-down">
-            Nepal Travel <span class="text-nepal-300">Adventures</span>
+            Nepal Travel <span class="text-nepal-600">Adventures</span>
         </h1>
         <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90 animate-fade-in-up">
             Expert guides, stunning photography, and insider tips for your Himalayan journey. 
