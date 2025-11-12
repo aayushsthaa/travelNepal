@@ -251,7 +251,7 @@ ob_start();
                     <p class="text-sm text-mountain-600">Home to 8 of the world's 14 highest peaks</p>
                 </div>
                 <div class="text-center p-4 bg-nepal-50 rounded-lg">
-                    <i class="fas fa-temple text-nepal-600 text-2xl mb-2"></i>
+                    <i class="fas fa-gopuram text-nepal-600 text-2xl mb-2"></i>
                     <h4 class="font-semibold text-mountain-800">Rich Culture</h4>
                     <p class="text-sm text-mountain-600">Ancient temples and diverse traditions</p>
                 </div>

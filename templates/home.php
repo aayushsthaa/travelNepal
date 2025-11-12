@@ -93,18 +93,26 @@ ob_start();
                     <p class="text-mountain-600 mb-4">
                         <?php echo renderHtml($post['excerpt']); ?>
                     </p>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <?php foreach (array_slice($post['tags'], 0, 2) as $tag): ?>
+                        <span class="bg-mountain-100 text-mountain-700 px-2 py-1 rounded text-xs">
+                            #<?php echo htmlspecialchars($tag); ?>
+                        </span>
+                        <?php endforeach; ?>
+                    </div>
                     <div class="flex items-center justify-between">
-                        <div class="flex flex-wrap gap-2">
-                            <?php foreach (array_slice($post['tags'], 0, 2) as $tag): ?>
-                            <span class="bg-mountain-100 text-mountain-700 px-2 py-1 rounded text-xs">
-                                #<?php echo htmlspecialchars($tag); ?>
-                            </span>
-                            <?php endforeach; ?>
-                        </div>
-                        <a href="<?php echo siteUrl('blog/' . htmlspecialchars($post['slug'])); ?>" 
+                        <a href="<?php echo siteUrl('blog/' . htmlspecialchars($post['slug'])); ?>"
                            class="text-nepal-600 hover:text-nepal-700 font-semibold text-sm hover:underline">
                             Read More <i class="fas fa-arrow-right ml-1"></i>
                         </a>
+                        <div class="flex space-x-3 text-mountain-400">
+                            <button class="hover:text-nepal-500 transition-colors" title="Share">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <button class="hover:text-red-500 transition-colors" title="Like">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </article>
@@ -199,7 +207,7 @@ ob_start();
                     
                     <div class="flex items-start">
                         <div class="w-12 h-12 bg-nepal-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-                            <i class="fas fa-backpack text-nepal-600"></i>
+                            <i class="fas fa-suitcase text-nepal-600"></i>
                         </div>
                         <div>
                             <h4 class="text-lg font-semibold text-mountain-800 mb-2">What to Pack</h4>

@@ -131,7 +131,7 @@ ob_start();
             <!-- Cultural Insights -->
             <div class="flex items-start space-x-4 p-6 bg-mountain-50 rounded-xl">
                 <div class="w-12 h-12 bg-nepal-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <i class="fas fa-temple text-white"></i>
+                    <i class="fas fa-gopuram text-white"></i>
                 </div>
                 <div>
                     <h3 class="text-xl font-bold text-mountain-800 mb-3">Cultural Insights</h3>
