@@ -178,17 +178,75 @@ if (!isset($content)) {
         #nepal-map {
             transition: opacity 0.3s ease;
         }
-        
+
+        /* Prose typography styles for blog content */
+        .prose {
+            color: #374151;
+            max-width: none;
+        }
+
+        .prose ul, .prose ol {
+            margin-bottom: 1rem;
+            margin-left: 1.5rem;
+        }
+
+        .prose ul {
+            list-style-type: disc;
+        }
+
+        .prose ol {
+            list-style-type: decimal;
+        }
+
+        .prose li {
+            margin-bottom: 0.5rem;
+            line-height: 1.625;
+        }
+
+        .prose p {
+            margin-bottom: 1rem;
+            line-height: 1.625;
+        }
+
+        .prose h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e293b;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .prose h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1e293b;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .prose strong {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .prose-lg h2 {
+            font-size: 1.875rem;
+        }
+
+        .prose-lg h3 {
+            font-size: 1.5rem;
+        }
+
         @media (max-width: 768px) {
             .custom-nepal-marker .marker-pin {
                 width: 25px;
                 height: 25px;
             }
-            
+
             .custom-nepal-marker .marker-pin i {
                 font-size: 14px;
             }
-            
+
             .leaflet-popup-content {
                 padding: 12px;
             }
