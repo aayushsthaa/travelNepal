@@ -29,9 +29,9 @@ ob_start();
 <!-- Contact Content Section -->
 <section class="py-16 bg-gray-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 animate-on-scroll">
             <!-- Contact Information -->
-            <div class="bg-white p-8 rounded-2xl shadow-lg">
+            <div class="bg-white p-8 rounded-2xl shadow-lg animate-on-scroll">
                 <h2 class="text-3xl font-display font-bold text-mountain-800 mb-8">
                     Get in <span class="text-gradient">Touch</span>
                 </h2>
@@ -209,17 +209,17 @@ ob_start();
 <!-- Location Map Section -->
 <section class="py-16 bg-gray-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
+        <div class="text-center mb-12 animate-on-scroll">
             <h2 class="text-3xl md:text-4xl font-display font-bold text-mountain-800 mb-4">
                 Discover <span class="text-gradient">Nepal</span>
             </h2>
             <p class="text-lg text-mountain-600 max-w-3xl mx-auto">
-                Nestled in the heart of the Himalayas between China and India, Nepal offers breathtaking landscapes, 
+                Nestled in the heart of the Himalayas between China and India, Nepal offers breathtaking landscapes,
                 rich culture, and unforgettable adventures. Explore our beautiful country and start planning your journey.
             </p>
         </div>
-        
-        <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+
+        <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 animate-on-scroll">
             <div class="mb-6">
                 <h3 class="text-2xl font-display font-bold text-mountain-800 mb-2">
                     Nepal Location Map
@@ -268,7 +268,7 @@ ob_start();
 <!-- FAQ Section -->
 <section class="py-16 bg-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
+        <div class="text-center mb-12 animate-on-scroll">
             <h2 class="text-3xl md:text-4xl font-display font-bold text-mountain-800 mb-4">
                 Frequently Asked <span class="text-gradient">Questions</span>
             </h2>
@@ -276,10 +276,10 @@ ob_start();
                 Quick answers to common questions about traveling to Nepal.
             </p>
         </div>
-        
-        <div class="space-y-6">
+
+        <div class="space-y-6 animate-on-scroll">
             <!-- FAQ Item 1 -->
-            <div class="bg-mountain-50 rounded-lg p-6">
+            <div class="bg-mountain-50 rounded-lg p-6 animate-on-scroll">
                 <h3 class="text-lg font-semibold text-mountain-800 mb-3">
                     <i class="fas fa-question-circle text-nepal-500 mr-2"></i>
                     When is the best time to visit Nepal?
@@ -290,7 +290,7 @@ ob_start();
             </div>
             
             <!-- FAQ Item 2 -->
-            <div class="bg-mountain-50 rounded-lg p-6">
+            <div class="bg-mountain-50 rounded-lg p-6 animate-on-scroll">
                 <h3 class="text-lg font-semibold text-mountain-800 mb-3">
                     <i class="fas fa-question-circle text-nepal-500 mr-2"></i>
                     Do I need a visa to visit Nepal?
@@ -299,9 +299,9 @@ ob_start();
                     Most visitors can obtain a visa on arrival at Kathmandu airport or apply online in advance. Requirements vary by nationality, so we recommend checking current visa requirements before your trip.
                 </p>
             </div>
-            
+
             <!-- FAQ Item 3 -->
-            <div class="bg-mountain-50 rounded-lg p-6">
+            <div class="bg-mountain-50 rounded-lg p-6 animate-on-scroll">
                 <h3 class="text-lg font-semibold text-mountain-800 mb-3">
                     <i class="fas fa-question-circle text-nepal-500 mr-2"></i>
                     What level of fitness is required for trekking?
@@ -310,9 +310,9 @@ ob_start();
                     Fitness requirements vary by trek. Short cultural walks require basic fitness, while high-altitude treks like Everest Base Camp need good cardiovascular fitness and preparation. We provide detailed fitness guidelines for each trek.
                 </p>
             </div>
-            
+
             <!-- FAQ Item 4 -->
-            <div class="bg-mountain-50 rounded-lg p-6">
+            <div class="bg-mountain-50 rounded-lg p-6 animate-on-scroll">
                 <h3 class="text-lg font-semibold text-mountain-800 mb-3">
                     <i class="fas fa-question-circle text-nepal-500 mr-2"></i>
                     How far in advance should I plan my trip?

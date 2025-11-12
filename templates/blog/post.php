@@ -171,7 +171,7 @@ ob_start();
 <!-- Related Posts -->
 <section class="py-16 bg-mountain-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl md:text-4xl font-display font-bold text-mountain-800 mb-12 text-center">
+        <h2 class="text-3xl md:text-4xl font-display font-bold text-mountain-800 mb-12 text-center animate-on-scroll">
             More Nepal <span class="text-gradient">Adventures</span>
         </h2>
         
@@ -189,9 +189,9 @@ ob_start();
         ?>
         
         <?php if (!empty($related_posts)): ?>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-on-scroll">
             <?php foreach ($related_posts as $related_post): ?>
-            <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden animate-on-scroll">
                 <div class="relative h-48">
                     <img src="<?php echo htmlspecialchars(ensureFullImageUrl($related_post['featured_image'])); ?>" 
                          alt="<?php echo htmlspecialchars($related_post['title']); ?>" 
@@ -226,19 +226,19 @@ ob_start();
 
 <!-- Call to Action -->
 <section class="py-16 bg-gradient-to-r from-nepal-500 to-nepal-600 text-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll">
         <h2 class="text-3xl md:text-4xl font-display font-bold mb-6">
-            Ready to Explore Nepal?
+            Ready to Explore <span class="text-nepal-200">Nepal</span>?
         </h2>
         <p class="text-xl mb-8 opacity-90">
             Let this story inspire your own Himalayan adventure. Start planning your journey today.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="<?php echo siteUrl('blog'); ?>" class="bg-white text-nepal-600 hover:text-nepal-700 font-semibold px-8 py-3 rounded-full transition-colors">
+            <a href="<?php echo siteUrl('blog'); ?>" class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                 <i class="fas fa-compass mr-2"></i>
                 More Adventures
             </a>
-            <a href="<?php echo siteUrl(); ?>" class="border-2 border-white hover:bg-white hover:text-nepal-600 font-semibold px-8 py-3 rounded-full transition-colors">
+            <a href="<?php echo siteUrl(); ?>" class="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                 <i class="fas fa-home mr-2"></i>
                 Back to Home
             </a>

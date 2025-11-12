@@ -26,9 +26,9 @@ ob_start();
 <!-- Best Destinations Section -->
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
+        <div class="text-center mb-16 animate-on-scroll">
             <h2 class="text-4xl md:text-5xl font-display font-bold text-mountain-900 mb-6">
-                Best Places to Visit in Nepal
+                Best Places to Visit in <span class="text-gradient">Nepal</span>
             </h2>
             <p class="text-xl text-mountain-600 max-w-3xl mx-auto">
                 Discover the most breathtaking destinations that make Nepal a once-in-a-lifetime experience
@@ -36,10 +36,10 @@ ob_start();
         </div>
 
         <!-- Everest Base Camp Trek -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20 animate-on-scroll">
             <div class="order-2 lg:order-1">
-                <img src="<?php echo SITE_URL; ?>/assets/images/Everest_sunrise_panorama_20949daa.png" 
-                     alt="Everest Base Camp Trek" 
+                <img src="<?php echo SITE_URL; ?>/assets/images/Everest_sunrise_panorama_20949daa.png"
+                     alt="Everest Base Camp Trek"
                      class="w-full h-96 object-cover rounded-lg shadow-lg">
             </div>
             <div class="order-1 lg:order-2">
@@ -68,7 +68,7 @@ ob_start();
         </div>
 
         <!-- Kathmandu Valley Heritage -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20 animate-on-scroll">
             <div>
                 <h3 class="text-3xl font-display font-bold text-mountain-900 mb-4">
                     Kathmandu Valley Heritage
@@ -100,10 +100,10 @@ ob_start();
         </div>
 
         <!-- Pokhara Lake City -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20 animate-on-scroll">
             <div class="order-2 lg:order-1">
-                <img src="<?php echo SITE_URL; ?>/assets/images/Pokhara_lake_reflections_ada62be7.png" 
-                     alt="Pokhara Lake City" 
+                <img src="<?php echo SITE_URL; ?>/assets/images/Pokhara_lake_reflections_ada62be7.png"
+                     alt="Pokhara Lake City"
                      class="w-full h-96 object-cover rounded-lg shadow-lg">
             </div>
             <div class="order-1 lg:order-2">
@@ -132,7 +132,7 @@ ob_start();
         </div>
 
         <!-- Annapurna Circuit -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20 animate-on-scroll">
             <div>
                 <h3 class="text-3xl font-display font-bold text-mountain-900 mb-4">
                     Annapurna Circuit Trek
@@ -164,10 +164,10 @@ ob_start();
         </div>
 
         <!-- Chitwan National Park -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center animate-on-scroll">
             <div class="order-2 lg:order-1">
-                <img src="<?php echo SITE_URL; ?>/assets/images/Everest_sunrise_panorama_20949daa.png" 
-                     alt="Chitwan National Park" 
+                <img src="<?php echo SITE_URL; ?>/assets/images/Everest_sunrise_panorama_20949daa.png"
+                     alt="Chitwan National Park"
                      class="w-full h-96 object-cover rounded-lg shadow-lg">
             </div>
             <div class="order-1 lg:order-2">
@@ -200,19 +200,21 @@ ob_start();
 
 <!-- Call to Action -->
 <section class="py-20 bg-mountain-50">
-    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 animate-on-scroll">
         <h2 class="text-4xl md:text-5xl font-display font-bold text-mountain-900 mb-6">
-            Ready to Explore Nepal?
+            Ready to Explore <span class="text-gradient">Nepal</span>?
         </h2>
         <p class="text-xl text-mountain-600 mb-10 leading-relaxed">
-            These incredible destinations are just the beginning. Nepal offers endless adventures, 
+            These incredible destinations are just the beginning. Nepal offers endless adventures,
             from towering peaks to ancient cultures. Start planning your journey today.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="<?php echo SITE_URL; ?>/blog" class="inline-block bg-nepal-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-nepal-700 transition-colors duration-200 text-lg">
+            <a href="<?php echo SITE_URL; ?>/blog" class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold px-8 py-4 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
+                <i class="fas fa-book-open mr-2"></i>
                 Read Travel Stories
             </a>
-            <a href="<?php echo SITE_URL; ?>/contact" class="inline-block bg-white border-2 border-mountain-300 text-mountain-700 px-8 py-4 rounded-lg font-semibold hover:bg-mountain-50 transition-colors duration-200 text-lg">
+            <a href="<?php echo SITE_URL; ?>/contact" class="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold px-8 py-4 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
+                <i class="fas fa-compass mr-2"></i>
                 Plan Your Trip
             </a>
         </div>

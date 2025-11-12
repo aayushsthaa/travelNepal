@@ -67,9 +67,9 @@ ob_start();
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Expert Guidance -->
-            <div class="text-center bg-white p-8 rounded-2xl shadow-lg card-hover">
-                <div class="w-16 h-16 bg-nepal-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-compass text-2xl text-nepal-600"></i>
+            <div class="text-center bg-white p-8 rounded-2xl shadow-lg card-hover animate-on-scroll">
+                <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-compass text-white text-2xl"></i>
                 </div>
                 <h3 class="text-xl font-bold text-mountain-800 mb-4">Expert Guidance</h3>
                 <p class="text-mountain-600">
@@ -78,20 +78,20 @@ ob_start();
             </div>
             
             <!-- Sustainable Tourism -->
-            <div class="text-center bg-white p-8 rounded-2xl shadow-lg card-hover">
-                <div class="w-16 h-16 bg-nepal-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-leaf text-2xl text-nepal-600"></i>
+            <div class="text-center bg-white p-8 rounded-2xl shadow-lg card-hover animate-on-scroll">
+                <div class="w-16 h-16 bg-gradient-to-br from-sky-500 to-sky-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-leaf text-white text-2xl"></i>
                 </div>
                 <h3 class="text-xl font-bold text-mountain-800 mb-4">Sustainable Tourism</h3>
                 <p class="text-mountain-600">
                     Promoting responsible travel practices that benefit local communities and preserve Nepal's natural beauty for future generations.
                 </p>
             </div>
-            
+
             <!-- Cultural Respect -->
-            <div class="text-center bg-white p-8 rounded-2xl shadow-lg card-hover">
-                <div class="w-16 h-16 bg-nepal-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-heart text-2xl text-nepal-600"></i>
+            <div class="text-center bg-white p-8 rounded-2xl shadow-lg card-hover animate-on-scroll">
+                <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-heart text-white text-2xl"></i>
                 </div>
                 <h3 class="text-xl font-bold text-mountain-800 mb-4">Cultural Respect</h3>
                 <p class="text-mountain-600">
@@ -114,10 +114,10 @@ ob_start();
             </p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 animate-on-scroll">
             <!-- Travel Guides -->
-            <div class="flex items-start space-x-4 p-6 bg-mountain-50 rounded-xl">
-                <div class="w-12 h-12 bg-nepal-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="flex items-start space-x-4 p-6 bg-mountain-50 rounded-xl animate-on-scroll">
+                <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0">
                     <i class="fas fa-map text-white"></i>
                 </div>
                 <div>
@@ -127,10 +127,10 @@ ob_start();
                     </p>
                 </div>
             </div>
-            
+
             <!-- Cultural Insights -->
-            <div class="flex items-start space-x-4 p-6 bg-mountain-50 rounded-xl">
-                <div class="w-12 h-12 bg-nepal-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="flex items-start space-x-4 p-6 bg-mountain-50 rounded-xl animate-on-scroll">
+                <div class="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
                     <i class="fas fa-gopuram text-white"></i>
                 </div>
                 <div>
@@ -140,10 +140,10 @@ ob_start();
                     </p>
                 </div>
             </div>
-            
+
             <!-- Adventure Planning -->
-            <div class="flex items-start space-x-4 p-6 bg-mountain-50 rounded-xl">
-                <div class="w-12 h-12 bg-nepal-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="flex items-start space-x-4 p-6 bg-mountain-50 rounded-xl animate-on-scroll">
+                <div class="w-12 h-12 bg-gradient-to-br from-sky-500 to-sky-600 rounded-lg flex items-center justify-center flex-shrink-0">
                     <i class="fas fa-mountain text-white"></i>
                 </div>
                 <div>
@@ -153,10 +153,10 @@ ob_start();
                     </p>
                 </div>
             </div>
-            
+
             <!-- Local Connections -->
-            <div class="flex items-start space-x-4 p-6 bg-mountain-50 rounded-xl">
-                <div class="w-12 h-12 bg-nepal-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="flex items-start space-x-4 p-6 bg-mountain-50 rounded-xl animate-on-scroll">
+                <div class="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center flex-shrink-0">
                     <i class="fas fa-users text-white"></i>
                 </div>
                 <div>
@@ -195,9 +195,9 @@ ob_start();
             </div>
         </div>
         
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <div class="flex flex-col sm:flex-row gap-4 justify-center animate-on-scroll">
 
-            <a href="<?php echo siteUrl('contact'); ?>" class="border-2 border-white hover:bg-white hover:text-nepal-600 font-semibold px-8 py-3 rounded-full transition-colors">
+            <a href="<?php echo siteUrl('contact'); ?>" class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                 <i class="fas fa-envelope mr-2"></i>
                 Get in Touch
             </a>

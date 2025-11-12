@@ -28,11 +28,11 @@ ob_start();
             and experience adventure like nowhere else on Earth.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="<?= SITE_URL ?>/blog" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
+                <a href="<?= SITE_URL ?>/blog" class="bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                     <i class="fas fa-compass mr-3"></i>
                     Explore Adventures
                 </a>
-                <a href="<?= SITE_URL ?>/destinations" class="bg-white/90 hover:bg-white text-nepal-700 hover:text-nepal-800 font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
+                <a href="<?= SITE_URL ?>/destinations" class="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-flex items-center">
                     <i class="fas fa-map-marked-alt mr-3"></i>
                     Explore Destinations
                 </a>
@@ -47,10 +47,10 @@ ob_start();
 
 
 <!-- Featured Blog Posts Section -->
-<section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="py-16 bg-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-16 animate-on-scroll">
-            <div>
+            <div class="animate-on-scroll">
                 <h2 class="text-4xl md:text-5xl font-display font-bold text-mountain-800 mb-4">
                     Latest <span class="text-gradient">Adventures</span>
                 </h2>
@@ -58,7 +58,7 @@ ob_start();
                     Discover insider tips, stunning photography, and inspiring travel stories from Nepal.
                 </p>
             </div>
-            <a href="<?php echo siteUrl('blog'); ?>" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hidden sm:inline-flex items-center">
+            <a href="<?php echo siteUrl('blog'); ?>" class="bg-gradient-to-r from-nepal-500 to-nepal-600 hover:from-nepal-600 hover:to-nepal-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hidden sm:inline-flex items-center animate-on-scroll">
                 <i class="fas fa-blog mr-2"></i>
                 View All Posts
             </a>
@@ -135,8 +135,8 @@ ob_start();
 </section>
 
 <!-- Why Choose Nepal Section -->
-<section class="py-20 bg-gradient-to-b from-gray-50 to-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="py-16 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16 animate-on-scroll">
             <h2 class="text-4xl md:text-5xl font-display font-bold text-center mb-4">Why Choose Nepal?</h2>
             <p class="text-xl text-nepal-600 text-center mb-16">Discover what makes Nepal truly magical</p>
@@ -147,8 +147,8 @@ ob_start();
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Adventure Card -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg p-8 text-center animate-on-scroll">
-                <div class="w-20 h-20 bg-gradient-to-br from-nepal-500 to-nepal-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div class="card-hover bg-white rounded-2xl shadow-lg p-8 text-center animate-on-scroll border-t-4 border-emerald-500">
+                <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-mountain text-white text-3xl"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-mountain-800 mb-4">Epic Adventures</h3>
@@ -156,10 +156,10 @@ ob_start();
                     Trek through the Himalayas, raft wild rivers, and experience the thrill of being on top of the world. Every step is an adventure waiting to unfold.
                 </p>
             </div>
-            
+
             <!-- Culture Card -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg p-8 text-center animate-on-scroll">
-                <div class="w-20 h-20 bg-gradient-to-br from-nepal-500 to-nepal-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div class="card-hover bg-white rounded-2xl shadow-lg p-8 text-center animate-on-scroll border-t-4 border-violet-500">
+                <div class="w-20 h-20 bg-gradient-to-br from-violet-500 to-violet-600 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-om text-white text-3xl"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-mountain-800 mb-4">Rich Culture</h3>
@@ -167,10 +167,10 @@ ob_start();
                     Immerse yourself in centuries-old traditions, visit ancient temples, and witness spiritual practices that have remained unchanged for generations.
                 </p>
             </div>
-            
+
             <!-- Wildlife Card -->
-            <div class="card-hover bg-white rounded-2xl shadow-lg p-8 text-center animate-on-scroll">
-                <div class="w-20 h-20 bg-gradient-to-br from-nepal-500 to-nepal-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div class="card-hover bg-white rounded-2xl shadow-lg p-8 text-center animate-on-scroll border-t-4 border-rose-500">
+                <div class="w-20 h-20 bg-gradient-to-br from-rose-500 to-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-paw text-white text-3xl"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-mountain-800 mb-4">Incredible Wildlife</h3>
@@ -183,8 +183,8 @@ ob_start();
 </section>
 
 <!-- Travel Tips Section -->
-<section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="py-16 bg-mountain-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row items-center gap-12">
             <div class="lg:w-1/2 animate-on-scroll">
                 <h2 class="text-4xl md:text-5xl font-display font-bold text-mountain-800 mb-6">
@@ -196,25 +196,25 @@ ob_start();
                 
                 <div class="space-y-6">
                     <div class="flex items-start">
-                        <div class="w-12 h-12 bg-nepal-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-nepal-600"></i>
+                        <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                            <i class="fas fa-calendar-alt text-emerald-600"></i>
                         </div>
                         <div>
                             <h4 class="text-lg font-semibold text-mountain-800 mb-2">Best Time to Visit</h4>
                             <p class="text-mountain-600">October-November and March-May offer the clearest skies and best trekking conditions.</p>
                         </div>
                     </div>
-                    
+
                     <div class="flex items-start">
-                        <div class="w-12 h-12 bg-nepal-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-                            <i class="fas fa-suitcase text-nepal-600"></i>
+                        <div class="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                            <i class="fas fa-suitcase text-sky-600"></i>
                         </div>
                         <div>
                             <h4 class="text-lg font-semibold text-mountain-800 mb-2">What to Pack</h4>
                             <p class="text-mountain-600">Layers are key! Pack light but include warm clothes for altitude and rain gear for unpredictable weather.</p>
                         </div>
                     </div>
-                    
+
                     <div class="flex items-start">
                         <div class="w-12 h-12 bg-nepal-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                             <i class="fas fa-heart text-nepal-600"></i>
@@ -255,8 +255,8 @@ ob_start();
 </section>
 
 <!-- Adventure Inspiration Section -->
-<section class="py-20 bg-gradient-to-br from-mountain-900 to-mountain-800 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+<section class="py-16 bg-gradient-to-br from-mountain-900 to-mountain-800 text-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div class="animate-on-scroll">
             <h2 class="text-4xl md:text-5xl font-display font-bold mb-6">
                 Ready to Create Your Own Nepal Story?
@@ -267,17 +267,17 @@ ob_start();
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                    <i class="fas fa-hiking text-4xl text-nepal-600 mb-4"></i>
+                    <i class="fas fa-hiking text-4xl text-emerald-400 mb-4"></i>
                     <h4 class="text-xl font-semibold mb-3">Trekking Adventures</h4>
                     <p class="opacity-80">From gentle day hikes to challenging multi-day expeditions</p>
                 </div>
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                    <i class="fas fa-camera text-4xl text-nepal-600 mb-4"></i>
+                    <i class="fas fa-camera text-4xl text-sky-400 mb-4"></i>
                     <h4 class="text-xl font-semibold mb-3">Photography Tours</h4>
                     <p class="opacity-80">Capture stunning landscapes and vibrant cultural moments</p>
                 </div>
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                    <i class="fas fa-spa text-4xl text-nepal-600 mb-4"></i>
+                    <i class="fas fa-spa text-4xl text-nepal-400 mb-4"></i>
                     <h4 class="text-xl font-semibold mb-3">Wellness Retreats</h4>
                     <p class="opacity-80">Find peace and rejuvenation in the Himalayas</p>
                 </div>
@@ -298,8 +298,8 @@ ob_start();
 </section>
 
 <!-- Newsletter Section -->
-<section class="py-20 bg-gradient-to-r from-nepal-500 to-nepal-600 text-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll">
+<section class="py-16 bg-gradient-to-r from-nepal-500 to-nepal-600 text-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll">
         <h2 class="text-4xl md:text-5xl font-display font-bold mb-6">
             Stay Updated with Nepal Adventures
         </h2>
@@ -310,7 +310,7 @@ ob_start();
             <div class="flex flex-col sm:flex-row gap-4">
                 <input type="email" name="email" placeholder="Enter your email address" required
                        class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-nepal-500 focus:border-transparent bg-white/90">
-                <button type="submit" class="bg-nepal-500 hover:bg-nepal-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
+                <button type="submit" class="bg-violet-500 hover:bg-violet-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
                     Subscribe
                 </button>
             </div>

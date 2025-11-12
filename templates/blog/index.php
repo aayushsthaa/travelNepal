@@ -46,7 +46,7 @@ ob_start();
             $categories = getCategories();
             foreach ($categories as $category):
             ?>
-            <button class="category-filter bg-mountain-100 text-mountain-700 px-6 py-2 rounded-full font-medium transition-all duration-300 hover:bg-nepal-500 hover:text-white" 
+            <button class="category-filter bg-mountain-100 text-mountain-700 px-6 py-2 rounded-full font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-emerald-500 hover:to-emerald-600 hover:text-white"
                     data-category="<?php echo htmlspecialchars($category['name']); ?>">
                 <?php echo htmlspecialchars($category['name']); ?>
             </button>
