@@ -1,8 +1,6 @@
 <?php
 $page_title = 'Admin Dashboard - travelNepal';
 $page_description = 'Manage your Nepal travel blog posts and content.';
-
-// Defensive coding to prevent undefined variable warnings
 $posts = $posts ?? [];
 
 ob_start();

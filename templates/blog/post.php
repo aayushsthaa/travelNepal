@@ -1,5 +1,4 @@
 <?php
-// Check if post data exists, otherwise show 404
 if (!isset($post) || !$post || !is_array($post)) {
     http_response_code(404);
     include TEMPLATES_PATH . '/404.php';

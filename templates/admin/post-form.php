@@ -1,5 +1,4 @@
 <?php
-// Initialize variables to prevent undefined variable warnings
 $post = $post ?? null;
 $error = $error ?? null;
 $isEditing = isset($post);

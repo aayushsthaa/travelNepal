@@ -22,7 +22,6 @@ class Router {
             $path = substr($path, strlen($basePath));
         }
         
-        // Ensure path starts with /
         if (empty($path)) {
             $path = '/';
         }

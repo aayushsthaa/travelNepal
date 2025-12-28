@@ -102,7 +102,7 @@ function getDbConnection() {
  * Helper function to generate asset URLs for XAMPP compatibility
  */
 function assetUrl($path) {
-    $basePath = '/travelNepal'; // Change this if your XAMPP directory structure is different
+    $basePath = '/travelNepal';
     return $basePath . '/' . ltrim($path, '/');
 }
 
@@ -110,7 +110,7 @@ function assetUrl($path) {
  * Helper function to generate site URLs for XAMPP compatibility
  */
 function siteUrl($path = '') {
-    $basePath = '/travelNepal'; // Change this if your XAMPP directory structure is different
+    $basePath = '/travelNepal';
     return $basePath . '/' . ltrim($path, '/');
 }
 

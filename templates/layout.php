@@ -1,10 +1,8 @@
 <?php
-// Ensure config.php is included for assetUrl function and constants
 if (!function_exists('assetUrl')) {
     require_once __DIR__ . '/../config/config.php';
 }
 
-// Set fallback values for variables that might not be defined
 if (!isset($page_title)) {
     $page_title = '';
 }

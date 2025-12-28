@@ -1,8 +1,6 @@
 <?php
 $page_title = 'Discover Nepal - Your Ultimate Himalayan Adventure';
 $page_description = 'Explore Nepal\'s breathtaking landscapes, rich culture, and incredible adventures. From Everest Base Camp to Kathmandu\'s ancient temples, discover your perfect Himalayan journey.';
-
-// Initialize variables with defaults if not set
 $featured_posts = $featured_posts ?? [];
 
 ob_start();

@@ -398,7 +398,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Handle window resize
         window.addEventListener('resize', resizeMap);
         
-        // Optional: Add fullscreen control if available
         if (typeof L.control.fullscreen !== 'undefined') {
             map.addControl(new L.control.fullscreen());
         }

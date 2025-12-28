@@ -59,7 +59,6 @@ ob_start();
 <section class="py-16 bg-gradient-to-b from-gray-50 to-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <?php 
-        // Ensure $posts is defined for template safety
         if (!isset($posts)) $posts = [];
         if (!empty($posts)): ?>
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8" id="blog-grid">

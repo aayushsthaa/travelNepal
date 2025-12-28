@@ -450,12 +450,10 @@ function requireCSRF() {
  * Include template with variables
  */
 function includeTemplate($template, $variables = []) {
-    // Define TEMPLATES_PATH if not already defined
     if (!defined('TEMPLATES_PATH')) {
         define('TEMPLATES_PATH', dirname(__DIR__) . '/templates');
     }
     
-    // Define SITE_URL if not already defined
     if (!defined('SITE_URL')) {
         define('SITE_URL', 'http://localhost/travelNepal');
     }
@@ -779,7 +777,6 @@ function sanitizeFilePath($path) {
     // Only allow alphanumeric characters, dots, hyphens, and underscores (no slashes)
     $path = preg_replace('/[^a-zA-Z0-9._\-]/', '', $path);
     
-    // Ensure no empty path or suspicious patterns
     if (empty($path) || strpos($path, '..') !== false || strpos($path, './') !== false) {
         return 'invalid';
     }

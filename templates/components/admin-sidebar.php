@@ -150,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Adjust sidebar/overlay on resize
 window.addEventListener('resize', function() {
     const sidebar = document.getElementById('admin-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
